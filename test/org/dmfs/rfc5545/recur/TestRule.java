@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
+
 
 public class TestRule
 {
@@ -22,11 +24,19 @@ public class TestRule
 	public Calendar start = null;
 	public int instances = -1;
 	public boolean printInstances = false;
+	public RfcMode mode = RfcMode.RFC5545_LAX;
 
 
 	public TestRule(String rule)
 	{
 		this.rule = rule;
+	}
+
+
+	public TestRule(String rule, RfcMode mode)
+	{
+		this.rule = rule;
+		this.mode = mode;
 	}
 
 

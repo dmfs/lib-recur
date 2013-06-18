@@ -48,7 +48,7 @@ The iterator supports the new for loop style too, just set the start beforehand
 			}
 		}
 
-By default the parser is very tolerant and accepts all rules that comply with RFC 2445. You can use other modes to ensure a certain compliance level:
+By default the parser is very tolerant and accepts all rules that comply with RFC 5545. You can use other modes to ensure a certain compliance level:
 
 		RecurrenceRule rule1 = new RecurrenceRule("FREQ=WEEKLY;BYWEEKNO=1,2,3,4;BYDAY=SU", RfcMode.RFC2445_STRICT);
 		// -> will iterate Sunday in the first four weeks of the year
@@ -75,14 +75,14 @@ By default the parser is very tolerant and accepts all rules that comply with RF
 		RecurrenceRule rule6 = new RecurrenceRule("FREQ=MONTHLY;BYMONTH=4;", RfcMode.RFC2445_STRICT);
 		// -> will throw an InvalidRecurrenceRuleExceptionException because the trailing ";" is invalid
 
-The default mode for parsing rules is ```RfcMode.RFC2445_LAX``` to support as many rules as possible.
+The default mode for parsing rules is ```RfcMode.RFC5545_LAX```. To support as many rules as possible use ```RfcMode.RFC2445_LAX```;
 
 
 ### Building rules
 
 To build a rule you have to specify a base frequency and optionally an RfcMode. Then you can start adding BY* rules.
 
-		RecurrenceRule rule = new RecurrenceRule(Freq.MONTHLY); // will create a new rule RfcMode.RFC5545_STRICT
+		RecurrenceRule rule = new RecurrenceRule(Freq.MONTHLY); // will create a new rule using RfcMode.RFC5545_STRICT mode
 
 		rule.setCount(20);
 

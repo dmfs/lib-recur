@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ public class RecurrenceIteratorTest
 		{
 			try
 			{
-				RecurrenceRule r = new RecurrenceRule(rule.rule);
+				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 
 				if (rule.start != null)
 				{
@@ -93,7 +94,7 @@ public class RecurrenceIteratorTest
 	{
 		for (TestRule rule : mTestRules)
 		{
-			RecurrenceRule r = new RecurrenceRule(rule.rule);
+			RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 			if (rule.start != null)
 			{
 				r.setStart(rule.start);
@@ -143,8 +144,8 @@ public class RecurrenceIteratorTest
 	{
 		for (TestRule rule : mTestRules)
 		{
-			RecurrenceRule r1 = new RecurrenceRule(rule.rule);
-			RecurrenceRule r2 = new RecurrenceRule(rule.rule);
+			RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
+			RecurrenceRule r2 = new RecurrenceRule(rule.rule, rule.mode);
 			if (rule.start != null)
 			{
 				r1.setStart(rule.start);
@@ -208,7 +209,7 @@ public class RecurrenceIteratorTest
 		{
 			try
 			{
-				RecurrenceRule r1 = new RecurrenceRule(rule.rule);
+				RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
 				if (rule.start != null)
 				{
 					r1.setStart(rule.start);
@@ -235,7 +236,7 @@ public class RecurrenceIteratorTest
 
 				Calendar lastInstance = it.next();
 
-				RecurrenceRule r2 = new RecurrenceRule(rule.rule);
+				RecurrenceRule r2 = new RecurrenceRule(rule.rule, rule.mode);
 
 				int count = 1;
 				while (it.hasNext() && count < MAX_ITERATIONS)
@@ -890,12 +891,12 @@ public class RecurrenceIteratorTest
 			.setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
 
 		// each day between Jan 27th and Jan 31st that is in week 5: 5 + 5 + 5 + 0 + 2
-		mTestRules.add(new TestRule("FREQ=MONTHLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231").setStart("20130101").setUntil("20171231")
-			.setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
+		mTestRules.add(new TestRule("FREQ=MONTHLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
+			.setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
 
 		// each day between Jan 27th and Jan 31st that is in week 5: 5 + 5 + 5 + 0 + 2
-		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231").setStart("20130101").setUntil("20171231")
-			.setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
+			.setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
 
 	}
 }
