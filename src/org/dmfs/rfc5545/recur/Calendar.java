@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2013 Marten Gajda <marten@dmfs.org>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 package org.dmfs.rfc5545.recur;
 
 import java.io.StringWriter;
@@ -34,6 +51,35 @@ public class Calendar extends GregorianCalendar
 	 * Indicates this calendar instance is floating, i.e. has no time zone and always refers to local time (in every time zone).
 	 */
 	private boolean mIsFloating;
+
+
+	/**
+	 * Create a new calendar instance from a time stamp. The instance will be initialized with UTC. Use {@link #toAllDay()} to make the instance all-day
+	 * instance.
+	 * 
+	 * @param millis
+	 *            The millisecond time stamp of the instance.
+	 */
+	public Calendar(long millis)
+	{
+		this(UTC, millis);
+	}
+
+
+	/**
+	 * Create a new calendar instance from a time stamp with a specific time zone. The event will be floating if time zone is <code>null</code>.
+	 * 
+	 * @param timezone
+	 *            The time zone of the new event.
+	 * @param millis
+	 *            The millisecond time stamp of the instance.
+	 */
+	public Calendar(TimeZone timezone, long millis)
+	{
+		super(timezone == null ? UTC : timezone);
+		setTimeInMillis(millis);
+		mIsFloating = timezone == null;
+	}
 
 
 	/**
@@ -86,7 +132,7 @@ public class Calendar extends GregorianCalendar
 	 * Create a new calendar instance with time zone and with some initial values.
 	 * 
 	 * @param timezone
-	 *            The {@link TimeZone} of this instance.
+	 *            The {@link TimeZone} of this instance. If timezone is <code>null</code> the instance will be floating.
 	 * @param year
 	 *            The year of the instance.
 	 * @param month
@@ -102,11 +148,11 @@ public class Calendar extends GregorianCalendar
 	 */
 	public Calendar(TimeZone timezone, int year, int month, int day, int hour, int minute, int second)
 	{
-		super(timezone);
+		super(timezone == null ? UTC : timezone);
 		super.set(year, month, day, hour, minute, second);
 		set(Calendar.MILLISECOND, 0);
 		mAllDay = false;
-		mIsFloating = false;
+		mIsFloating = timezone == null;
 	}
 
 
@@ -119,6 +165,27 @@ public class Calendar extends GregorianCalendar
 		clone.mIsFloating = mIsFloating;
 
 		return clone;
+	}
+
+
+	@Override
+	public void set(int field, int value)
+	{
+		if (mAllDay)
+		{
+			switch (field)
+			{
+				case HOUR_OF_DAY:
+				case HOUR:
+				case AM_PM:
+				case MINUTE:
+				case SECOND:
+				case MILLISECOND:
+					// this is no longer an all day instance if we set the value to anything but 0
+					mAllDay &= value == 0;
+			}
+		}
+		super.set(field, value);
 	}
 
 
@@ -151,9 +218,19 @@ public class Calendar extends GregorianCalendar
 	}
 
 
+	/**
+	 * Convert this instance to an all-day instance. This will drop all time zone and time information.
+	 */
 	public void toAllDay()
 	{
 		mAllDay = true;
+		mIsFloating = true;
+		int year = get(Calendar.YEAR);
+		int month = get(Calendar.MONTH);
+		int dayOfMonth = get(Calendar.DAY_OF_MONTH);
+		setTimeZone(UTC);
+		set(year, month, dayOfMonth, 0, 0, 0);
+		set(MILLISECOND, 0);
 	}
 
 
@@ -185,8 +262,10 @@ public class Calendar extends GregorianCalendar
 			int hour = get(Calendar.HOUR_OF_DAY);
 			int minute = get(Calendar.MINUTE);
 			int second = get(Calendar.SECOND);
+			int millisecond = get(Calendar.MILLISECOND);
 			setTimeZone(timezone);
 			set(year, month, dayOfMonth, hour, minute, second);
+			set(MILLISECOND, millisecond);
 		}
 	}
 
@@ -223,11 +302,11 @@ public class Calendar extends GregorianCalendar
 	 * where YYYYMMDD means a date (year, month, day of month) and HHMMSS means a time (hour, minute, second). <code>'T'</code> and <code>'Z'</code> stand for
 	 * the literals <code>T</code> and <code>Z</code>.
 	 * 
-	 * If the Z is present the time zone is UTC. Otherwise the time zone is specified in an additional parameter or if no such parameter exists it's floating
+	 * If 'Z' is present the time zone is UTC. Otherwise the time zone is specified in an additional parameter or if no such parameter exists it's floating
 	 * (i.e. always local time).
 	 * <p>
-	 * Use {@link #replaceTimeZone(TimeZone)} to make set a time zone for floating instances and {@link #setTimeZone(TimeZone)} to shift the time zone for UTC
-	 * instances.
+	 * Use {@link #parse(TimeZone, String)} to apply a time zone to floating events or {@link #replaceTimeZone(TimeZone)} to set the time zone after paring the
+	 * string. Use {@link #setTimeZone(TimeZone)} to shift the time zone.
 	 * </p>
 	 * 
 	 * @param string
@@ -236,6 +315,39 @@ public class Calendar extends GregorianCalendar
 	 */
 	public static Calendar parse(String string)
 	{
+		return parse(null, string);
+	}
+
+
+	/**
+	 * Parses a date-time string as specified in RFC 5545. There are three valid forms of such a String:
+	 * <ul>
+	 * <li><code>YYYYMMDD</code></li>
+	 * <li><code>YYYYMMDD'T'HHMMSS</code></li>
+	 * <li><code>YYYYMMDD'T'HHMMSS'Z'</code></li>
+	 * </ul>
+	 * where YYYYMMDD means a date (year, month, day of month) and HHMMSS means a time (hour, minute, second). <code>'T'</code> and <code>'Z'</code> stand for
+	 * the literals <code>T</code> and <code>Z</code>.
+	 * 
+	 * If 'Z' is present the time zone is UTC. Otherwise the time zone is specified in an additional parameter or if no such parameter exists it's floating
+	 * (i.e. always local time).
+	 * <p>
+	 * Use {@link #setTimeZone(TimeZone)} to shift the time zone.
+	 * </p>
+	 * 
+	 * @param timeZone
+	 *            A time zone to apply to non-allday and non-UTC date-time values. If timeZone is <code>null</code> the event will be floating.
+	 * @param string
+	 *            A valid date-time string.
+	 * @return A new {@link Calendar} instance.
+	 */
+	public static Calendar parse(TimeZone timeZone, String string)
+	{
+		if (string == null)
+		{
+			throw new NullPointerException("a date-time string must not be null");
+		}
+
 		if (string.length() == 8)
 		{
 			return new Calendar(Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
@@ -243,16 +355,15 @@ public class Calendar extends GregorianCalendar
 		}
 		else if (string.length() == 15 && string.charAt(8) == 'T')
 		{
-			return new Calendar(Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
-				Integer.parseInt(string.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)),
-				Integer.parseInt(string.substring(13, 15)));
+			return new Calendar(timeZone, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string
+				.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)), Integer.parseInt(string.substring(13,
+				15)));
 		}
 		else if (string.length() == 16 && string.charAt(8) == 'T' && string.charAt(15) == 'Z')
 		{
-			Calendar result = new Calendar(Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string
+			Calendar result = new Calendar(UTC, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string
 				.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)), Integer.parseInt(string.substring(13,
 				15)));
-			result.replaceTimeZone(UTC);
 			return result;
 		}
 		throw new IllegalArgumentException("illegal date-time string: " + string);
