@@ -71,20 +71,18 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	@Override
 	public Calendar next()
 	{
-		Instance instance;
-		if (mNextInstance == null)
+		Instance instance = mNextInstance;
+		if (instance == null)
 		{
 			instance = mRuleIterator.next();
+			if (instance == null)
+			{
+				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+			}
 		}
 		else
 		{
-			instance = mNextInstance;
 			mNextInstance = null;
-		}
-
-		if (instance == null)
-		{
-			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
 		if (mStart.isFloating())
@@ -109,6 +107,43 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	public boolean hasNext()
 	{
 		return (mNextInstance != null || (mNextInstance = mRuleIterator.next()) != null);
+	}
+
+
+	/**
+	 * Peek at the next instance to be returned by {@link #next()} without actually iterating it. Calling this method (even multiple times) won't affect the
+	 * instances returned by {@link #next()}.
+	 * 
+	 * @return the upcoming instance or <code>null</code> if there are no more instances.
+	 */
+	public Calendar peek()
+	{
+		Instance instance = mNextInstance;
+		if (instance == null)
+		{
+			instance = mRuleIterator.next();
+
+			if (instance == null)
+			{
+				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+			}
+		}
+
+		if (mStart.isFloating())
+		{
+			if (mStart.isAllDay())
+			{
+				return new Calendar(instance.year, instance.month, instance.dayOfMonth);
+			}
+			else
+			{
+				return new Calendar(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+			}
+		}
+		else
+		{
+			return new Calendar(mStart.getTimeZone(), instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+		}
 	}
 
 
