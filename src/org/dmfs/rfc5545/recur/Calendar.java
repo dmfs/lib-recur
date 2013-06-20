@@ -228,7 +228,7 @@ public class Calendar extends GregorianCalendar
 		int year = get(Calendar.YEAR);
 		int month = get(Calendar.MONTH);
 		int dayOfMonth = get(Calendar.DAY_OF_MONTH);
-		setTimeZone(UTC);
+		super.setTimeZone(UTC);
 		set(year, month, dayOfMonth, 0, 0, 0);
 		set(MILLISECOND, 0);
 	}
