@@ -169,6 +169,32 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	}
 
 
+	/**
+	 * Skip all instances up to a specific date.
+	 * <p>
+	 * <strong>Note:</strong> After calling this method you should call {@link #hasNext()} before you continue because there might no more instances left if
+	 * there is an UNTIL or COUNT part in the rule.
+	 * </p>
+	 * 
+	 * @param until
+	 *            The earliest date to be returned by the next call to {@link #next()}.
+	 */
+	public void skip(Calendar until)
+	{
+		if (!hasNext())
+		{
+			return;
+		}
+
+		Calendar next = peek();
+		while (hasNext() && until.after(next))
+		{
+			skip(1);
+			next = peek();
+		}
+	}
+
+
 	@Override
 	public void remove()
 	{
