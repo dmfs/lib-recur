@@ -17,9 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.List;
-import java.util.TreeSet;
-
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
@@ -39,7 +36,7 @@ final class ByMonthFilter extends ByFilter
 	/**
 	 * The list of months to let pass or to expand.
 	 */
-	private final List<Integer> mMonths;
+	private final int[] mMonths;
 
 	/**
 	 * Whether to allow weeks that overlap one of the months in {@link #mMonths} to pass. This is important if the rule is weekly and a BY*DAY filter is
@@ -58,10 +55,10 @@ final class ByMonthFilter extends ByFilter
 	private final Calendar mHelper;
 
 
-	public ByMonthFilter(RecurrenceRule rule, RuleIterator previous, Calendar start)
+	public ByMonthFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(previous, start, rule.getFreq() == Freq.YEARLY);
-		mMonths = rule.getByPart(Part.BYMONTH);
+		super(previous, calendarTools, start, rule.getFreq() == Freq.YEARLY);
+		mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
 
 		/*
 		 * If we expand day-wise in a weekly interval we'll have to keep overlapping weeks, otherwise we may loose instances.
@@ -87,20 +84,26 @@ final class ByMonthFilter extends ByFilter
 
 
 	@Override
-	boolean filter(Instance instance)
+	boolean filter(long instance)
 	{
+		final int month = Instance.month(instance);
 		if (!mAllowOverlappingWeeks)
 		{
-			return !mMonths.contains(instance.month + 1);
+			return StaticUtils.linearSearch(mMonths, month + 1) < 0;
 		}
 		else
 		{
-			if (mMonths.contains(instance.month + 1))
+			if (StaticUtils.linearSearch(mMonths, month + 1) >= 0)
 			{
 				return false;
 			}
+			int year = Instance.year(instance);
+			int dayOfMonth = Instance.dayOfMonth(instance);
+			int hour = Instance.hour(instance);
+			int minute = Instance.minute(instance);
+			int second = Instance.second(instance);
 
-			mHelper.set(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+			mHelper.set(year, month, dayOfMonth, hour, minute, second);
 			// force calculation of the WEEK_OF_YEAR and DAY_OF_WEEK fields.
 			mHelper.get(Calendar.WEEK_OF_YEAR);
 
@@ -108,36 +111,29 @@ final class ByMonthFilter extends ByFilter
 			 * Check if the current week overlaps any of the months in mMonths, i.e. if the month of the end or the start of the week is in mMonths.
 			 */
 			mHelper.set(Calendar.DAY_OF_WEEK, mWeekStart); // set to first day of the week
-			if (mMonths.contains(mHelper.get(Calendar.MONTH) + 1))
+			if (StaticUtils.linearSearch(mMonths, mHelper.get(Calendar.MONTH) + 1) >= 0)
 			{
 				return false;
 			}
 
 			mHelper.add(Calendar.DAY_OF_MONTH, 6); // set to last day of the week
-			return !mMonths.contains(mHelper.get(Calendar.MONTH) + 1);
+			return StaticUtils.linearSearch(mMonths, mHelper.get(Calendar.MONTH) + 1) < 0;
 		}
 	}
 
 
 	@Override
-	void expand(TreeSet<Instance> set, Instance instance, Instance start)
+	void expand(LongArray set, long instance, long start)
 	{
-		if (instance.year < start.year)
-		{
-			// nothing to do (actually we should never get here)
-			return;
-		}
-
 		for (int month : mMonths)
 		{
-			if (instance.year == start.year && month /* 1-based */<= start.month /* 0-based */)
+			long newInstance = Instance.setMonth(instance, month - 1);
+			if (newInstance < start)
 			{
 				// instance is before start, nothing to do here
 				continue;
 			}
 
-			Instance newInstance = (Instance) instance.clone();
-			newInstance.month = month - 1;
 			set.add(newInstance);
 		}
 	}

@@ -17,9 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.TreeSet;
 
 
@@ -56,24 +53,21 @@ abstract class ByFilter extends RuleIterator
 	private final boolean mExpand;
 
 	/**
-	 * The current iterator. This is used by {@link #next()} if this filter is expanding.
-	 */
-	private Iterator<Instance> mCurrentIterator;
-
-	/**
 	 * The first instance to iterate.
 	 */
-	private final Instance mStart;
+	private final long mStart;
 
 	/**
 	 * The set we work on.
 	 */
-	private final TreeSet<Instance> mWorkingSet = new TreeSet<Instance>();
+	private LongArray mWorkingSet = null;
 
 	/**
-	 * The set we return to subsequent filters.
+	 * The set we return.
 	 */
-	private final Set<Instance> mResultSet = Collections.unmodifiableSet(mWorkingSet);
+	private final LongArray mResultSet = new LongArray();
+
+	final CalendarMetrics mCalendarMetrics;
 
 
 	/**
@@ -85,28 +79,28 @@ abstract class ByFilter extends RuleIterator
 	 * @param start
 	 *            The first instance.
 	 * @param expand
-	 *            <code>true</code> to epxand the instances, <code>false</code> to limit them.
+	 *            <code>true</code> to expand the instances, <code>false</code> to limit them.
 	 */
-	public ByFilter(RuleIterator previous, Calendar start, boolean expand)
+	public ByFilter(RuleIterator previous, CalendarMetrics calendarTools, Calendar start, boolean expand)
 	{
 		super(previous);
-		mStart = new Instance(start);
+		mStart = Instance.makeFast(start);
 		mExpand = expand;
+		mCalendarMetrics = calendarTools;
 	}
 
 
 	@Override
-	public Instance next()
+	public long next()
 	{
-		Instance next;
-		if (mExpand)
+		long next;
+		if (mExpand) // TODO: check if we are faster when we handle all cases like the expand case
 		{
-			if (mCurrentIterator == null || !mCurrentIterator.hasNext())
+			if (mWorkingSet == null || !mWorkingSet.hasNext())
 			{
-				nextSet();
-				mCurrentIterator = mWorkingSet.iterator();
+				mWorkingSet = nextSet();
 			}
-			next = mCurrentIterator.next();
+			next = mWorkingSet.next();
 		}
 		else
 		{
@@ -126,25 +120,28 @@ abstract class ByFilter extends RuleIterator
 
 
 	@Override
-	Set<Instance> nextSet()
+	LongArray nextSet()
 	{
-		mWorkingSet.clear();
+		LongArray resultSet = mResultSet;
+		resultSet.clear();
+
 		if (mExpand)
 		{
 			int counter = 0;
 			do
 			{
-				for (Instance instance : mPrevious.nextSet())
+				if (counter == MAX_EMPTY_SETS)
 				{
-					if (counter == MAX_EMPTY_SETS)
-					{
-						throw new IllegalArgumentException("too many empty recurrence sets");
-					}
-					counter++;
-
-					expand(mWorkingSet, instance, mStart);
+					throw new IllegalArgumentException("too many empty recurrence sets " + this);
 				}
-			} while (mWorkingSet.size() == 0);
+				counter++;
+
+				LongArray prev = mPrevious.nextSet();
+				while (prev.hasNext())
+				{
+					expand(resultSet, prev.next(), mStart);
+				}
+			} while (!resultSet.hasNext());
 		}
 		else
 		{
@@ -156,16 +153,19 @@ abstract class ByFilter extends RuleIterator
 					throw new IllegalArgumentException("too many empty recurrence sets");
 				}
 				counter++;
-				for (Instance d : mPrevious.nextSet())
+
+				LongArray prev = mPrevious.nextSet();
+				while (prev.hasNext())
 				{
-					if (!filter(d))
+					long next = prev.next();
+					if (!filter(next))
 					{
-						mWorkingSet.add(d);
+						resultSet.add(next);
 					}
 				}
-			} while (mWorkingSet.size() == 0);
+			} while (!resultSet.hasNext());
 		}
-		return mResultSet;
+		return resultSet;
 	}
 
 
@@ -176,7 +176,7 @@ abstract class ByFilter extends RuleIterator
 	 *            The instance to filter.
 	 * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
 	 */
-	abstract boolean filter(Instance instance);
+	abstract boolean filter(long instance);
 
 
 	/**
@@ -190,5 +190,5 @@ abstract class ByFilter extends RuleIterator
 	 *            The first instance of the rule. An implementing filter can use this to avoid iterating instances that precede the first instance if it's save
 	 *            to do so.
 	 */
-	abstract void expand(TreeSet<Instance> instances, Instance instance, Instance start);
+	abstract void expand(LongArray instances, long instance, long start);
 }

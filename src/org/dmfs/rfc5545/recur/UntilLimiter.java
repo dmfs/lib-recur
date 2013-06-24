@@ -22,12 +22,12 @@ package org.dmfs.rfc5545.recur;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-class UntilLimiter extends Limiter
+final class UntilLimiter extends Limiter
 {
 	/**
 	 * The latest allowed instance start date.
 	 */
-	private final Instance mUntil;
+	private final long mUntil;
 
 
 	/**
@@ -49,14 +49,13 @@ class UntilLimiter extends Limiter
 			// switch until to the time zone of start
 			until.setTimeZone(start.getTimeZone());
 		}
-		mUntil = new Instance(until);
+		mUntil = Instance.makeFast(until);
 	}
 
 
 	@Override
-	boolean stop(Instance instance)
+	boolean stop(long instance)
 	{
-		// stop once the instance is after the until date
-		return mUntil.compareTo(instance) < 0;
+		return mUntil < Instance.maskWeekday(instance);
 	}
 }

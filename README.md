@@ -25,27 +25,8 @@ The basic use case is to iterate over all instances of a given rule starting on 
 
 		while (it.hasNext() && (!rule.isInfinite() || maxInstances-- > 0))
 		{
-			Calendar nextInstance = it.next();
+			Calendar nextInstance = it.nextCalendar();
 			// do something with nextInstance
-		}
-
-The iterator supports the new for loop style too, just set the start beforehand
-		
-		RecurrenceRule rule = new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=23;BYMONTH=5");
-		
-		Calendar start = new Calendar(1982,Calendar.MAY,23);
-
-		rule.setStart(start);
-
-		int maxInstances = 100; // limit instances for rules that recur forever
-
-		for (Calendar instance:rule)
-		{
-			// do something with instance
-			if (rule.isInfinite() && maxInstances-- <= 0)
-			{
-				break;
-			}
 		}
 
 By default the parser is very tolerant and accepts all rules that comply with RFC 5545. You can use other modes to ensure a certain compliance level:
@@ -111,6 +92,7 @@ To build a rule you have to specify a base frequency and optionally an RfcMode. 
 * Add tests for edge cases
 * Add validator and a validator log
 * Add a couple of additional checks to ensure the built rule is valid
+* don't use a Calendar instance for calendar calculations, use CalendarMetrics instead.
 
 ## License
 

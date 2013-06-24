@@ -17,9 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Iterator;
-
-
 /**
  * An iterator for recurrence rules.
  * <p>
@@ -29,7 +26,7 @@ import java.util.Iterator;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public class RecurrenceIterator implements Iterator<Calendar>
+public final class RecurrenceIterator
 {
 	/**
 	 * The previous iterator instance. This is <code>null</code> for the {@link FreqIterator}.
@@ -37,27 +34,62 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	private final RuleIterator mRuleIterator;
 
 	/**
-	 * The first instance. This is used to adjust the time zone and the all-day flag of the instances.
+	 * The first event to iterate;
 	 */
-	private final Calendar mStart;
+	private Calendar mStart;
 
 	/**
 	 * The upcoming instance, if any.
 	 */
-	private Instance mNextInstance;
+	private long mNextInstance = Long.MIN_VALUE;
+
+	/**
+	 * A helper for date calculations.
+	 */
+	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
 
 
 	/**
-	 * Creates a new iterator that gets its input from <code>previous</code>.
+	 * Creates a new {@link RecurrenceIterator} that gets its input from <code>ruleIterator</code>.
 	 * 
 	 * @param ruleIterator
-	 *            A RuleIterator that precedes this one in the chain of iterators or <code>null</code> if this is the first iterator (i.e. {@link FreqIterator}
-	 *            ).
+	 *            The last {@link RuleIterator} in the chain of iterators.
+	 * @param start
+	 *            The first instance to iterate.
 	 */
 	RecurrenceIterator(RuleIterator ruleIterator, Calendar start)
 	{
 		mRuleIterator = ruleIterator;
-		mStart = start;
+		mStart = start.clone();
+
+	}
+
+
+	/**
+	 * Get the next instance. The instances are guaranteed to be strictly increasing in time.
+	 * 
+	 * @return A time stamp of the next instance.
+	 */
+	public long nextMillis()
+	{
+		long instance = mNextInstance;
+		if (instance == Long.MIN_VALUE)
+		{
+			instance = mRuleIterator.next();
+			if (instance == Long.MIN_VALUE)
+			{
+				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+			}
+		}
+		else
+		{
+			mNextInstance = Long.MIN_VALUE;
+		}
+
+		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
+			Instance.second(instance));
+
+		return mHelper.getTimeInMillis();
 	}
 
 
@@ -66,45 +98,43 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	 * 
 	 * @return A {@link Calendar} object for the next instance.
 	 */
-	@Override
-	public Calendar next()
+	public Calendar nextCalendar()
 	{
-		Instance instance = mNextInstance;
-		if (instance == null)
+		long instance = mNextInstance;
+		if (instance == Long.MIN_VALUE)
 		{
 			instance = mRuleIterator.next();
-			if (instance == null)
+			if (instance == Long.MIN_VALUE)
 			{
 				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 			}
 		}
 		else
 		{
-			mNextInstance = null;
+			mNextInstance = Long.MIN_VALUE;
 		}
 
-		if (mStart.isFloating())
+		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
+			Instance.second(instance));
+
+		Calendar result = mHelper.clone();
+
+		if (mStart.isAllDay())
 		{
-			if (mStart.isAllDay())
-			{
-				return new Calendar(instance.year, instance.month, instance.dayOfMonth);
-			}
-			else
-			{
-				return new Calendar(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
-			}
+			result.toAllDay();
 		}
 		else
 		{
-			return new Calendar(mStart.getTimeZone(), instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+			result.setTimeZone(mStart.isFloating() ? null : mStart.getTimeZone());
 		}
+
+		return result;
 	}
 
 
-	@Override
 	public boolean hasNext()
 	{
-		return (mNextInstance != null || (mNextInstance = mRuleIterator.next()) != null);
+		return (mNextInstance != Long.MIN_VALUE || (mNextInstance = mRuleIterator.next()) != Long.MIN_VALUE);
 	}
 
 
@@ -114,34 +144,60 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	 * 
 	 * @return the upcoming instance or <code>null</code> if there are no more instances.
 	 */
-	public Calendar peek()
+	public long peekMillis()
 	{
-		Instance instance = mNextInstance;
-		if (instance == null)
+		long instance = mNextInstance;
+		if (instance == Long.MIN_VALUE)
 		{
 			instance = mRuleIterator.next();
 
-			if (instance == null)
+			if (instance == Long.MIN_VALUE)
 			{
 				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 			}
 		}
 
-		if (mStart.isFloating())
+		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
+			Instance.second(instance));
+
+		return mHelper.getTimeInMillis();
+	}
+
+
+	/**
+	 * Peek at the next instance to be returned by {@link #next()} without actually iterating it. Calling this method (even multiple times) won't affect the
+	 * instances returned by {@link #next()}.
+	 * 
+	 * @return the upcoming instance or <code>null</code> if there are no more instances.
+	 */
+	public Calendar peekCalendar()
+	{
+		long instance = mNextInstance;
+		if (instance == Long.MIN_VALUE)
 		{
-			if (mStart.isAllDay())
+			instance = mRuleIterator.next();
+
+			if (instance == Long.MIN_VALUE)
 			{
-				return new Calendar(instance.year, instance.month, instance.dayOfMonth);
+				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 			}
-			else
-			{
-				return new Calendar(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
-			}
+		}
+
+		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
+			Instance.second(instance));
+
+		Calendar result = mHelper.clone();
+
+		if (mStart.isAllDay())
+		{
+			result.isAllDay();
 		}
 		else
 		{
-			return new Calendar(mStart.getTimeZone(), instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+			result.setTimeZone(mStart.isFloating() ? null : mStart.getTimeZone());
 		}
+
+		return result;
 	}
 
 
@@ -157,14 +213,40 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	 */
 	public void skip(int skip)
 	{
-		if (mNextInstance != null)
+		if (mNextInstance != Long.MIN_VALUE)
 		{
 			--skip;
-			mNextInstance = null;
+			mNextInstance = Long.MIN_VALUE;
 		}
-		while (skip > 0 && mRuleIterator.next() != null)
+		while (skip > 0 && mRuleIterator.next() != Long.MIN_VALUE)
 		{
 			--skip;
+		}
+	}
+
+
+	/**
+	 * Skip all instances up to a specific date.
+	 * <p>
+	 * <strong>Note:</strong> After calling this method you should call {@link #hasNext()} before you continue because there might no more instances left if
+	 * there is an UNTIL or COUNT part in the rule.
+	 * </p>
+	 * 
+	 * @param until
+	 *            The time stamp of earliest date to be returned by the next call to {@link #next()}.
+	 */
+	public void skip(long until)
+	{
+		if (!hasNext())
+		{
+			return;
+		}
+
+		long next = peekMillis();
+		while (hasNext() && next < until)
+		{
+			skip(1);
+			next = peekMillis();
 		}
 	}
 
@@ -181,23 +263,6 @@ public class RecurrenceIterator implements Iterator<Calendar>
 	 */
 	public void skip(Calendar until)
 	{
-		if (!hasNext())
-		{
-			return;
-		}
-
-		Calendar next = peek();
-		while (hasNext() && until.after(next))
-		{
-			skip(1);
-			next = peek();
-		}
-	}
-
-
-	@Override
-	public void remove()
-	{
-		throw new UnsupportedOperationException("Remove is not supported by this iterator");
+		skip(until.getTimeInMillis());
 	}
 }

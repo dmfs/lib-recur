@@ -17,71 +17,54 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.io.StringWriter;
-
-
 /**
- * Represents a single instance of the series of instances. We use this class instead of a {@link Calendar} because it allows invalid dates like 2013-02-29. A
- * Calendar instance either wraps around to 2013-03-01 or limits to 2013-2-28. In either case that's not what we want when iterating instances. We want to
- * preserve instances like that because they keep valuable information. Invalid dates get filtered out by the {@link SanityFilter} after all by-rules have been
- * applied.
+ * This class provides a set of static methods to manipulate instances stored int a long value.
+ * 
+ * Storing the values of an instance in a single long allows to compare them quickly and it doesn't require any object instantiations.
+ * 
  * <p>
- * Also this class doesn't maintain a time zone.
+ * TODO: add javadoc
  * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class Instance implements Comparable<Instance>, Cloneable
+public final class Instance
 {
-	/**
-	 * The year of this instance.
-	 */
-	public int year;
+	private final static int YEAR_BITS = 18;
+	private final static int MONTH_BITS = 5;
+	private final static int DAY_BITS = 7;
+	private final static int HOUR_BITS = 5;
+	private final static int MINUTE_BITS = 6;
+	private final static int SECOND_BITS = 6;
+	private final static int WEEKDAY_BITS = 3;
+
+	private final static int WEEKDAY_POS = 0;
+	private final static int SECOND_POS = WEEKDAY_BITS + WEEKDAY_POS;
+	private final static int MINUTE_POS = SECOND_BITS + SECOND_POS;
+	private final static int HOUR_POS = MINUTE_BITS + MINUTE_POS;
+	private final static int DAY_POS = HOUR_BITS + HOUR_POS;
+	private final static int MONTH_POS = DAY_BITS + DAY_POS;
+	private final static int YEAR_POS = MONTH_BITS + MONTH_POS;
+
+	private final static long SECOND_MASK = ((1L << SECOND_BITS) - 1) << SECOND_POS;
+	private final static long MINUTE_MASK = ((1L << MINUTE_BITS) - 1) << MINUTE_POS;
+	private final static long HOUR_MASK = ((1L << HOUR_BITS) - 1) << HOUR_POS;
+	private final static long WEEKDAY_MASK = ((1L << WEEKDAY_BITS) - 1) << WEEKDAY_POS;
+	private final static long DAY_MASK = ((1L << DAY_BITS) - 1) << DAY_POS;
+	private final static long MONTH_MASK = ((1L << MONTH_BITS) - 1) << MONTH_POS;
+	private final static long YEAR_MASK = ((1L << YEAR_BITS) - 1) << YEAR_POS;
+
+	private final static int YEAR_BIAS = 0;
+	private final static int MONTH_BIAS = 1 << (MONTH_BITS - 1);
+	private final static int DAY_BIAS = 1 << (DAY_BITS - 1);
+
 
 	/**
-	 * Zero based month index.
+	 * You shall not instantiate this class
 	 */
-	public int month;
-
-	/**
-	 * The month of the instance.
-	 */
-	public int dayOfMonth;
-
-	/**
-	 * The week of the year of the instance.
-	 */
-	public int dayOfWeek;
-
-	/**
-	 * The day of the year of the instance.
-	 */
-	public int dayOfYear;
-
-	/**
-	 * The week of year of the instance. The actual value depends on the current setting of the week start.
-	 */
-	public int weekOfYear;
-
-	/**
-	 * The hour of the instance.
-	 */
-	public int hour;
-
-	/**
-	 * The minute of the instance.
-	 */
-	public int minute;
-
-	/**
-	 * The seconds of the instance.
-	 */
-	public int second;
-
-	/**
-	 * A flag indicating whether this instance is an allday instance or not.
-	 */
-	public boolean allDay = false;
+	private Instance()
+	{
+	}
 
 
 	/**
@@ -89,184 +72,132 @@ final class Instance implements Comparable<Instance>, Cloneable
 	 * 
 	 * @param defaults
 	 */
-	public Instance(Calendar defaults)
+	public static long make(Calendar defaults)
 	{
-		year = defaults.get(Calendar.YEAR);
-		month = defaults.get(Calendar.MONTH);
-		weekOfYear = defaults.get(Calendar.WEEK_OF_YEAR);
-		dayOfMonth = defaults.get(Calendar.DAY_OF_MONTH);
-		dayOfWeek = defaults.get(Calendar.DAY_OF_WEEK);
-		dayOfYear = defaults.get(Calendar.DAY_OF_YEAR);
-		hour = defaults.get(Calendar.HOUR_OF_DAY);
-		minute = defaults.get(Calendar.MINUTE);
-		second = defaults.get(Calendar.SECOND);
+		int year = defaults.get(Calendar.YEAR);
+		int month = defaults.get(Calendar.MONTH);
+		int dayOfMonth = defaults.get(Calendar.DAY_OF_MONTH);
+		int dayOfWeek = defaults.get(Calendar.DAY_OF_WEEK);
+		int hour = defaults.get(Calendar.HOUR_OF_DAY);
+		int minute = defaults.get(Calendar.MINUTE);
+		int second = defaults.get(Calendar.SECOND);
+		return make(year, month, dayOfMonth, hour, minute, second, dayOfWeek);
 	}
 
 
 	/**
-	 * Creates a new instance providing all values explicitly. This also sets {@link #allDay} to false;
+	 * Like {@link #make(Calendar)}, but doesn't set the field DAY_OF_WEEK.
 	 * 
-	 * @param year
-	 *            The year of the instance.
-	 * @param month
-	 *            The month of the instance.
-	 * @param dayOfMonth
-	 *            The day of month of the instance.
-	 * @param hour
-	 *            The hour of the instance.
-	 * @param minute
-	 *            The minute of the instance.
-	 * @param second
-	 *            The seconds of the instance.
+	 * @param defaults
 	 */
-	public Instance(int year, int month, int dayOfMonth, int hour, int minute, int second)
+	public static long makeFast(Calendar defaults)
 	{
-		this.year = year;
-		this.month = month;
-		this.dayOfMonth = dayOfMonth;
-		this.hour = hour;
-		this.minute = minute;
-		this.second = second;
-		this.allDay = false;
+		int year = defaults.get(Calendar.YEAR);
+		int month = defaults.get(Calendar.MONTH);
+		int dayOfMonth = defaults.get(Calendar.DAY_OF_MONTH);
+		int hour = defaults.get(Calendar.HOUR_OF_DAY);
+		int minute = defaults.get(Calendar.MINUTE);
+		int second = defaults.get(Calendar.SECOND);
+		return make(year, month, dayOfMonth, hour, minute, second);
 	}
 
 
-	/**
-	 * Creates a new instance providing all values explicitly. This also sets {@link #allDay} to true.
-	 * 
-	 * @param year
-	 *            The year of the instance.
-	 * @param month
-	 *            The month of the instance.
-	 * @param dayOfMonth
-	 *            The day of month of the instance.
-	 */
-	public Instance(int year, int month, int dayOfMonth)
+	public static long make(int year, int month, int dayOfMonth, int hour, int minute, int second, int dayOfWeek)
 	{
-		this.year = year;
-		this.month = month;
-		this.dayOfMonth = dayOfMonth;
-		this.hour = 0;
-		this.minute = 0;
-		this.second = 0;
-		this.allDay = true;
+		long mValue = (((long) year + YEAR_BIAS) << YEAR_POS) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS)
+			| (((long) dayOfWeek) << WEEKDAY_POS) | ((long) hour << HOUR_POS) | ((long) minute << MINUTE_POS) | ((long) second << SECOND_POS);
+		return mValue;
 	}
 
 
-	@Override
-	public Instance clone()
+	public static long make(int year, int month, int dayOfMonth, int hour, int minute, int second)
 	{
-		Instance result = new Instance(year, month, dayOfMonth, hour, minute, second);
-		result.dayOfWeek = dayOfWeek;
-		result.weekOfYear = weekOfYear;
-		result.dayOfYear = dayOfYear;
-		result.allDay = allDay;
-
-		return result;
+		long mValue = (((long) year + YEAR_BIAS) << YEAR_POS) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS)
+			| ((long) hour << HOUR_POS) | ((long) minute << MINUTE_POS) | ((long) second << SECOND_POS);
+		return mValue;
 	}
 
 
-	@Override
-	public String toString()
+	public static long setMonth(long instance, int month)
 	{
-		StringWriter result = new StringWriter(15);
-		writeInt(result, year / 100);
-		writeInt(result, year % 100);
-		writeInt(result, month + 1);
-		writeInt(result, dayOfMonth);
-		if (!allDay)
-		{
-			result.append('T');
-			writeInt(result, hour);
-			writeInt(result, minute);
-			writeInt(result, second);
-		}
-		return result.toString();
+		return (instance & ~MONTH_MASK) | (((long) month + MONTH_BIAS) << MONTH_POS);
 	}
 
 
-	/**
-	 * A helper to write two digit leading zero integers. This method writes only the two least significant digits.
-	 * 
-	 * @param sw
-	 *            The {@link StringWriter} to write to.
-	 * @param num
-	 *            The int to write.
-	 */
-	private void writeInt(StringWriter sw, int num)
+	public static long setDayOfMonth(long instance, int dayOfMonth)
 	{
-		sw.write((num / 10) % 10 + '0');
-		sw.write((num % 10) + '0');
+		return (instance & ~DAY_MASK) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS);
 	}
 
 
-	@Override
-	public int compareTo(Instance other)
+	public static long setMonthAndDayOfMonth(long instance, int month, int dayOfMonth)
 	{
-		/*
-		 * We compare each value separately instead of just calculating a time stamp and compare this one.
-		 * 
-		 * That guarantees two values will not equal just because one value wraps around.
-		 */
-		if (year == other.year)
-		{
-			if (month == other.month)
-			{
-				if (dayOfMonth == other.dayOfMonth)
-				{
-					if (hour == other.hour)
-					{
-						if (minute == other.minute)
-						{
-							return second - other.second;
-						}
-						else
-						{
-							return minute - other.minute;
-						}
-					}
-					else
-					{
-						return hour - other.hour;
-					}
-				}
-				else
-				{
-					return dayOfMonth - other.dayOfMonth;
-				}
-			}
-			else
-			{
-				return month - other.month;
-			}
-		}
-		else
-		{
-			return year - other.year;
-		}
+		return (instance & ~(MONTH_MASK | DAY_MASK)) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS);
 	}
 
 
-	@Override
-	public int hashCode()
+	public static long setHour(long instance, int hour)
 	{
-		/*
-		 * This hash code doesn't take leap years or other calendar scales into account. That's ok because we consider two instances the same only if year,
-		 * month, day of month, hour, minute and second are equal.
-		 * 
-		 * In particular that means the dates 2013-03-01 and 2013-02-29 are not equal and must not have the same hash code.
-		 */
-		return (((year * 366 + 31 * month + dayOfMonth) * 24 + hour) * 60 + minute) * 60 + second;
+		return (instance & ~HOUR_MASK) | ((long) hour << HOUR_POS);
 	}
 
 
-	@Override
-	public boolean equals(Object other)
+	public static long setMinute(long instance, int minute)
 	{
-		if (!(other instanceof Instance))
-		{
-			return false;
-		}
-		return compareTo((Instance) other) == 0;
+		return (instance & ~MINUTE_MASK) | ((long) minute << MINUTE_POS);
+	}
+
+
+	public static long setSecond(long instance, int second)
+	{
+		return (instance & ~SECOND_MASK) | ((long) second << SECOND_POS);
+	}
+
+
+	public static long maskWeekday(long instance)
+	{
+		return (instance & ~(WEEKDAY_MASK));
+	}
+
+
+	public static int year(long instance)
+	{
+		return (int) ((instance & YEAR_MASK) >> YEAR_POS) - YEAR_BIAS;
+	}
+
+
+	public static int month(long instance)
+	{
+		return (int) ((instance & MONTH_MASK) >> MONTH_POS) - MONTH_BIAS;
+	}
+
+
+	public static int dayOfMonth(long instance)
+	{
+		return (int) ((instance & DAY_MASK) >> DAY_POS) - DAY_BIAS;
+	}
+
+
+	public static int hour(long instance)
+	{
+		return (int) ((instance & HOUR_MASK) >> HOUR_POS);
+	}
+
+
+	public static int minute(long instance)
+	{
+		return (int) ((instance & MINUTE_MASK) >> MINUTE_POS);
+	}
+
+
+	public static int second(long instance)
+	{
+		return (int) ((instance & SECOND_MASK) >> SECOND_POS);
+	}
+
+
+	public static int dayOfWeek(long instance)
+	{
+		return (int) ((instance & WEEKDAY_MASK) >> WEEKDAY_POS);
 	}
 }

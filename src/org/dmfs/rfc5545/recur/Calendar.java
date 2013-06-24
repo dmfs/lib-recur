@@ -203,7 +203,7 @@ public class Calendar extends GregorianCalendar
 		}
 	}
 
-
+/*
 	@Override
 	public TimeZone getTimeZone()
 	{
@@ -216,7 +216,7 @@ public class Calendar extends GregorianCalendar
 			return super.getTimeZone();
 		}
 	}
-
+*/
 
 	/**
 	 * Convert this instance to an all-day instance. This will drop all time zone and time information.
@@ -228,7 +228,7 @@ public class Calendar extends GregorianCalendar
 		int year = get(Calendar.YEAR);
 		int month = get(Calendar.MONTH);
 		int dayOfMonth = get(Calendar.DAY_OF_MONTH);
-		setTimeZone(UTC);
+		super.setTimeZone(UTC);
 		set(year, month, dayOfMonth, 0, 0, 0);
 		set(MILLISECOND, 0);
 	}

@@ -18,7 +18,6 @@
 package org.dmfs.rfc5545.recur;
 
 import java.util.List;
-import java.util.TreeSet;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
@@ -51,6 +50,8 @@ final class ByWeekNoFilter extends ByFilter
 
 	/**
 	 * A helper for calendar calculations.
+	 * 
+	 * TODO: get rid of it.
 	 */
 	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
 
@@ -60,9 +61,9 @@ final class ByWeekNoFilter extends ByFilter
 	private final boolean mAllowOverlappingWeeks;
 
 
-	public ByWeekNoFilter(RecurrenceRule rule, RuleIterator previous, Calendar start)
+	public ByWeekNoFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(previous, start, rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY);
+		super(previous, calendarTools, start, rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY);
 
 		mByWeekNo = rule.getByPart(Part.BYWEEKNO);
 
@@ -78,23 +79,32 @@ final class ByWeekNoFilter extends ByFilter
 
 
 	@Override
-	boolean filter(Instance instance)
+	boolean filter(long instance)
 	{
 		/*
 		 * RFC 5545 doesn't specify filtering for BYWEEKNO, it's allowed for expansion of YEARLY rules, only. However RFC 2445 doesn't have any restrictions, so
 		 * we should be able to filter BYWEEKNO.
 		 */
-		mHelper.set(instance.year, instance.month, 1);
+		mHelper.set(Instance.year(instance), Instance.month(instance), 1);
 		// get the number of weeks in that year
 		int yearWeeks = mHelper.getActualMaximum(Calendar.WEEK_OF_YEAR);
-		return (!mByWeekNo.contains(instance.weekOfYear) && !mByWeekNo.contains(instance.weekOfYear - 1 - yearWeeks)) || instance.weekOfYear > yearWeeks;
+		int weekOfYear = mCalendarMetrics.getWeekOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
+		return (!mByWeekNo.contains(weekOfYear) && !mByWeekNo.contains(weekOfYear - 1 - yearWeeks)) || weekOfYear > yearWeeks;
 	}
 
 
 	@Override
-	void expand(TreeSet<Instance> set, Instance instance, Instance notBefore)
+	void expand(LongArray set, long instance, long notBefore)
 	{
-		mHelper.set(instance.year, instance.month, 1);
+		int year = Instance.year(instance);
+		int month = Instance.month(instance);
+		int dayOfMonth = Instance.dayOfMonth(instance);
+		int hour = Instance.hour(instance);
+		int minute = Instance.minute(instance);
+		int second = Instance.second(instance);
+		int dayOfWeek = Instance.dayOfWeek(instance);
+
+		mHelper.set(year, month, 1);
 		// get the number of weeks in that year
 		int yearWeeks = mHelper.getActualMaximum(Calendar.WEEK_OF_YEAR);
 
@@ -116,13 +126,13 @@ final class ByWeekNoFilter extends ByFilter
 				/*
 				 * Expand instances if the week intersects instance.month. The by-day expansion will filter any instances not in that month.
 				 */
-				mHelper.set(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+				mHelper.set(year, month, dayOfMonth, hour, minute, second);
 				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
 				// maintain original day of week
-				mHelper.set(Calendar.DAY_OF_WEEK, instance.dayOfWeek);
-				if (mHelper.get(Calendar.MONTH) == instance.month)
+				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+				if (mHelper.get(Calendar.MONTH) == month)
 				{
-					set.add(new Instance(mHelper));
+					set.add(Instance.make(mHelper));
 				}
 				else
 				{
@@ -130,29 +140,23 @@ final class ByWeekNoFilter extends ByFilter
 
 					// check if the first day of this week is still in this month
 					mHelper.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-					if (mHelper.get(Calendar.MONTH) == instance.month)
+					if (mHelper.get(Calendar.MONTH) == month)
 					{
 						// create a new instance and adjust day values
-						Instance newInstance = new Instance(mHelper);
-						newInstance.dayOfWeek = instance.dayOfWeek;
-						int offset = (instance.dayOfWeek - firstDayOfWeek + 7) % 7;
-						newInstance.dayOfMonth += offset;
-						newInstance.dayOfYear += offset;
-						set.add(newInstance);
+						int offset = (dayOfWeek - firstDayOfWeek + 7) % 7;
+						set.add(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
+							minute, second, dayOfWeek));
 					}
 					else
 					{
 						// check if the last day of this week is still in this month
 						mHelper.add(Calendar.DAY_OF_YEAR, 6);
-						if (mHelper.get(Calendar.MONTH) == instance.month)
+						if (mHelper.get(Calendar.MONTH) == month)
 						{
 							// create a new instance and adjust day values
-							Instance newInstance = new Instance(mHelper);
-							newInstance.dayOfWeek = instance.dayOfWeek;
-							int offset = (instance.dayOfWeek - firstDayOfWeek - 6) % 7;
-							newInstance.dayOfMonth += offset;
-							newInstance.dayOfYear += offset;
-							set.add(newInstance);
+							int offset = (dayOfWeek - firstDayOfWeek - 6) % 7;
+							set.add(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
+								minute, second, dayOfWeek));
 						}
 					}
 				}
@@ -162,21 +166,21 @@ final class ByWeekNoFilter extends ByFilter
 				/*
 				 * Expand instances that are in instance.month.
 				 */
-				mHelper.set(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+				mHelper.set(year, month, dayOfMonth, hour, minute, second);
 				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
-				mHelper.set(Calendar.DAY_OF_WEEK, instance.dayOfWeek);
-				if (mHelper.get(Calendar.MONTH) == instance.month)
+				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+				if (mHelper.get(Calendar.MONTH) == month)
 				{
-					set.add(new Instance(mHelper));
+					set.add(Instance.make(mHelper));
 				}
 			}
 			else
 			{
 				// mScope == Scope.YEARLY
-				mHelper.set(instance.year, instance.month, instance.dayOfMonth, instance.hour, instance.minute, instance.second);
+				mHelper.set(year, month, dayOfMonth, hour, minute, second);
 				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
-				mHelper.set(Calendar.DAY_OF_WEEK, instance.dayOfWeek);
-				set.add(new Instance(mHelper));
+				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+				set.add(Instance.make(mHelper));
 			}
 		}
 	}

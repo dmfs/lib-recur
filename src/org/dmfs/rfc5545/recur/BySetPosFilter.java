@@ -17,11 +17,7 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
@@ -41,47 +37,56 @@ final class BySetPosFilter extends RuleIterator
 	/**
 	 * The positions in the set to filter by.
 	 */
-	private final List<Integer> mSetPositions;
+	private final int[] mSetPositions;
 
 	/**
 	 * An {@link Iterator} to iterate over the elements in the resulting set. This is used by {@link #next()}.
 	 */
-	private Iterator<Instance> mSetIterator;
+	private LongArray mSetIterator;
 
 	/**
-	 * The set we work on.
+	 * This indicates that the next instance to return is the first instance.
 	 */
-	private final TreeSet<Instance> mWorkingSet = new TreeSet<Instance>();
+	private boolean mFirst = true;
 
 	/**
 	 * The set we return to subsequent filters.
 	 */
-	private final Set<Instance> mResultSet = Collections.unmodifiableSet(mWorkingSet);
+	private final LongArray mResultSet = new LongArray();
+
+	private final long mStart;
 
 
-	public BySetPosFilter(RecurrenceRule rule, RuleIterator previous)
+	public BySetPosFilter(RecurrenceRule rule, RuleIterator previous, Calendar start)
 	{
 		super(previous);
-		mSetPositions = rule.getByPart(Part.BYSETPOS);
+		mSetPositions = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSETPOS));
+		mStart = Instance.makeFast(start);
 	}
 
 
 	@Override
-	public Instance next()
+	public long next()
 	{
 		if (mSetIterator == null || !mSetIterator.hasNext())
 		{
-			mSetIterator = nextSet().iterator();
+			mSetIterator = nextSet();
 		}
 		return mSetIterator.next();
 	}
 
 
 	@Override
-	Set<Instance> nextSet()
+	LongArray nextSet()
 	{
-		TreeSet<Instance> workingSet = mWorkingSet;
-		workingSet.clear();
+		LongArray resultSet = mResultSet;
+		resultSet.clear();
+
+		if (mFirst)
+		{
+			resultSet.add(mStart);
+			mFirst = false;
+		}
 
 		int counter = -1;
 		do
@@ -91,21 +96,25 @@ final class BySetPosFilter extends RuleIterator
 				throw new IllegalStateException("too many empty recurrence sets");
 			}
 
-			Set<Instance> nextSet = mPrevious.nextSet();
+			LongArray nextSet = mPrevious.nextSet();
+			nextSet.sort();
 			int limit = nextSet.size() + 1;
 			int pos = 1;
 
 			// iterate over all instances and check if their position is in mSetPositions
-			for (Instance d : nextSet)
+			while (nextSet.hasNext())
 			{
-				if (mSetPositions.contains(pos) || pos < limit && mSetPositions.contains(pos - limit))
+				long d = nextSet.next();
+
+				if ((StaticUtils.linearSearch(mSetPositions, pos) >= 0 || pos < limit && StaticUtils.linearSearch(mSetPositions, pos - limit) >= 0)
+					&& mStart < Instance.maskWeekday(d))
 				{
-					workingSet.add(d);
+					resultSet.add(d);
 				}
 				++pos;
+				mFirst = false;
 			}
-		} while (workingSet.size() == 0);
-		return mResultSet;
+		} while (!resultSet.hasNext());
+		return resultSet;
 	}
-
 }

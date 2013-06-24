@@ -17,9 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.List;
-import java.util.TreeSet;
-
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
@@ -34,33 +31,32 @@ final class ByHourFilter extends ByFilter
 	/**
 	 * The hour list from the rule.
 	 */
-	private final List<Integer> mHours;
+	private final int[] mHours;
 
 
-	public ByHourFilter(RecurrenceRule rule, RuleIterator previous, Calendar start)
+	public ByHourFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(previous, start, rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY || rule.getFreq() == Freq.WEEKLY || rule.getFreq() == Freq.DAILY);
-		mHours = rule.getByPart(Part.BYHOUR);
+		super(previous, calendarTools, start, rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY || rule.getFreq() == Freq.WEEKLY
+			|| rule.getFreq() == Freq.DAILY);
+		mHours = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYHOUR));
 	}
 
 
 	@Override
-	boolean filter(Instance instance)
+	boolean filter(long instance)
 	{
 		// check that the hour of the instance is in mHours
-		return !mHours.contains(instance.hour);
+		return StaticUtils.linearSearch(mHours, Instance.hour(instance)) < 0;
 	}
 
 
 	@Override
-	void expand(TreeSet<Instance> instances, Instance instance, Instance start)
+	void expand(LongArray instances, long instance, long start)
 	{
 		// add a new instance for every hour in mHours
 		for (int hour : mHours)
 		{
-			Instance newInstance = instance.clone();
-			newInstance.hour = hour;
-			instances.add(newInstance);
+			instances.add(Instance.setHour(instance, hour));
 		}
 	}
 }

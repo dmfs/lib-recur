@@ -17,11 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
-
-
 /**
  * Limits the instance set of a recurrence rules. The only subclasses are {@link CountLimiter} and {@link UntilLimiter} that limit by instance count or by last
  * recurrence date respectively.
@@ -33,17 +28,6 @@ import java.util.TreeSet;
  */
 abstract class Limiter extends RuleIterator
 {
-	/**
-	 * The set we work on.
-	 */
-	private final TreeSet<Instance> mWorkingSet = new TreeSet<Instance>();
-
-	/**
-	 * The set we return to subsequent filters.
-	 */
-	private final Set<Instance> mResultSet = Collections.unmodifiableSet(mWorkingSet);
-
-
 	/**
 	 * Constructor for Limiter that just passes through the <code>previous</code> parameter.
 	 * 
@@ -57,26 +41,17 @@ abstract class Limiter extends RuleIterator
 
 
 	@Override
-	public Instance next()
+	public long next()
 	{
-		Instance instance = mPrevious.next();
-		return stop(instance) ? null : instance;
+		long instance = mPrevious.next();
+		return stop(instance) ? Long.MIN_VALUE : instance;
 	}
 
 
 	@Override
-	Set<Instance> nextSet()
+	LongArray nextSet()
 	{
-		TreeSet<Instance> workingSet = mWorkingSet;
-		workingSet.clear();
-		for (Instance d : mPrevious.nextSet())
-		{
-			if (!stop(d))
-			{
-				workingSet.add(d);
-			}
-		}
-		return workingSet.size() == 0 ? null : mResultSet;
+		throw new UnsupportedOperationException("nextSet is not implemented for Limiters, since it should never be called");
 	}
 
 
@@ -87,6 +62,6 @@ abstract class Limiter extends RuleIterator
 	 *            The {@link Calendar} instance to check.
 	 * @return <code>true</code> if the limit of the recurrence set has been reached and no more instances should be iterated.
 	 */
-	abstract boolean stop(Instance instance);
+	abstract boolean stop(long instance);
 
 }

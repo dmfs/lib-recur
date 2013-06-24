@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +49,7 @@ import java.util.regex.Pattern;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class RecurrenceRule implements Iterable<Calendar>
+public final class RecurrenceRule
 {
 
 	/**
@@ -148,9 +147,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		FREQ(new FreqConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new FreqIterator(rule, start);
+				return new FreqIterator(rule, calendarTools, start);
 			}
 		},
 
@@ -159,7 +158,7 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		INTERVAL(new IntConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				throw new UnsupportedOperationException("INTERVAL doesn't have an iterator.");
 			}
@@ -169,7 +168,7 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		WKST(new WeekdayConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				throw new UnsupportedOperationException("WKST doesn't have an iterator.");
 			}
@@ -180,9 +179,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYMONTH(new IntListConverter(1, 12)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByMonthFilter(rule, previous, start);
+				return new ByMonthFilter(rule, previous, calendarTools, start);
 			}
 		},
 
@@ -191,9 +190,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYWEEKNO(new IntListConverter(-53, 53).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByWeekNoFilter(rule, previous, start);
+				return new ByWeekNoFilter(rule, previous, calendarTools, start);
 			}
 		},
 
@@ -202,9 +201,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYYEARDAY(new IntListConverter(-366, 366).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByYearDayFilter(rule, previous, start);
+				return new ByYearDayFilter(rule, previous, calendarTools, start);
 			}
 		},
 
@@ -213,9 +212,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYMONTHDAY(new IntListConverter(-31, 31).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByMonthDayFilter(rule, previous, start);
+				return new ByMonthDayFilter(rule, previous, calendarTools, start);
 			}
 		},
 
@@ -224,9 +223,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYDAY(new WeekdayListConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByDayFilter(rule, previous, start);
+				return new ByDayFilter(rule, previous, calendarTools, start);
 			}
 		},
 
@@ -235,9 +234,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYHOUR(new IntListConverter(0, 23)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByHourFilter(rule, previous, start);
+				return new ByHourFilter(rule, previous, calendarTools, start);
 			}
 		},
 		/**
@@ -245,9 +244,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYMINUTE(new IntListConverter(0, 59)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByMinuteFilter(rule, previous, start);
+				return new ByMinuteFilter(rule, previous, calendarTools, start);
 			}
 		},
 		/**
@@ -255,9 +254,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYSECOND(new IntListConverter(0, 60)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new BySecondFilter(rule, previous, start);
+				return new BySecondFilter(rule, previous, calendarTools, start);
 			}
 		},
 
@@ -266,9 +265,9 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		BYSETPOS(new IntListConverter(-366, 366).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new BySetPosFilter(rule, previous);
+				return new BySetPosFilter(rule, previous, start);
 			}
 		},
 
@@ -278,7 +277,7 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		UNTIL(new DateTimeConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				return new UntilLimiter(rule, previous, start);
 			}
@@ -290,7 +289,7 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 */
 		COUNT(new IntConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start)
+			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				return new CountLimiter(rule, previous);
 			}
@@ -330,7 +329,8 @@ public final class RecurrenceRule implements Iterable<Calendar>
 		 * @throws UnsupportedOperationException
 		 *             If this part does not have a {@link RuleIterator}.
 		 */
-		abstract RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, Calendar start) throws UnsupportedOperationException;
+		abstract RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			throws UnsupportedOperationException;
 	}
 
 	/**
@@ -1172,6 +1172,7 @@ public final class RecurrenceRule implements Iterable<Calendar>
 			}
 		}
 
+		CalendarMetrics calendarTools = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
 		boolean sanityFilterAdded = false;
 		RuleIterator iterator = null;
 
@@ -1181,22 +1182,21 @@ public final class RecurrenceRule implements Iterable<Calendar>
 			// add a filter for each rule part
 			if (p != Part.INTERVAL && p != Part.WKST)
 			{
-				if (p == Part.UNTIL || p == Part.COUNT)
+				if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
 				{
-					// insert SanityFilter before adding limiting filter, otherwise we may count filtered elements
-					iterator = new SanityFilter(iterator, start);
+					// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
+					iterator = new SanityFilter(this, iterator, calendarTools, start);
 					sanityFilterAdded = true;
 				}
-				iterator = p.getRuleIterator(this, iterator, start);
+				iterator = p.getRuleIterator(this, iterator, calendarTools, start);
 			}
 		}
 		// add a SanityFilter if not already done.
-		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(iterator, start), start);
+		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarTools, start), start);
 	}
 
 
-	@Override
-	public Iterator<Calendar> iterator()
+	public RecurrenceIterator iterator()
 	{
 		if (mStart == null)
 		{

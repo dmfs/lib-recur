@@ -17,9 +17,7 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
@@ -31,6 +29,12 @@ import java.util.TreeSet;
  */
 final class SanityFilter extends RuleIterator
 {
+	/**
+	 * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered
+	 * or nothing was expanded.
+	 */
+	private final static int MAX_EMPTY_SETS = 1000;
+
 	/**
 	 * The max number of filtered instances.
 	 */
@@ -44,22 +48,30 @@ final class SanityFilter extends RuleIterator
 	/**
 	 * The {@link Calendar} of the first instance (i.e. DTSTART).
 	 */
-	private final Instance mStart;
+	private final long mStart;
 
 	/**
 	 * A helper for date calculations.
+	 * 
+	 * TODO: get rid of it.
 	 */
-	private final Calendar mHelper = new Calendar(2000, 0, 1);
+	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
 
 	/**
-	 * The set we work on.
+	 * A {@link LongArray} that contains the instances to return.
 	 */
-	private final TreeSet<Instance> mWorkingSet = new TreeSet<Instance>();
+	private final LongArray mResultSet = new LongArray();
 
 	/**
-	 * The set we return to subsequent filters.
+	 * Helper for calendar calculations.
 	 */
-	private final Set<Instance> mResultSet = Collections.unmodifiableSet(mWorkingSet);
+	@SuppressWarnings("unused")
+	private final CalendarMetrics mCalendarMetrics;
+
+	/**
+	 * Whether we have to filter the results by start date (i.e. remove all instances preceding the start date).
+	 */
+	private final boolean mFilterByStart;
 
 
 	/**
@@ -71,17 +83,20 @@ final class SanityFilter extends RuleIterator
 	 * @param start
 	 *            The earliest date to let pass.
 	 */
-	SanityFilter(RuleIterator previous, Calendar start)
+	SanityFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
 		super(previous);
-		mStart = new Instance(start);
+		mStart = Instance.makeFast(start);
+		mCalendarMetrics = calendarTools;
+		mFilterByStart = !rule.hasPart(Part.BYSETPOS);
 	}
 
 
 	@Override
-	public Instance next()
+	public long next()
 	{
-		if (mFirst)
+		Calendar helper = mHelper;
+		if (mFirst && mFilterByStart)
 		{
 			// mStart is always the first result
 			mFirst = false;
@@ -90,8 +105,9 @@ final class SanityFilter extends RuleIterator
 		else
 		{
 			int counter = -1;
-			Instance next;
+			long next;
 			// skip all instances that precede start
+			long simpleInstance = 0;
 			do
 			{
 				if (++counter == MAX_FILTERED_INSTANCES)
@@ -100,38 +116,81 @@ final class SanityFilter extends RuleIterator
 				}
 
 				next = mPrevious.next();
-				mHelper.set(next.year, next.month, next.dayOfMonth, next.hour, next.minute, next.second);
-			} while (next != null && (mStart.compareTo(next) >= 0) || (mHelper.get(Calendar.YEAR) != next.year) || (mHelper.get(Calendar.MONTH) != next.month)
-				|| (mHelper.get(Calendar.DAY_OF_MONTH) != next.dayOfMonth) || (mHelper.get(Calendar.HOUR_OF_DAY) != next.hour)
-				|| (mHelper.get(Calendar.MINUTE) != next.minute) || (mHelper.get(Calendar.SECOND) != next.second));
+				if (next == Long.MIN_VALUE)
+				{
+					continue;
+				}
+
+				int year = Instance.year(next);
+				int month = Instance.month(next);
+				int dayOfMonth = Instance.dayOfMonth(next);
+				int hour = Instance.hour(next);
+				int minute = Instance.minute(next);
+				int second = Instance.second(next);
+
+				helper.set(year, month, dayOfMonth, hour, minute, second);
+
+				simpleInstance = Instance.maskWeekday(next);
+
+				// System.out.println("ex " + Long.toHexString(next) + "    " + Long.toHexString(simpleInstance) + "    "
+				// + Long.toHexString(Instance.makeFast(mHelper)));
+
+			} while (mFilterByStart && mStart >= simpleInstance || Instance.makeFast(helper) != simpleInstance);
+
 			return next;
 		}
 	}
 
 
 	@Override
-	Set<Instance> nextSet()
+	LongArray nextSet()
 	{
-		Set<Instance> nextSet = mPrevious.nextSet();
+		Calendar helper = mHelper;
+		LongArray resultSet = mResultSet;
 
-		if (mFirst) // filter the first set only
+		resultSet.clear();
+		if (mFirst && mFilterByStart)
 		{
-			mWorkingSet.clear();
-			// ensure start is contained in the set
-			nextSet.add(mStart);
+			// mStart is always the first result
+			mFirst = false;
+			resultSet.add(mStart);
+		}
 
-			for (Instance d : nextSet)
+		int counter = 0;
+		do
+		{
+			if (counter == MAX_EMPTY_SETS)
 			{
-				if (mStart.compareTo(d) < 0)
+				throw new IllegalArgumentException("too many empty recurrence sets");
+			}
+			counter++;
+
+			LongArray prev = mPrevious.nextSet();
+			long simpleInstance = 0;
+			while (prev.hasNext())
+			{
+				long next = prev.next();
+
+				int year = Instance.year(next);
+				int month = Instance.month(next);
+				int dayOfMonth = Instance.dayOfMonth(next);
+				int hour = Instance.hour(next);
+				int minute = Instance.minute(next);
+				int second = Instance.second(next);
+
+				helper.set(year, month, dayOfMonth, hour, minute, second);
+
+				simpleInstance = Instance.maskWeekday(next);
+
+				// System.out.println("ex " + Long.toHexString(next) + "    " + Long.toHexString(simpleInstance) + "    "
+				// + Long.toHexString(Instance.makeFast(mHelper)));
+
+				if ((!mFilterByStart || mStart < simpleInstance) && Instance.makeFast(helper) == simpleInstance)
 				{
-					mWorkingSet.add(d);
+					resultSet.add(next);
 				}
 			}
-
-			mFirst = false;
-
-			nextSet = mResultSet;
-		}
-		return nextSet;
+		} while (!resultSet.hasNext());
+		return resultSet;
 	}
 }

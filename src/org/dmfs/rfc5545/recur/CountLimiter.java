@@ -51,7 +51,7 @@ class CountLimiter extends Limiter
 
 
 	@Override
-	boolean stop(Instance instance)
+	boolean stop(long instance)
 	{
 		// Stop if more than mLimit instances have been iterated.
 		return ++mCounter > mLimit;

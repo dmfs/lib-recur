@@ -18,7 +18,6 @@
 package org.dmfs.rfc5545.recur;
 
 import java.util.List;
-import java.util.TreeSet;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
@@ -37,30 +36,28 @@ final class ByMinuteFilter extends ByFilter
 	private final List<Integer> mMinutes;
 
 
-	public ByMinuteFilter(RecurrenceRule rule, RuleIterator previous, Calendar start)
+	public ByMinuteFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(previous, start, rule.getFreq() != Freq.SECONDLY && rule.getFreq() != Freq.MINUTELY);
+		super(previous, calendarTools, start, rule.getFreq() != Freq.SECONDLY && rule.getFreq() != Freq.MINUTELY);
 		mMinutes = rule.getByPart(Part.BYMINUTE);
 	}
 
 
 	@Override
-	boolean filter(Instance instance)
+	boolean filter(long instance)
 	{
 		// filter all minutes not in the list
-		return !mMinutes.contains(instance.minute);
+		return !mMinutes.contains(Instance.minute(instance));
 	}
 
 
 	@Override
-	void expand(TreeSet<Instance> instances, Instance instance, Instance start)
+	void expand(LongArray instances, long instance, long start)
 	{
 		// add a new instance for every minute value in the list
 		for (int minute : mMinutes)
 		{
-			Instance newInstance = instance.clone();
-			newInstance.minute = minute;
-			instances.add(newInstance);
+			instances.add(Instance.setMinute(instance, minute));
 		}
 	}
 }

@@ -17,10 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 
 
@@ -44,24 +40,28 @@ public class FreqIterator extends RuleIterator
 
 	/**
 	 * The next instance to return.
+	 * 
+	 * TODO: get rid of it and use {@link CalendarMetrics}.
 	 */
 	private final Calendar mNextInstance;
 
 	/**
-	 * Keeps the default values for values not modified by the iterator.
+	 * A {@link LongArray} to hold the instances of the current interval.
 	 */
-	private final Instance mDefaults;
+	private final LongArray mResultSet = new LongArray(1);
 
 	/**
-	 * A {@link Set} to hold the instances of the current interval.
+	 * A helper to perform calendar calculations.
 	 */
-	private final TreeSet<Instance> mWorkingSet = new TreeSet<Instance>();
+	private final CalendarMetrics mCalendarMetrics;
 
-	/**
-	 * The {@link Set} that is returned to the caller of {@link #nextSet()}. It's an unmodifiable copy of the {@link #mWorkingSet}, so the caller can not mess
-	 * it up.
-	 */
-	private final Set<Instance> mResultSet = Collections.unmodifiableSet(mWorkingSet);
+	private int mNextYear;
+	private int mNextMonth;
+	private final int mDefaultDayOfMonth;
+	private final int mDefaultHour;
+	private final int mDefaultMinute;
+	private final int mDefaultSecond;
+	private final int mDefaultDayOfWeek;
 
 
 	/**
@@ -72,78 +72,74 @@ public class FreqIterator extends RuleIterator
 	 * @param start
 	 *            The first instance to iterate.
 	 */
-	public FreqIterator(RecurrenceRule rule, Calendar start)
+	public FreqIterator(RecurrenceRule rule, CalendarMetrics calendarTools, Calendar start)
 	{
 		super(null);
 		mFreq = rule.getFreq();
 		mInterval = rule.getInterval();
 		mNextInstance = getIntervalStart(rule, start);
-		mDefaults = new Instance(start);
+		long defaults = Instance.make(start);
+		mCalendarMetrics = calendarTools;
+
+		mNextYear = Instance.year(defaults);
+		mNextMonth = Instance.month(defaults);
+		mDefaultDayOfMonth = Instance.dayOfMonth(defaults);
+		mDefaultDayOfWeek = Instance.dayOfWeek(defaults);
+		mDefaultHour = Instance.hour(defaults);
+		mDefaultMinute = Instance.minute(defaults);
+		mDefaultSecond = Instance.second(defaults);
 	}
 
 
 	@Override
-	public Instance next()
+	public long next()
 	{
-		Instance result = mDefaults.clone();
+		long result = 0;
 		switch (mFreq)
 		{
 			case YEARLY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				mNextInstance.add(Calendar.YEAR, mInterval);
+				result = Instance.make(mNextYear, mNextMonth, mDefaultDayOfMonth, mDefaultHour, mDefaultMinute, mDefaultSecond, mDefaultDayOfWeek);
+				mNextYear += mInterval;
 				break;
 
 			case MONTHLY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.month = mNextInstance.get(Calendar.MONTH);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				mNextInstance.add(Calendar.MONTH, mInterval);
+				result = Instance.make(mNextYear, mNextMonth, mDefaultDayOfMonth, mDefaultHour, mDefaultMinute, mDefaultSecond, mDefaultDayOfWeek);
+				mNextMonth += mInterval;
+				int maxMonths;
+				while (mNextMonth >= (maxMonths = mCalendarMetrics.getMonthsPerYear(mNextYear)))
+				{
+					mNextMonth -= maxMonths;
+					++mNextYear;
+				}
 				break;
 
 			case WEEKLY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.month = mNextInstance.get(Calendar.MONTH);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				result.dayOfMonth = mNextInstance.get(Calendar.DAY_OF_MONTH);
+				result = Instance.make(mNextInstance.get(Calendar.YEAR), mNextInstance.get(Calendar.MONTH), mNextInstance.get(Calendar.DAY_OF_MONTH),
+					mDefaultHour, mDefaultMinute, mDefaultSecond, mDefaultDayOfWeek);
 				mNextInstance.add(Calendar.DAY_OF_YEAR, 7 * mInterval);
 				break;
 
 			case DAILY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.month = mNextInstance.get(Calendar.MONTH);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				result.dayOfMonth = mNextInstance.get(Calendar.DAY_OF_MONTH);
+				result = Instance.make(mNextInstance.get(Calendar.YEAR), mNextInstance.get(Calendar.MONTH), mNextInstance.get(Calendar.DAY_OF_MONTH),
+					mDefaultHour, mDefaultMinute, mDefaultSecond, mDefaultDayOfWeek);
 				mNextInstance.add(Calendar.DAY_OF_YEAR, mInterval);
 				break;
 
 			case HOURLY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.month = mNextInstance.get(Calendar.MONTH);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				result.dayOfMonth = mNextInstance.get(Calendar.DAY_OF_MONTH);
-				result.hour = mNextInstance.get(Calendar.HOUR_OF_DAY);
+				result = Instance.make(mNextInstance.get(Calendar.YEAR), mNextInstance.get(Calendar.MONTH), mNextInstance.get(Calendar.DAY_OF_MONTH),
+					mNextInstance.get(Calendar.HOUR_OF_DAY), mDefaultMinute, mDefaultSecond, mDefaultDayOfWeek);
 				mNextInstance.add(Calendar.HOUR_OF_DAY, mInterval);
 				break;
 
 			case MINUTELY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.month = mNextInstance.get(Calendar.MONTH);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				result.dayOfMonth = mNextInstance.get(Calendar.DAY_OF_MONTH);
-				result.hour = mNextInstance.get(Calendar.HOUR_OF_DAY);
-				result.minute = mNextInstance.get(Calendar.MINUTE);
+				result = Instance.make(mNextInstance.get(Calendar.YEAR), mNextInstance.get(Calendar.MONTH), mNextInstance.get(Calendar.DAY_OF_MONTH),
+					mNextInstance.get(Calendar.HOUR_OF_DAY), mNextInstance.get(Calendar.MINUTE), mDefaultSecond, mDefaultDayOfWeek);
 				mNextInstance.add(Calendar.MINUTE, mInterval);
 				break;
 
 			case SECONDLY:
-				result.year = mNextInstance.get(Calendar.YEAR);
-				result.month = mNextInstance.get(Calendar.MONTH);
-				result.weekOfYear = mNextInstance.get(Calendar.WEEK_OF_YEAR);
-				result.dayOfMonth = mNextInstance.get(Calendar.DAY_OF_MONTH);
-				result.hour = mNextInstance.get(Calendar.HOUR_OF_DAY);
-				result.minute = mNextInstance.get(Calendar.MINUTE);
-				result.second = mNextInstance.get(Calendar.SECOND);
+				result = Instance.make(mNextInstance.get(Calendar.YEAR), mNextInstance.get(Calendar.MONTH), mNextInstance.get(Calendar.DAY_OF_MONTH),
+					mNextInstance.get(Calendar.HOUR_OF_DAY), mNextInstance.get(Calendar.MINUTE), mNextInstance.get(Calendar.SECOND), mDefaultDayOfWeek);
 				mNextInstance.add(Calendar.SECOND, mInterval);
 				break;
 
@@ -213,10 +209,10 @@ public class FreqIterator extends RuleIterator
 
 
 	@Override
-	Set<Instance> nextSet()
+	LongArray nextSet()
 	{
-		mWorkingSet.clear();
-		mWorkingSet.add(next());
+		mResultSet.clear();
+		mResultSet.add(next());
 		return mResultSet;
 	}
 
