@@ -119,25 +119,6 @@ final class ByDayFilter extends ByFilter
 
 
 	@Override
-	public long next()
-	{
-		if (mHasPositions)
-		{
-			// we have positional weekdays, so get an entire set and return the instances one by one.
-			if (mSetIterator == null || !mSetIterator.hasNext())
-			{
-				mSetIterator = nextSet();
-			}
-			return mSetIterator.next();
-		}
-		else
-		{
-			return super.next();
-		}
-	}
-
-
-	@Override
 	boolean filter(long instance)
 	{
 		// this is called if FREQ is <= DAILY or any of BYMONTHDAY or BYYEARDAY is present, so we don't have to filter by month here
