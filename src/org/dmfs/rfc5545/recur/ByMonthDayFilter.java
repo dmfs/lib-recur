@@ -28,8 +28,6 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * RFC 2445 does. A reasonable solution seems to be to expand if BYYEARDAY is not specified, but expand only days that are in the same week.
  * </p>
  * 
- * TODO: cache days of month for faster access
- * 
  * @author Marten Gajda <marten@dmfs.org>
  */
 final class ByMonthDayFilter extends ByFilter
@@ -97,8 +95,7 @@ final class ByMonthDayFilter extends ByFilter
 	@Override
 	boolean filter(long instance)
 	{
-		mHelper.set(Instance.year(instance), Instance.month(instance), 1);
-		int monthDays = mHelper.getActualMaximum(Calendar.DAY_OF_MONTH);
+		int monthDays = mCalendarMetrics.getDaysPerMonth(Instance.year(instance), Instance.month(instance));
 		int dayOfMonth = Instance.dayOfMonth(instance);
 		return (StaticUtils.linearSearch(mMonthDays, dayOfMonth) < 0 && StaticUtils.linearSearch(mMonthDays, dayOfMonth - 1 - monthDays) < 0)
 			|| dayOfMonth > monthDays;
@@ -109,6 +106,7 @@ final class ByMonthDayFilter extends ByFilter
 	void expand(LongArray set, long instance, long start)
 	{
 		Calendar helper = mHelper;
+		CalendarMetrics calendarMetrics = mCalendarMetrics;
 
 		int year = Instance.year(instance);
 		int month = Instance.month(instance);
@@ -126,8 +124,30 @@ final class ByMonthDayFilter extends ByFilter
 		int minute = Instance.minute(instance);
 		int second = Instance.second(instance);
 
-		helper.set(year, month, 1);
-		int monthDays = helper.getActualMaximum(Calendar.DAY_OF_MONTH);
+		int prevMonthDays = 0;
+		int nextMonthDays = 0;
+		if (mScope == Scope.WEEKLY || mScope == Scope.WEEKLY_AND_MONTHLY)
+		{
+			if (month == 0)
+			{
+				prevMonthDays = calendarMetrics.getDaysPerMonth(year - 1, calendarMetrics.getMonthsPerYear(year - 1) - 1);
+			}
+			else
+			{
+				prevMonthDays = calendarMetrics.getDaysPerMonth(year, month - 1);
+			}
+
+			if (month == calendarMetrics.getMonthsPerYear(year) - 1)
+			{
+				nextMonthDays = calendarMetrics.getDaysPerMonth(year + 1, 0);
+			}
+			else
+			{
+				nextMonthDays = calendarMetrics.getDaysPerMonth(year, month + 1);
+			}
+		}
+
+		int monthDays = calendarMetrics.getDaysPerMonth(year, month);
 		for (int day : mMonthDays)
 		{
 			int newDay = day;
@@ -144,10 +164,6 @@ final class ByMonthDayFilter extends ByFilter
 					 * 
 					 * We handle this case just like expanding a MONTHLY rule. The difficult part is that a week can overlap two months.
 					 */
-					helper.set(year, month - 1, 1);
-					int prevMonthDays = helper.getActualMaximum(Calendar.DAY_OF_MONTH);
-					helper.set(year, month + 1, 1);
-					int nextMonthDays = helper.getActualMaximum(Calendar.DAY_OF_MONTH);
 
 					int prevMonthDay = day;
 					int nextMonthDay = day;
@@ -157,13 +173,11 @@ final class ByMonthDayFilter extends ByFilter
 						nextMonthDay = day + nextMonthDays + 1;
 					}
 
-					helper.set(year, month, dayOfMonth, hour, minute, second);
-					int oldWeek = helper.get(Calendar.WEEK_OF_YEAR);
-					helper.set(year, month, newDay);
+					int oldWeek = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);// helper.get(Calendar.WEEK_OF_YEAR);
 					/*
 					 * Add instance only if the week didn't change.
 					 */
-					int newWeek = helper.get(Calendar.WEEK_OF_YEAR);
+					int newWeek = calendarMetrics.getWeekOfYear(year, month, newDay);
 					if (0 < newDay && newDay <= monthDays && newWeek == oldWeek)
 					{
 						set.add(Instance.make(helper));
@@ -211,45 +225,40 @@ final class ByMonthDayFilter extends ByFilter
 					 * 
 					 * This case is handled like the WEEKLY case, just with an additional check for the correct month.
 					 */
-					helper.set(year, month - 1, 1);
-					int prevMonthDays2 = helper.getActualMaximum(Calendar.DAY_OF_MONTH);
-					helper.set(year, month + 1, 1);
-					int nextMonthDays2 = helper.getActualMaximum(Calendar.DAY_OF_MONTH);
 
 					int prevMonthDay2 = day;
 					int nextMonthDay2 = day;
 					if (day < 0)
 					{
-						prevMonthDay2 = day + prevMonthDays2 + 1;
-						nextMonthDay2 = day + nextMonthDays2 + 1;
+						prevMonthDay2 = day + prevMonthDays + 1;
+						nextMonthDay2 = day + nextMonthDays + 1;
 					}
 
-					helper.set(year, month, dayOfMonth, hour, minute, second);
-					int oldWeek2 = helper.get(Calendar.WEEK_OF_YEAR);
+					int oldWeek2 = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);// helper.get(Calendar.WEEK_OF_YEAR);
 					helper.set(year, month, newDay);
 					/*
 					 * Add instance only if the week didn't change.
 					 */
-					int newWeek2 = helper.get(Calendar.WEEK_OF_YEAR);
+					int newWeek2 = calendarMetrics.getWeekOfYear(year, month, newDay);
 					if (0 < newDay && newDay <= monthDays && newWeek2 == oldWeek2)
 					{
-						if (mMonths != null && StaticUtils.linearSearch(mMonths, mHelper.get(Calendar.MONTH) + 1) >= 0)
+						if (mMonths != null && StaticUtils.linearSearch(mMonths, month + 1) >= 0)
 						/*
 						 * the rule is WEEKLY with BYMONTH filter or MONTHLY or YEARLY with BYMONTH and BYWEEKNO filter, so filter by month because we may have
 						 * overlapping weeks
 						 */
 						{
-							set.add(Instance.make(helper));
+							set.add(Instance.make(year, month, newDay, hour, minute, second, calendarMetrics.getDayOfWeek(year, month, newDay)));
 						}
 						else if (mMonths == null && helper.get(Calendar.MONTH) == month)
 						/*
 						 * the rule is MONTHLY with BYWEEKNOfilter, so add only instances in the original month
 						 */
 						{
-							set.add(Instance.make(helper));
+							set.add(Instance.make(year, month, newDay, hour, minute, second, calendarMetrics.getDayOfWeek(year, month, newDay)));
 						}
 					}
-					else if (0 < nextMonthDay2 && nextMonthDay2 <= nextMonthDays2 && nextMonthDay2 < 7)
+					else if (0 < nextMonthDay2 && nextMonthDay2 <= nextMonthDays && nextMonthDay2 < 7)
 					{
 						/*
 						 * The day might belong to the next month.
@@ -280,7 +289,7 @@ final class ByMonthDayFilter extends ByFilter
 							}
 						}
 					}
-					else if (0 < prevMonthDay2 && prevMonthDay2 <= prevMonthDays2 && prevMonthDay2 > prevMonthDays2 - 7)
+					else if (0 < prevMonthDay2 && prevMonthDay2 <= prevMonthDays && prevMonthDay2 > prevMonthDays - 7)
 					{
 						/*
 						 * The day might belong to the previous month.
@@ -338,7 +347,7 @@ final class ByMonthDayFilter extends ByFilter
 					for (int i = 0; i < 12; ++i)
 					{
 						helper.set(year, i, 1);
-						int monthDays2 = helper.getActualMaximum(Calendar.DAY_OF_MONTH);
+						int monthDays2 = calendarMetrics.getDaysPerMonth(year, i);
 
 						if (day < 0)
 						{

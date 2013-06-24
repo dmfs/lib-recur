@@ -80,12 +80,13 @@ public abstract class CalendarMetrics
 
 
 	/**
-	 * Determines month and day for a given day of year. The result contains both, month and day in a single integer. To split the values use something like
+	 * Determines month and day for a given day of year. The result contains both, month and day in a single integer. To split the values use
+	 * {@link #month(int)} and {@link #dayOfMonth(int)} like in:
 	 * 
 	 * <pre>
-	 * int monthAndDay = getMonthAndDayOfYearDay(year, yearDay);
-	 * int month = monthAndDay &gt;&gt; 8;
-	 * int dayOfMonth = monthAndDay &amp; 0xff;
+	 * int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
+	 * int month = CalendarMetrics.month(monthAndDay);
+	 * int dayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 	 * </pre>
 	 * 
 	 * @param year
@@ -95,6 +96,38 @@ public abstract class CalendarMetrics
 	 * @return in integer with the day of month in the lowest significant byte and the month in the second lowest significant byte.
 	 */
 	public abstract int getMonthAndDayOfYearDay(int year, int yearDay);
+
+
+	public static int monthAndDay(int month, int day)
+	{
+		return (month << 8) + day;
+	}
+
+
+	/**
+	 * Get the month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
+	 * 
+	 * @param monthAndDay
+	 *            An integer that contains a month and a day.
+	 * @return The month.
+	 */
+	public static int month(int monthAndDay)
+	{
+		return monthAndDay >> 8;
+	}
+
+
+	/**
+	 * Get the day of month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
+	 * 
+	 * @param monthAndDay
+	 *            An integer that contains a month and a day.
+	 * @return The day of month.
+	 */
+	public static int dayOfMonth(int monthAndDay)
+	{
+		return monthAndDay & 0xff;
+	}
 
 
 	public abstract int getYearDaysForMonth(int year, int month);
@@ -113,6 +146,12 @@ public abstract class CalendarMetrics
 
 
 	public abstract int getWeekOfYear(int year, int yearDay);
+
+
+	public abstract int getDayOfWeek(int year, int yearDay);
+
+
+	public abstract int getDayOfWeek(int year, int month, int dayOfMonth);
 
 
 	/**

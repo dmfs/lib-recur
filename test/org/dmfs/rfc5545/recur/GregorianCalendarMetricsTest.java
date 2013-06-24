@@ -18,7 +18,6 @@
 package org.dmfs.rfc5545.recur;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -47,21 +46,74 @@ public class GregorianCalendarMetricsTest
 	@Test
 	public void testGetDaysPerMonth()
 	{
-		fail("Noch nicht implementiert");
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					for (int month = 0; month < 12; ++month)
+					{
+						testCal.set(year, month, 1);
+
+						assertEquals("failed for year " + year + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
+							testCal.getActualMaximum(java.util.Calendar.DAY_OF_MONTH), tools.getDaysPerMonth(year, month));
+					}
+				}
+			}
+		}
 	}
 
 
 	@Test
 	public void testGetMonthsPerYear()
 	{
-		fail("Noch nicht implementiert");
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					// set testCal to Feb 1st
+					testCal.set(year, 1, 1);
+
+					assertEquals("failed for year " + year + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
+						testCal.getActualMaximum(java.util.Calendar.MONTH), tools.getMonthsPerYear(year) - 1);
+				}
+			}
+		}
 	}
 
 
 	@Test
 	public void testGetDaysPerYear()
 	{
-		fail("Noch nicht implementiert");
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					// set testCal to Feb 1st
+					testCal.set(year, 1, 1);
+
+					assertEquals("failed for year " + year + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
+						testCal.getActualMaximum(java.util.Calendar.DAY_OF_YEAR), tools.getDaysPerYear(year));
+				}
+			}
+		}
 	}
 
 
@@ -109,7 +161,6 @@ public class GregorianCalendarMetricsTest
 					for (int yearday = 1; yearday <= tools.getDaysPerYear(year); ++yearday)
 					{
 						testCal.set(java.util.Calendar.DAY_OF_YEAR, yearday);
-						// System.out.println("" + testCal);
 
 						assertEquals("failed for year " + year + " yearday " + yearday + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
 							testCal.get(java.util.Calendar.WEEK_OF_YEAR), tools.getWeekOfYear(year, yearday));
@@ -123,7 +174,29 @@ public class GregorianCalendarMetricsTest
 	@Test
 	public void testGetDayOfYear()
 	{
-		fail("Noch nicht implementiert");
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					for (int month = 0; month < 12; ++month)
+					{
+						for (int monthday = 1; monthday <= tools.getDaysPerMonth(year, month); ++monthday)
+						{
+							testCal.set(year, month, monthday);
+
+							assertEquals("failed for year " + year + " yearday " + monthday + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
+								testCal.get(java.util.Calendar.DAY_OF_YEAR), tools.getDayOfYear(year, month, monthday));
+						}
+					}
+				}
+			}
+		}
 	}
 
 
@@ -187,7 +260,26 @@ public class GregorianCalendarMetricsTest
 	@Test
 	public void testGetYearDaysForMonth()
 	{
-		fail("Noch nicht implementiert");
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					for (int month = 0; month < 12; ++month)
+					{
+						testCal.set(year, month, 1);
+
+						assertEquals("failed for year " + year + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
+							testCal.get(java.util.Calendar.DAY_OF_YEAR) - 1, tools.getYearDaysForMonth(year, month));
+					}
+				}
+			}
+		}
 	}
 
 
@@ -211,8 +303,8 @@ public class GregorianCalendarMetricsTest
 						// System.out.println("" + testCal);
 
 						int monthAndDay = tools.getMonthAndDayOfYearDay(year, yearday);
-						int month = monthAndDay >> 8;
-						int day = monthAndDay & 0xff;
+						int month = CalendarMetrics.month(monthAndDay);
+						int day = CalendarMetrics.dayOfMonth(monthAndDay);
 						assertEquals("month failed for year " + year + " yearday " + yearday + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
 							testCal.get(java.util.Calendar.MONTH), month);
 						assertEquals("day failed for year " + year + " yearday " + yearday + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek,
@@ -221,7 +313,83 @@ public class GregorianCalendarMetricsTest
 				}
 			}
 		}
+	}
 
+
+	@Test
+	public void testGetDayOfWeekIntInt()
+	{
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					testCal.set(year, 0, 1);
+					for (int yearday = 1; yearday <= tools.getDaysPerYear(year); ++yearday)
+					{
+						testCal.set(java.util.Calendar.DAY_OF_YEAR, yearday);
+						// System.out.println("" + testCal);
+
+						assertEquals("day of week failed for year " + year + " yearday " + yearday + " weekstart " + weekStart + " minDays "
+							+ minDaysInFirstWeek, testCal.get(java.util.Calendar.DAY_OF_WEEK) - 1, tools.getDayOfWeek(year, yearday));
+					}
+				}
+			}
+		}
+	}
+
+
+	@Test
+	public void testGetDayOfWeekIntIntInt()
+	{
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					for (int month = 0; month < 12; ++month)
+					{
+						for (int monthday = 1; monthday <= tools.getDaysPerMonth(year, month); ++monthday)
+						{
+							testCal.set(year, month, monthday);
+
+							assertEquals("day of week failed for year " + year + " yearday " + monthday + " weekstart " + weekStart + " minDays "
+								+ minDaysInFirstWeek, testCal.get(java.util.Calendar.DAY_OF_WEEK) - 1, tools.getDayOfWeek(year, month, monthday));
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	@Test
+	public void testMonthAndDay()
+	{
+		CalendarMetrics tools = new GregorianCalendarMetrics(1, 4);
+		for (int month = 0; month < 12; ++month)
+		{
+			for (int monthday = 1; monthday <= tools.getDaysPerMonth(2000, month); ++monthday)
+			{
+				int mad = CalendarMetrics.monthAndDay(month, monthday);
+
+				int mo = CalendarMetrics.month(mad);
+				int dom = CalendarMetrics.dayOfMonth(mad);
+
+				assertEquals(month, mo);
+				assertEquals(monthday, dom);
+			}
+		}
 	}
 
 }
