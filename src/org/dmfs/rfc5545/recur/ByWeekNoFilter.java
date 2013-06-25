@@ -104,9 +104,8 @@ final class ByWeekNoFilter extends ByFilter
 		int second = Instance.second(instance);
 		int dayOfWeek = Instance.dayOfWeek(instance);
 
-		mHelper.set(year, month, 1);
 		// get the number of weeks in that year
-		int yearWeeks = mHelper.getActualMaximum(Calendar.WEEK_OF_YEAR);
+		int yearWeeks = mCalendarMetrics.getWeeksPerYear(year);
 
 		for (int weekOfYear : mByWeekNo)
 		{
