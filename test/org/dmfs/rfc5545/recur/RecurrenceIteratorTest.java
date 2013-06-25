@@ -142,7 +142,9 @@ public class RecurrenceIteratorTest
 			{
 				Calendar instance = it.nextCalendar();
 				// check that the previous instance is always before the next instance
-				assertTrue("instance no " + count + " " + lastInstance + " not before " + instance + " in rule " + rule.rule, lastInstance.before(instance));
+				String errMsg = "";
+				// errMsg = "instance no " + count + " " + lastInstance + " not before " + instance + " in rule " + rule.rule;
+				assertTrue(errMsg, lastInstance.before(instance));
 
 				lastInstance = instance;
 				count++;
@@ -200,7 +202,9 @@ public class RecurrenceIteratorTest
 				Calendar c2 = i2.nextCalendar();
 
 				// check that the instances always equal
-				assertEquals("instances " + c1 + " and " + c2 + " do not equal in rule " + rule.rule, c1, c2);
+				String errMsg = "";
+				// errMsg = "instances " + c1 + " and " + c2 + " do not equal in rule " + rule.rule;
+				assertEquals(errMsg, c1, c2);
 
 				count++;
 
@@ -210,7 +214,9 @@ public class RecurrenceIteratorTest
 				}
 			}
 
-			assertEquals("rule not properly optimized: " + rule.rule, i1.hasNext(), i2.hasNext());
+			String errMsg = "";
+			// errMsg = "rule not properly optimized: " + rule.rule;
+			assertEquals(errMsg, i1.hasNext(), i2.hasNext());
 		}
 
 	}
@@ -269,14 +275,17 @@ public class RecurrenceIteratorTest
 					RecurrenceIterator i2 = r2.iterator(lastInstance);
 
 					// first instance of r2 should be lastInstance
-					assertEquals("error on first instance of rule " + rule.rule + " after " + count + " iterations ", lastInstance, i2.nextCalendar());
+					String errMsg = "";
+					// errMsg = "error on first instance of rule " + rule.rule + " after " + count + " iterations ";
+					assertEquals(errMsg, lastInstance, i2.nextCalendar());
 
 					lastInstance = it.nextCalendar();
 
 					Calendar upcoming2 = i2.nextCalendar();
 
 					// check that the second instance of i2 equals the current instance of i
-					assertEquals("error on rule " + rule.rule + " after " + count + " iterations ", lastInstance, upcoming2);
+					// errMsg = "error on rule " + rule.rule + " after " + count + " iterations ";
+					assertEquals(errMsg, lastInstance, upcoming2);
 				}
 			}
 			catch (ArrayIndexOutOfBoundsException e)

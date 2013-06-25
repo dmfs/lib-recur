@@ -139,7 +139,9 @@ public class TestRule
 	{
 		if (count == -1 && until != null)
 		{
-			assertTrue("instance " + instance + " after " + until, !instance.after(until));
+			String errMsg = "";
+			// errMsg = "instance " + instance + " after " + until;
+			assertTrue(errMsg, !instance.after(until));
 		}
 	}
 
@@ -148,7 +150,9 @@ public class TestRule
 	{
 		if (months != null)
 		{
-			assertTrue("month of " + instance + " not in " + months + " rule: " + rule, months.contains(instance.get(Calendar.MONTH) + 1));
+			String errMsg = "";
+			// errMsg = "month of " + instance + " not in " + months + " rule: " + rule;
+			assertTrue(errMsg, months.contains(instance.get(Calendar.MONTH) + 1));
 		}
 	}
 
@@ -157,7 +161,9 @@ public class TestRule
 	{
 		if (weekdays != null)
 		{
-			assertTrue("weekday of " + instance + " not in " + weekdays + " rule: " + rule, weekdays.contains(instance.get(Calendar.DAY_OF_WEEK)));
+			String errMsg = "";
+			// errMsg = "weekday of " + instance + " not in " + weekdays + " rule: " + rule;
+			assertTrue(errMsg, weekdays.contains(instance.get(Calendar.DAY_OF_WEEK)));
 		}
 	}
 
@@ -166,7 +172,9 @@ public class TestRule
 	{
 		if (monthdays != null)
 		{
-			assertTrue("monthday of " + instance + " not in " + monthdays + " rule: " + rule, monthdays.contains(instance.get(Calendar.DAY_OF_MONTH)));
+			String errMsg = "";
+			// errMsg = "monthday of " + instance + " not in " + monthdays + " rule: " + rule;
+			assertTrue(errMsg, monthdays.contains(instance.get(Calendar.DAY_OF_MONTH)));
 		}
 	}
 
@@ -175,7 +183,9 @@ public class TestRule
 	{
 		if (weeks != null)
 		{
-			assertTrue("week of " + instance + " not in " + weeks + " rule: " + rule, weeks.contains(instance.get(Calendar.WEEK_OF_YEAR)));
+			String errMsg = "";
+			// errMsg = "week of " + instance + " not in " + weeks + " rule: " + rule;
+			assertTrue(errMsg, weeks.contains(instance.get(Calendar.WEEK_OF_YEAR)));
 		}
 	}
 
@@ -196,7 +206,9 @@ public class TestRule
 	{
 		if (this.instances > 0)
 		{
-			assertEquals("invalid number of instances for " + rule + " with start " + start, this.instances, instances);
+			String errMsg = "";
+			errMsg = "invalid number of instances for " + rule + " with start " + start;
+			assertEquals(errMsg, this.instances, instances);
 		}
 	}
 
