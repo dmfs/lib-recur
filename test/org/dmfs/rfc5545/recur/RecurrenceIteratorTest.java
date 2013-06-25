@@ -926,6 +926,7 @@ public class RecurrenceIteratorTest
 				.setStart("20130101").setUntil("20131231").setInstances(365));
 
 		// every day in 2012 and 2013 -> 731 instances
+		mTestRules.add(new TestRule("FREQ=HOURLY;INTERVAL=24;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
 		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
 		mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
@@ -993,6 +994,13 @@ public class RecurrenceIteratorTest
 		// each day between Jan 27th and Jan 31st that is in week 5: 5 + 5 + 5 + 0 + 2
 		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
 			.setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
+
+		mTestRules.add(new TestRule("FREQ=HOURLY;INTERVAL=2;UNTIL=20131231T235959Z").setStart("20120101T000000Z").setUntil("20131231T235959Z")
+			.setInstances(731 * 12));
+		mTestRules.add(new TestRule("FREQ=MINUTELY;INTERVAL=30;UNTIL=20131231T235959Z").setStart("20120101T000000Z").setUntil("20131231T235959Z")
+			.setInstances(731 * 12 * 4));
+		mTestRules.add(new TestRule("FREQ=SECONDLY;INTERVAL=600;UNTIL=20131231T235959Z").setStart("20120101T000000Z").setUntil("20131231T235959Z")
+			.setInstances(731 * 12 * 4 * 3));
 
 	}
 }

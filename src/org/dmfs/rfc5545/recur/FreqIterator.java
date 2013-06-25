@@ -156,7 +156,6 @@ public final class FreqIterator extends RuleIterator
 				mNextMonth = CalendarMetrics.month(monthAndDay3);
 				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay3);
 				mNextDayOfWeek = mCalendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear) + 1;
-
 				break;
 
 			case MINUTELY:
@@ -164,8 +163,8 @@ public final class FreqIterator extends RuleIterator
 
 				if (mNextMinute > 59)
 				{
-					mNextDayOfYear += mNextMinute / (24 * 60);
-					mNextHour += (mNextMinute / 60) % 24;
+					mNextDayOfYear += (mNextHour + mNextMinute / 60) / 24 + mNextMinute / (24 * 60);
+					mNextHour = (mNextHour + mNextMinute / 60) % 24;
 					mNextMinute %= 60;
 					int maxDays3;
 					while (mNextDayOfYear > (maxDays3 = mCalendarMetrics.getDaysPerYear(mNextYear)))
@@ -185,9 +184,9 @@ public final class FreqIterator extends RuleIterator
 
 				if (mNextSecond > 59)
 				{
-					mNextDayOfYear += mNextSecond / (24 * 60 * 60);
-					mNextHour += (mNextSecond / (60 * 60)) % 24;
-					mNextMinute += (mNextSecond / 60) % 24;
+					mNextDayOfYear += (mNextHour + (mNextMinute + mNextSecond / 60) / 60) / 24 + mNextSecond / (24 * 60 * 60);
+					mNextHour = (mNextHour + (mNextMinute + mNextSecond / 60) / 60) % 24;
+					mNextMinute = (mNextMinute + mNextSecond / 60) % 60;
 					mNextSecond %= 60;
 					int maxDays3;
 					while (mNextDayOfYear > (maxDays3 = mCalendarMetrics.getDaysPerYear(mNextYear)))
