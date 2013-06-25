@@ -203,7 +203,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	@Override
 	public int getMonthOfYearDay(int year, int yearDay)
 	{
-		int month = yearDay >> 5 + 1; // get a good estimation for the first month to check
+		int month = (yearDay >> 5) + 1; // get a good estimation for the first month to check
 		if (month < 12 && getYearDaysForMonth(year, month) < yearDay)
 		{
 			month++;
