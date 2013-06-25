@@ -372,4 +372,34 @@ public class GregorianCalendarMetricsTest
 		}
 	}
 
+
+	@Test
+	public void testGetMonthOfYearDay()
+	{
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					testCal.set(year, 0, 1);
+					for (int yearDay = 1; yearDay <= tools.getDaysPerYear(year); ++yearDay)
+					{
+						testCal.set(java.util.Calendar.DAY_OF_YEAR, yearDay);
+						String errMsg = "Get month of year day failed for year=" + year + " yearDay=" + yearDay + " weekStart=" + weekStart + " minDays="
+							+ minDaysInFirstWeek;
+
+						assertEquals(errMsg, testCal.get(Calendar.MONTH), tools.getMonthOfYearDay(year, yearDay));
+
+					}
+
+				}
+			}
+		}
+	}
+
 }
