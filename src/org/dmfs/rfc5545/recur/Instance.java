@@ -130,6 +130,12 @@ public final class Instance
 	}
 
 
+	public static long setDayOfWeek(long instance, int dayOfWeek)
+	{
+		return (instance & ~WEEKDAY_MASK) | (dayOfWeek << WEEKDAY_POS);
+	}
+
+
 	public static long setMonthAndDayOfMonth(long instance, int month, int dayOfMonth)
 	{
 		return (instance & ~(MONTH_MASK | DAY_MASK)) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS);

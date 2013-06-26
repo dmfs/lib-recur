@@ -93,6 +93,20 @@ public class InstanceTest
 
 
 	@Test
+	public void testSetDayOfWeek()
+	{
+		long i = Instance.setDayOfWeek(Instance.make(2000, 2, 20, 3, 45, 36, 5), 4);
+		assertEquals(2000, Instance.year(i));
+		assertEquals(2, Instance.month(i));
+		assertEquals(20, Instance.dayOfMonth(i));
+		assertEquals(3, Instance.hour(i));
+		assertEquals(45, Instance.minute(i));
+		assertEquals(36, Instance.second(i));
+		assertEquals(4, Instance.dayOfWeek(i));
+	}
+
+
+	@Test
 	public void testSetMonthAndDayOfMonth()
 	{
 		long i = Instance.setMonthAndDayOfMonth(Instance.make(2000, 2, 20, 3, 45, 36), 11, 13);

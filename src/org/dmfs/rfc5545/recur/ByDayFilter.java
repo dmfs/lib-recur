@@ -55,15 +55,9 @@ final class ByDayFilter extends ByFilter
 	private final boolean mHasPositions;
 
 	/**
-	 * A set of week days without positional prefix.
+	 * An array of the weekdays and their positions in a packed form that allows us to find them with a simple integer comparison
 	 */
-	private Set<Integer> mSimpleDaySet = new HashSet<Integer>();
-
-	/**
-	 * An {@link Iterator} to iterate over the instances. Since we may have positional weekdays we have to cache an entire interval and later iterate over the
-	 * instanced to return them.
-	 */
-	private LongArray mSetIterator;
+	private final int[] mPackedDays;
 
 	/**
 	 * A Helper for calendar calculations.
@@ -80,6 +74,24 @@ final class ByDayFilter extends ByFilter
 	private final List<Integer> mMonths;
 
 
+	private static int packDay(int pos, int day)
+	{
+		return (pos << 8) + day;
+	}
+
+
+	private static int unpackDay(int packedDay)
+	{
+		return packedDay & 0xff;
+	}
+
+
+	private static int unpackPos(int packedDay)
+	{
+		return packedDay >> 8;
+	}
+
+
 	public ByDayFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
 		super(previous, calendarTools, start, ((rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY) && !rule.hasPart(Part.BYYEARDAY) && !rule
@@ -90,15 +102,18 @@ final class ByDayFilter extends ByFilter
 			: Scope.WEEKLY)
 			: (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
 
-		// Build a set that contains the weekdays only
 		boolean hasPositions = false;
+		mPackedDays = new int[mByDay.size()];
+		int count = 0;
 		for (WeekdayNum w : mByDay)
 		{
 			if (w.pos != 0)
 			{
 				hasPositions = true;
 			}
-			mSimpleDaySet.add(w.weekday.toCalendarDay());
+			mPackedDays[count] = packDay(w.pos, w.weekday.toCalendarDay());
+			++count;
+
 		}
 		mHasPositions = hasPositions;
 
@@ -122,32 +137,40 @@ final class ByDayFilter extends ByFilter
 	boolean filter(long instance)
 	{
 		// this is called if FREQ is <= DAILY or any of BYMONTHDAY or BYYEARDAY is present, so we don't have to filter by month here
+		int year = Instance.year(instance);
+		int month = Instance.month(instance);
+		int dayOfMonth = Instance.dayOfMonth(instance);
+		int dayOfWeek = mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth) + 1;
 
 		if (!mHasPositions)
 		{
-			int year = Instance.year(instance);
-			int month = Instance.month(instance);
-			int dayOfMonth = Instance.dayOfMonth(instance);
-			return !mSimpleDaySet.contains(mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth) + 1);
+			// return !mSimpleDaySet.contains(mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth) + 1);
+			return StaticUtils.linearSearch(mPackedDays, packDay(0, dayOfWeek)) < 0;
 		}
 		else
 		{
-			int dayOfWeek = Instance.dayOfWeek(instance);
 			switch (mScope)
 			{
 				case WEEKLY:
 					/*
 					 * Note: if we're in a weekly scope we shouldn't be here. So we just ignore any positions.
 					 */
-					return !mSimpleDaySet.contains(dayOfWeek);
+					return StaticUtils.linearSearch(mPackedDays, packDay(0, dayOfWeek)) < 0;
 
 				case WEEKLY_AND_MONTHLY:
-					return !mSimpleDaySet.contains(dayOfWeek);
+					return StaticUtils.linearSearch(mPackedDays, packDay(0, dayOfWeek)) < 0;
 
 				case MONTHLY:
+					int nthDay = (dayOfMonth - 1) / 7 + 1;
+					int lastNthDay = (dayOfMonth - mCalendarMetrics.getDaysPerMonth(year, month)) / 7 - 1;
+					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packDay(nthDay, dayOfWeek)) < 0)
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packDay(lastNthDay, dayOfWeek)) < 0);
 				case YEARLY:
-					// FIXME: filter because BYMONTHDAY or BYYEARDAY are specified in the rule
-					throw new UnsupportedOperationException("not implemented yet");
+					int yearDay = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
+					int nthDay2 = (yearDay - 1) / 7 + 1;
+					int lastNthDay2 = (yearDay - mCalendarMetrics.getDaysPerYear(year)) / 7 - 1;
+					return (nthDay2 <= 0 || StaticUtils.linearSearch(mPackedDays, packDay(nthDay2, dayOfWeek)) < 0)
+						&& (lastNthDay2 >= 0 || StaticUtils.linearSearch(mPackedDays, packDay(lastNthDay2, dayOfWeek)) < 0);
 
 				default:
 					return false;
