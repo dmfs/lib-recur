@@ -207,7 +207,7 @@ public class TestRule
 		if (this.instances > 0)
 		{
 			String errMsg = "";
-			errMsg = "invalid number of instances for " + rule + " with start " + start;
+			// errMsg = "invalid number of instances for " + rule + " with start " + start;
 			assertEquals(errMsg, this.instances, instances);
 		}
 	}
