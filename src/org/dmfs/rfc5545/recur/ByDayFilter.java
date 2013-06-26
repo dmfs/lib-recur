@@ -17,10 +17,7 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
@@ -74,18 +71,41 @@ final class ByDayFilter extends ByFilter
 	private final List<Integer> mMonths;
 
 
-	private static int packDay(int pos, int day)
+	/**
+	 * Get a packed representation of a {@link WeekdayNum}.
+	 * 
+	 * @param pos
+	 *            The position of the day or <code>0</code>.
+	 * @param day
+	 *            The number of the weekday.
+	 * @return An int that contains the position and the weekday.
+	 */
+	private static int packWeekday(int pos, int day)
 	{
 		return (pos << 8) + day;
 	}
 
 
-	private static int unpackDay(int packedDay)
+	/**
+	 * Get the weekday part of a packed day.
+	 * 
+	 * @param packedDay
+	 *            The packed day int.
+	 * @return The weekday.
+	 */
+	private static int unpackWeekday(int packedDay)
 	{
 		return packedDay & 0xff;
 	}
 
 
+	/**
+	 * Get the positional part of a packed day.
+	 * 
+	 * @param packedDay
+	 *            The packed day int.
+	 * @return The position.
+	 */
 	private static int unpackPos(int packedDay)
 	{
 		return packedDay >> 8;
@@ -111,7 +131,7 @@ final class ByDayFilter extends ByFilter
 			{
 				hasPositions = true;
 			}
-			mPackedDays[count] = packDay(w.pos, w.weekday.toCalendarDay());
+			mPackedDays[count] = packWeekday(w.pos, w.weekday.toCalendarDay());
 			++count;
 
 		}
@@ -145,7 +165,7 @@ final class ByDayFilter extends ByFilter
 		if (!mHasPositions)
 		{
 			// return !mSimpleDaySet.contains(mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth) + 1);
-			return StaticUtils.linearSearch(mPackedDays, packDay(0, dayOfWeek)) < 0;
+			return StaticUtils.linearSearch(mPackedDays, packWeekday(0, dayOfWeek)) < 0;
 		}
 		else
 		{
@@ -153,24 +173,22 @@ final class ByDayFilter extends ByFilter
 			{
 				case WEEKLY:
 					/*
-					 * Note: if we're in a weekly scope we shouldn't be here. So we just ignore any positions.
+					 * Note: if we're in a weekly scope we shouldn't be here. So we just ignore any days with positions.
 					 */
-					return StaticUtils.linearSearch(mPackedDays, packDay(0, dayOfWeek)) < 0;
+					return StaticUtils.linearSearch(mPackedDays, packWeekday(0, dayOfWeek)) < 0;
 
 				case WEEKLY_AND_MONTHLY:
-					return StaticUtils.linearSearch(mPackedDays, packDay(0, dayOfWeek)) < 0;
-
 				case MONTHLY:
 					int nthDay = (dayOfMonth - 1) / 7 + 1;
 					int lastNthDay = (dayOfMonth - mCalendarMetrics.getDaysPerMonth(year, month)) / 7 - 1;
-					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packDay(nthDay, dayOfWeek)) < 0)
-						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packDay(lastNthDay, dayOfWeek)) < 0);
+					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay, dayOfWeek)) < 0)
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
 				case YEARLY:
 					int yearDay = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
 					int nthDay2 = (yearDay - 1) / 7 + 1;
 					int lastNthDay2 = (yearDay - mCalendarMetrics.getDaysPerYear(year)) / 7 - 1;
-					return (nthDay2 <= 0 || StaticUtils.linearSearch(mPackedDays, packDay(nthDay2, dayOfWeek)) < 0)
-						&& (lastNthDay2 >= 0 || StaticUtils.linearSearch(mPackedDays, packDay(lastNthDay2, dayOfWeek)) < 0);
+					return (nthDay2 <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay2, dayOfWeek)) < 0)
+						&& (lastNthDay2 >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay2, dayOfWeek)) < 0);
 
 				default:
 					return false;
