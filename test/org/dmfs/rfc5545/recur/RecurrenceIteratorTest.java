@@ -78,9 +78,12 @@ public class RecurrenceIteratorTest
 				{
 					Calendar instance = it.nextCalendar();
 					count++;
-					if (count > 1) // do not test first instance
+					if (count == 1)
 					{
-						// if (rule.printInstances) System.out.print(" "+ rule.rule+ " " + count + "  ");
+						rule.testStart(instance);
+					}
+					else
+					{
 						rule.testInstance(instance);
 					}
 
@@ -950,9 +953,6 @@ public class RecurrenceIteratorTest
 			.setStart("20130101").setUntil("20131231").setInstances(245)
 			.setMonthdays(1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
 
-		// every week in 2012 -> 53 instances
-		mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(53));
-
 		// every 2nd week in 2012 (except week 1) + start instance -> 26 instances
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53;UNTIL=20121231")
 			.setStart("20120101").setUntil("20121231").setInstances(26));
@@ -1016,6 +1016,23 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule(
 			"FREQ=YEARLY;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=2TH;UNTIL=20171231")
 			.setStart("20130101").setUntil("20171231").setMonths(1).setWeekdays(Calendar.THURSDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14).setInstances(6));
+
+		// interval tests
+
+		// every year from 2012 until 2017 -> 6 instances
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20170101").setStart("20120101").setUntil("20170101").setInstances(6));
+
+		// every month from 2012 until end of 2014 -> 36 instances
+		mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20141231").setStart("20120101").setUntil("20141231").setInstances(36));
+
+		// every day from 20120101 until 20131231 -> 731 instances
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(366 + 365));
+
+		// every hour from 20120101 until 20120131T050000 -> 30 * 24 + 6 instances
+		mTestRules.add(new TestRule("FREQ=HOURLY;UNTIL=20120131T050000").setStart("20120101T000000").setUntil("20120131T050000").setInstances(30 * 24 + 6));
+
+		// every week in 2012 -> 53 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(53));
 
 	}
 }
