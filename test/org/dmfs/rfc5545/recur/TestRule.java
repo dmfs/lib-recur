@@ -212,4 +212,18 @@ public class TestRule
 		}
 	}
 
+
+	public void testStart(Calendar instance)
+	{
+		if (this.start != null)
+		{
+			final int[] fields = { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH };
+			for (int i = 0; i < fields.length; ++i)
+			{
+				assertEquals(this.start.get(fields[i]), instance.get(fields[i]));
+			}
+		}
+
+	}
+
 }
