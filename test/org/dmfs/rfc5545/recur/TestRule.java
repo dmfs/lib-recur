@@ -23,6 +23,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 
@@ -41,12 +43,17 @@ public class TestRule
 	public Calendar start = null;
 	public int instances = -1;
 	public boolean printInstances = false;
-	public RfcMode mode = RfcMode.RFC5545_LAX;
+	public static final RfcMode defaultMode = RfcMode.RFC5545_LAX;
+	public RfcMode mode;
+
+	private static final String UNTIL_REGEX = "UNTIL=(\\d{8}(T\\d{6}Z?)?)";
+	private static final Pattern untilPattern = Pattern.compile(UNTIL_REGEX);
 
 
 	public TestRule(String rule)
 	{
-		this.rule = rule;
+		this(rule, defaultMode);
+
 	}
 
 
@@ -54,6 +61,12 @@ public class TestRule
 	{
 		this.rule = rule;
 		this.mode = mode;
+
+		Matcher matcher = untilPattern.matcher(rule);
+		if (matcher.find())
+		{
+			_setUntil(matcher.group(1));
+		}
 	}
 
 
@@ -86,6 +99,12 @@ public class TestRule
 
 
 	public TestRule setUntil(String lastInstance)
+	{
+		return this;
+	}
+
+
+	private TestRule _setUntil(String lastInstance)
 	{
 		until = Calendar.parse(lastInstance);
 		floating = !lastInstance.endsWith("Z");
@@ -140,7 +159,7 @@ public class TestRule
 		if (count == -1 && until != null)
 		{
 			String errMsg = "";
-			// errMsg = "instance " + instance + " after " + until;
+			errMsg = "instance " + instance + " after " + until;
 			assertTrue(errMsg, !instance.after(until));
 		}
 	}
