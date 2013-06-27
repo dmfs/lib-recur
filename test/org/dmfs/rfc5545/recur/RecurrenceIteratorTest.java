@@ -1036,6 +1036,9 @@ public class RecurrenceIteratorTest
 		// every day from 20120101 until 20131231 -> 731 instances
 		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20131231").setStart("20120101").setInstances(366 + 365));
 
+		// every second day from 20120101 until 20131231 -> 365 instances
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20131231;INTERVAL=2").setStart("20120101").setInstances(366));
+
 		// every week in 2012 -> 53 instances
 		mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20121231").setStart("20120101").setInstances(53));
 
@@ -1048,5 +1051,14 @@ public class RecurrenceIteratorTest
 		// every second from 20120101T050000 until 20120101T080000 -> 3 * 60 = 180 instances
 		mTestRules.add(new TestRule("FREQ=SECONDLY;UNTIL=20120101T065959").setStart("20120101T050000").setInstances(2 * 60 * 60));
 
+		/**
+		 * yearly + x
+		 */
+
+		// the fourth month of each year from 2012 until 2019
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTH=4").setStart("20120101").setInstances(9).setMonths(4).setMonthdays(1));
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYYEARDAY=5").setStart("20120101").setInstances(9).setMonths(1).setMonthdays(5));
+		
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120101"))
 	}
 }
