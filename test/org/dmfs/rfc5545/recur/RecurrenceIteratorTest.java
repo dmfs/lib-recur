@@ -31,7 +31,7 @@ import org.junit.Test;
 
 public class RecurrenceIteratorTest
 {
-	private final static int MAX_ITERATIONS = 10000;
+	public final static int MAX_ITERATIONS = 10000;
 
 	private final static Calendar FLOATING_TEST_START_DATE = Calendar.parse("19850501T133912");
 	private final static Calendar ABSOLUTE_TEST_START_DATE = Calendar.parse("19850501T133912Z");
@@ -385,7 +385,7 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=3TH;COUNT=2").setCount(2).setWeekdays(Calendar.THURSDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYDAY=1FR").setCount(10).setWeekdays(Calendar.FRIDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYMONTHDAY=1,-1").setCount(10).setMonthdays(1, 28, 29, 30, 31));
-		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15").setCount(10).setMonthdays(1, 15));
+		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15").setCount(10).setMonthdays(2, 15));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;INTERVAL=18;BYMONTHDAY=10,11,12,13,14,15").setCount(10).setMonthdays(10, 11, 12, 13, 14, 15));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;INTERVAL=2;BYDAY=1SU,-1SU").setCount(10).setWeekdays(Calendar.SUNDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3").setCount(3));
@@ -1057,8 +1057,34 @@ public class RecurrenceIteratorTest
 
 		// the fourth month of each year from 2012 until 2019
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTH=4").setStart("20120101").setInstances(9).setMonths(4).setMonthdays(1));
+		// the fifth day of each year
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYYEARDAY=5").setStart("20120101").setInstances(9).setMonths(1).setMonthdays(5));
-		
-		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120101"))
+
+		// 20120101 was a Sunday
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYWEEKNO=20").setStart("20120101").setInstances(9).setMonths(5).setWeekdays(Calendar.SUNDAY)
+			.setSeconds(0).setMinutes(0).setHours(0));
+
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTHDAY=5").setStart("20120101").setInstances(12 * 8 + 1).setMonthdays(5));
+
+		// every Tuesday in 201201 (including start date)
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131;BYDAY=TU").setStart("20120101").setInstances(5 + 1).setWeekdays(Calendar.TUESDAY));
+
+		/**
+		 * bysetpos
+		 */
+
+		mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20121231;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1").setStart("20120101").setInstances(12 + 1)
+			.setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+
+		/**
+		 * Fixme: commented out until fixed. BY[HOUR,MINUTE,SECOND] aren't expanded correctly. (Compare github issue #7)
+		 */
+		// mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20120131T120000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1));
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1).setHours(12));
+		//
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120103T000000;BYMINUTE=12").setStart("20120101T000000").setInstances(2 * 24 + 1).setMinutes(12));
+		//
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1).setHours(12));
+
 	}
 }
