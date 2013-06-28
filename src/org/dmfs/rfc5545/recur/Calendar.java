@@ -388,7 +388,9 @@ public class Calendar extends GregorianCalendar
 			TimeZone tz = getTimeZone();
 			if (tz != null && "UTC".equals(tz.getID()))
 			{
-				result.write('Z');
+				if (!isFloating()) {
+					result.write('Z');
+				}
 			}
 		}
 		return result.toString();
