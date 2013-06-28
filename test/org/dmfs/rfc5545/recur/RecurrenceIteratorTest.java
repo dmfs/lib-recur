@@ -1058,7 +1058,7 @@ public class RecurrenceIteratorTest
 		// the fourth month of each year from 2012 until 2019
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTH=4").setStart("20120101").setInstances(9).setMonths(4).setMonthdays(1));
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYYEARDAY=5").setStart("20120101").setInstances(9).setMonths(1).setMonthdays(5));
-		
-		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120101"))
+
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120101"));
 	}
 }
