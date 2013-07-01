@@ -56,6 +56,7 @@ public class RecurrenceEquivalenceTest
 				{
 					if (!instancesA.equals(instancesB))
 					{
+
 						return false;
 					}
 				}
@@ -132,7 +133,12 @@ public class RecurrenceEquivalenceTest
 		mRules.add(new Unit(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1"), new TestRule(
 			"FREQ=MONTHLY;BYDAY=-1MO,-1TU,-1WE,-1TH,-1FR;BYSETPOS=-1")));
 
-		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12")));
+		// last month in year
+		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12"), new TestRule(
+			"FREQ=DAILY;BYMONTH=12;BYMONTHDAY=1")));
+
+		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12"), new TestRule(
+			"FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=27")).setStart("20100327"));
 
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=1"), new TestRule("FREQ=YEARLY;BYMONTH=2")));
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=3"), new TestRule("FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=3")).setStart("20100505"));
@@ -140,6 +146,12 @@ public class RecurrenceEquivalenceTest
 		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,3,5,7,8,10,12;BYMONTHDAY=25,26,27,28,29,30,31;BYDAY=TH"), new TestRule(
 			"FREQ=MONTHLY;BYMONTH=1,3,5,7,8,10,12;BYDAY=TH;BYSETPOS=-1"), new TestRule(
 			"FREQ=DAILY;BYMONTH=1,3,5,7,8,10,12;BYMONTHDAY=25,26,27,28,29,30,31;BYDAY=TH"), new TestRule("FREQ=MONTHLY;BYMONTH=1,3,5,7,8,10,12;BYDAY=-1TH")));
+
+		mRules.add(new Unit(new TestRule("FREQ=HOURLY;BYSECOND=27;BYMINUTE=0,15,30,45"), new TestRule("FREQ=MINUTELY;BYMINUTE=0,15,30,45;BYSECOND=27"),
+			new TestRule("FREQ=SECONDLY;BYMINUTE=0,15,30,45;BYSECOND=27")).setStart("20120101T053027"));
+
+		mRules.add(new Unit(new TestRule("FREQ=WEEKLY;BYDAY=MO,WE,FR;BYHOUR=15"), new TestRule("FREQ=HOURLY;BYDAY=MO,WE,FR;BYHOUR=15")));
+		mRules.add(new Unit(new TestRule("FREQ=WEEKLY;BYDAY=MO,WE,FR;BYHOUR=15"), new TestRule("FREQ=HOURLY;BYDAY=MO,WE,FR;BYHOUR=15")).setStart("20090713"));
 
 	}
 }
