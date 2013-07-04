@@ -688,6 +688,34 @@ public final class RecurrenceRule
 				mParts.remove(Part.BYMONTHDAY);
 			}
 		}
+
+		/**
+		 * BYSETPOS is only valid in combination with another BYxxx rule. We therefore check the number of elements. If this number is larger than cnt the rule
+		 * contains another BYxxx rule and is therefore valid.
+		 */
+		if (mParts.containsKey(Part.BYSETPOS))
+		{
+
+			int cnt = 2; // FREQ and BYSETPOS
+			if (mParts.containsKey(Part.UNTIL) || mParts.containsKey(Part.COUNT))
+			{
+				cnt++;
+			}
+			if (mParts.size() - cnt <= 0)
+			{
+				if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+				{
+					// we're in strict mode => throw exception
+					throw new InvalidRecurrenceRuleException("BYSETPOS must only be used in conjunction with another BYxxx rule.");
+				}
+				else
+				{
+					// we're in lax mode => drop BYSETPOS
+					mParts.remove(Part.BYSETPOS);
+				}
+			}
+
+		}
 	}
 
 
