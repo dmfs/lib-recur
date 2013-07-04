@@ -647,14 +647,16 @@ public final class RecurrenceRule
 			}
 		}
 
-		if (mode == RfcMode.RFC5545_STRICT)
+		if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
 		{
-			// in RFC 5545 BYWEEKNO can be used with YEARLY rules only
 			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 			{
-				throw new InvalidRecurrenceRuleException("In RFC 5545, BYWEEKNO is allowed in YEARLY rules only");
+				throw new InvalidRecurrenceRuleException("BYWEEKNO is allowed in YEARLY rules only");
 			}
+		}
 
+		if (mode == RfcMode.RFC5545_STRICT)
+		{
 			// in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
 			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && mParts.containsKey(Part.BYYEARDAY))
 			{
@@ -668,14 +670,17 @@ public final class RecurrenceRule
 			}
 		}
 
-		if (mode == RfcMode.RFC5545_LAX)
+		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
 		{
 			// in RFC 5545 BYWEEKNO can be used with YEARLY rules only
 			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 			{
 				mParts.remove(Part.BYWEEKNO);
 			}
+		}
 
+		if (mode == RfcMode.RFC5545_LAX)
+		{
 			// in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
 			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && mParts.containsKey(Part.BYYEARDAY))
 			{
