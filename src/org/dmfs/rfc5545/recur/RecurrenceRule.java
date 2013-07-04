@@ -468,6 +468,11 @@ public final class RecurrenceRule
 	 */
 	private Calendar mStart;
 
+	/**
+	 * Pre-built "FREQ=" string, used for validation in RFC2445_STRICT mode.
+	 */
+	private final static String FREQ_PREFIX = Part.FREQ.name() + "=";
+
 
 	/**
 	 * Create a new recurrence rule from String using the {@link RfcMode} {@link RfcMode#RFC5545_LAX}. The parser will be quite tolerant and skip any invalid
@@ -560,9 +565,7 @@ public final class RecurrenceRule
 
 		String[] parts = recur.split(";");
 
-		final String FREQ_PREFIX = Part.FREQ.name() + "=";
 		if (mode == RfcMode.RFC2445_STRICT && parts.length > 0 && !parts[0].startsWith(FREQ_PREFIX))
-
 		{
 			// in RFC2445 rules must start with "FREQ=" !
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
