@@ -560,7 +560,9 @@ public final class RecurrenceRule
 
 		String[] parts = recur.split(";");
 
-		if (mode == RfcMode.RFC2445_STRICT && parts.length > 0 && !Part.FREQ.name().equals(parts[0]))
+		final String FREQ_PREFIX = Part.FREQ.name() + "=";
+		if (mode == RfcMode.RFC2445_STRICT && parts.length > 0 && !parts[0].startsWith(FREQ_PREFIX))
+
 		{
 			// in RFC2445 rules must start with "FREQ=" !
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
