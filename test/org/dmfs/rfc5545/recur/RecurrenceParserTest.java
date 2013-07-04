@@ -96,16 +96,16 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC5545_STRICT));
 		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC5545_LAX));
 
+		/**
+		 * Missing FREQ=
+		 */
 		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("Without 'FREQ='")));
 		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
-		// mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("Without 'FREQ='")));
-		// mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_LAX).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
+		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("Without 'FREQ='")));
+		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_LAX).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
 
-		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO", RfcMode.RFC2445_STRICT));
-		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC2445_LAX));
-		// mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_STRICT).setException(new
-		// InvalidRecurrenceRuleException("")));
-		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_LAX));
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("")));
 
 		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYMONHT=2").setException(new InvalidRecurrenceRuleException("unknown keyword")));
 
