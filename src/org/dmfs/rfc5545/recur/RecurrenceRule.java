@@ -629,6 +629,11 @@ public final class RecurrenceRule
 			throw new InvalidRecurrenceRuleException("FREQ part is missing");
 		}
 
+		if (mParts.containsKey(Part.UNTIL) && mParts.containsKey(Part.COUNT))
+		{
+			throw new InvalidRecurrenceRuleException("UNTIL and COUNT must not occur in the same rule.");
+		}
+
 		if (getInterval() == 0)
 		{
 			if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
