@@ -574,38 +574,46 @@ public final class RecurrenceRule
 		// now parse each part and add it to mParts.
 		for (String keyvalue : parts)
 		{
-			try
+			int equals = keyvalue.indexOf("=");
+			if (equals > 0)
 			{
-				int equals = keyvalue.indexOf("=");
-				if (equals > 0)
-				{
-					String key = keyvalue.substring(0, equals);
-					String value = keyvalue.substring(equals + 1);
+				String key = keyvalue.substring(0, equals);
+				String value = keyvalue.substring(equals + 1);
 
-					Part part = Part.valueOf(key);
-					Object partValue = part.converter.parse(value);
-					if (partValue != null)
+				Part part = Part.valueOf(key);
+				Object partValue = null;
+
+				try
+				{
+					partValue = part.converter.parse(value);
+				}
+				catch (InvalidRecurrenceRuleException e)
+				{
+					if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
 					{
-						this.mParts.put(part, partValue);
+						throw e;
+					}
+					else
+					{
+						// just skip invalid parts in lax modes
 					}
 				}
-				else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+
+				if (partValue != null)
 				{
-					// strict modes throw on empty parts
-					throw new InvalidRecurrenceRuleException("Found empty part in " + recur);
+					if (this.mParts.containsKey(part))
+					{
+						throw new InvalidRecurrenceRuleException(key + " must not occur twice.");
+					}
+					this.mParts.put(part, partValue);
 				}
 			}
-			catch (InvalidRecurrenceRuleException e)
+			else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
 			{
-				if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
-				{
-					throw e;
-				}
-				else
-				{
-					// just skip invalid parts in lax modes
-				}
+				// strict modes throw on empty parts
+				throw new InvalidRecurrenceRuleException("Found empty part in " + recur);
 			}
+
 		}
 
 		// validate the rule

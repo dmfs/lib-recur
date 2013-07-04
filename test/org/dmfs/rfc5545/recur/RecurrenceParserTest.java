@@ -13,6 +13,8 @@ public class RecurrenceParserTest
 {
 	private static Set<TestRuleWithException> mRules = new HashSet<TestRuleWithException>();
 	private static String defaultStart = "20120101";
+	private static final String[] byRules = { "INTERVAL=2", "BYSECOND=2", "BYMINUTE=2", "BYHOUR=2", "BYDAY=MO", "BYMONTHDAY=2", "BYYEARDAY=2", "BYWEEKNO=2",
+		"BYMONTH=2", "WKST=MO" };
 
 	public class TestRuleWithException extends TestRule
 	{
@@ -38,24 +40,146 @@ public class RecurrenceParserTest
 			return this;
 		}
 
+
+		public TestRuleWithException setInstances(int instances)
+		{
+			super.setInstances(instances);
+			return this;
+		}
+
+
+		public TestRuleWithException setUntil(String until)
+		{
+			super.setUntil(until);
+			return this;
+		}
+
+	}
+
+
+	public void addInvalidWhiteSpaceTests()
+	{
+		final String s = "FREQ=YEARLY;BYMONTH=12";
+		for (int i = 0; i < s.length(); ++i)
+		{
+			StringBuffer sb = new StringBuffer(s);
+			sb.insert(i, " ");
+			mRules.add(new TestRuleWithException(sb.toString(), RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("Invalid whitespace - "
+				+ sb.toString())));
+		}
+	}
+
+
+	/**
+	 * Keywords must only occur once.
+	 */
+	private void addUniqueKeyWordTests()
+	{
+		String byRuleTemplate = "FREQ=YEARLY;";
+		for (int i = 0; i < byRules.length; ++i)
+		{
+			String rule = byRuleTemplate + byRules[i] + ";" + byRules[i];
+			mRules.add(new TestRuleWithException(rule, RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		}
+
 	}
 
 
 	@Test
 	public void testRule()
 	{
+		/**
+		 * In RFC2445 a RecurrenceRule has to start with "FREQ=", in RFC5545 the order is arbitrary but it must occur.
+		 */
 		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
-		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC2445_LAX));
+		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC2445_LAX).setInstances(0).setUntil("20130101"));
 		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC5545_STRICT));
 		mRules.add(new TestRuleWithException("BYDAY=MO;FREQ=WEEKLY", RfcMode.RFC5545_LAX));
+
+		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("Without 'FREQ='")));
+		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
+		// mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("Without 'FREQ='")));
+		// mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_LAX).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
+
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO", RfcMode.RFC2445_STRICT));
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC2445_LAX));
+		// mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_STRICT).setException(new
+		// InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_LAX));
+
+		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYMONHT=2").setException(new InvalidRecurrenceRuleException("unknown keyword")));
+
+		/**
+		 * Missing value for BYxxx rule.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYMONTH=", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYMONTH=", RfcMode.RFC5545_LAX).setInstances(0));
+
+		/**
+		 * Invalid delimiter.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=YEARLY,BYMONTH=27", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+
+		/**
+		 * COUNT and UNTIL must not occur in the same rule.
+		 */
+		mRules
+			.add(new TestRuleWithException("FREQ=DAILY;UNTIL=20130101;COUNT=12", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+
+		/**
+		 * Values are out of range.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYMONTH=13", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYHOUR=25", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYMINUTE=61", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYSECOND=61", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYMONTHDAY=32", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+
+		/**
+		 * BYMONTHDAY must not occur if the FREQ is set to WEEKLY.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYMONTHDAY=7", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+
+		/**
+		 * BYYEARDAY must only occur together with FREQ=YEARLY.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYYEARDAY=7", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYYEARDAY=7", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=DAILY;BYYEARDAY=7", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+
+		/**
+		 * BYWEEKNO must only be used when FREQ=YEARLY.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC5545_LAX).setInstances(0));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC2445_LAX).setInstances(0));
+
+		/**
+		 * BYSETPOS must only be used in conjunction with another BYxxx rule.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1;COUNT=2", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1;COUNT=2", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC5545_LAX).setInstances(0));
+
+		/**
+		 * Test for other keywords.
+		 */
+		// addUniqueKeyWordTests();
+		// addInvalidWhiteSpaceTests();
+
 		for (TestRuleWithException rule : mRules)
 		{
 			if (rule.start == null)
 			{
 				rule.setStart(defaultStart);
 			}
+			boolean caughtException = false;
 			try
 			{
+
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 				r.setStart(rule.start);
 				RecurrenceIterator it = r.iterator();
@@ -64,6 +188,8 @@ public class RecurrenceParserTest
 				while (it.hasNext())
 				{
 					Calendar instance = it.nextCalendar();
+					rule.testInstance(instance);
+					rule.assertInstances(count);
 					instances.add(instance);
 					count++;
 					if (count == RecurrenceIteratorTest.MAX_ITERATIONS)
@@ -75,11 +201,13 @@ public class RecurrenceParserTest
 			}
 			catch (Exception e)
 			{
+				caughtException = true;
 				if (rule.exception != null)
 				{
 
 					if (!(e.getClass() == rule.exception.getClass()))
 					{
+						e.printStackTrace();
 						fail("Expected " + rule.exception + ", got " + e);
 					}
 				}
@@ -87,10 +215,15 @@ public class RecurrenceParserTest
 				{
 					e.printStackTrace();
 					fail("Exception occured.");
-
 				}
 
 			}
+			if (!caughtException && rule.exception != null)
+			{
+				fail("Expected exception: " + rule.exception);
+			}
+			caughtException = false;
+
 		}
 	}
 }
