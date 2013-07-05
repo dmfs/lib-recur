@@ -1,7 +1,9 @@
 package org.dmfs.rfc5545.recur;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +22,7 @@ public class RecurrenceParserTest
 	{
 
 		public Exception exception;
+		public Set<String> invalidRules = new HashSet<String>();
 
 
 		public TestRuleWithException(String rule)
@@ -54,6 +57,36 @@ public class RecurrenceParserTest
 			return this;
 		}
 
+
+		/**
+		 * Sets a list of rules that should be dropped after parsing.
+		 * 
+		 * @param invalidRules
+		 *            the rules
+		 * @return
+		 */
+		public TestRuleWithException setInvalidRules(String... invalidRules)
+		{
+			this.invalidRules = new HashSet<String>();
+			this.invalidRules.addAll(Arrays.asList(invalidRules));
+			return this;
+		}
+
+
+		/**
+		 * Asserts that the rules set in {@link setInvalidRules} are really dropped.
+		 * 
+		 * @param rule
+		 *            Rule that is returned by {@link RecurrenceRule.toString}
+		 */
+		public void assertInvalidRules(String rule)
+		{
+			for (String droppedRule : invalidRules)
+			{
+				assertFalse("Invalid rule detected that should have been dropped", rule.contains(droppedRule));
+			}
+		}
+
 	}
 
 
@@ -81,7 +114,6 @@ public class RecurrenceParserTest
 			String rule = byRuleTemplate + byRules[i] + ";" + byRules[i];
 			mRules.add(new TestRuleWithException(rule, RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		}
-
 	}
 
 
@@ -164,6 +196,15 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1;COUNT=2", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC5545_LAX).setInstances(0));
 
+		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC5545_LAX).setInvalidRules("BYDAY="));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC5545_LAX).setInvalidRules("BYDAY="));
+		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC2445_STRICT).setInvalidRules("BYDAY="));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC2445_STRICT).setInvalidRules("BYDAY="));
+		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC2445_LAX).setInvalidRules("BYDAY="));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC2445_LAX).setInvalidRules("BYDAY="));
+
 		/**
 		 * Test for other keywords.
 		 */
@@ -181,6 +222,7 @@ public class RecurrenceParserTest
 			{
 
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
+				rule.assertInvalidRules(r.toString());
 				r.setStart(rule.start);
 				RecurrenceIterator it = r.iterator();
 				Set<Calendar> instances = new HashSet<Calendar>();
