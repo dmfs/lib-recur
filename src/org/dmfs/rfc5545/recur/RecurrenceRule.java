@@ -622,6 +622,65 @@ public final class RecurrenceRule
 
 
 	/**
+	 * Checks for invalid rules when a numeric value is set in BYDAY. Depending on the mode either an exception is thrown or the BYDAY rule is simply dropped.
+	 * 
+	 * @param freq
+	 *            The {@link Freq} specified in the rule.
+	 * @throws InvalidRecurrenceRuleException
+	 *             if the mode is set to RFC5545_STRICT and an invalid rule is detected.
+	 */
+	private void checkForInvalidNumericInByDay(Freq freq) throws InvalidRecurrenceRuleException
+	{
+		if (mParts.containsKey(Part.BYDAY))
+		{
+			@SuppressWarnings("unchecked")
+			List<WeekdayNum> values = (ArrayList<WeekdayNum>) mParts.get(Part.BYDAY);
+
+			for (WeekdayNum value : values)
+			{
+				if (value.pos != 0) // user specified integer in BYDAY rule
+				{
+					/**
+					 * https://tools.ietf.org/html/rfc5545#section-3.3.10
+					 * "The BYDAY rule part MUST NOT be specified with a numeric value when the FREQ rule part is not set to MONTHLY or YEARLY."
+					 */
+					if (freq != Freq.YEARLY && freq != Freq.MONTHLY)
+					{
+						if (mode == RfcMode.RFC5545_STRICT)
+						{
+							final String errMsg = "The BYDAY rule part must not be specified with a numeric value when the FREQ "
+								+ "rule part is not set to MONTHLY or YEARLY.";
+							throw new InvalidRecurrenceRuleException(errMsg);
+						}
+						else
+						{
+							mParts.remove(Part.BYDAY);
+						}
+					}
+					/**
+					 * https://tools.ietf.org/html/rfc5545#section-3.3.10
+					 * "Furthermore, the BYDAY rule part MUST NOT be specified with a numeric value with the FREQ rule part set to YEARLY when the BYWEEKNO rule part is specified."
+					 */
+					else if (freq == Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
+					{
+						if (mode == RfcMode.RFC5545_STRICT)
+						{
+							final String errMsg = "The BYDAY rule part must not be specified with a numeric value with"
+								+ " the FREQ rule part set to YEARLY when BYWEEKNO is set";
+							throw new InvalidRecurrenceRuleException(errMsg);
+						}
+						else
+						{
+							mParts.remove(Part.BYDAY);
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	/**
 	 * Validate this rule.
 	 * 
 	 * @throws InvalidRecurrenceRuleException
@@ -676,6 +735,7 @@ public final class RecurrenceRule
 			{
 				throw new InvalidRecurrenceRuleException("In RFC 5545, BYMONTHDAY is not allowed in WEEKLY rules");
 			}
+
 		}
 
 		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
@@ -686,22 +746,6 @@ public final class RecurrenceRule
 				mParts.remove(Part.BYWEEKNO);
 			}
 		}
-
-		if (mode == RfcMode.RFC5545_LAX)
-		{
-			// in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
-			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && mParts.containsKey(Part.BYYEARDAY))
-			{
-				mParts.remove(Part.BYYEARDAY);
-			}
-
-			// in RFC 5545 BYMONTHAY must not be used in WEEKLY rules
-			if (freq == Freq.WEEKLY && mParts.containsKey(Part.BYMONTHDAY))
-			{
-				mParts.remove(Part.BYMONTHDAY);
-			}
-		}
-
 		/**
 		 * BYSETPOS is only valid in combination with another BYxxx rule. We therefore check the number of elements. If this number is larger than cnt the rule
 		 * contains another BYxxx rule and is therefore valid.
@@ -727,8 +771,11 @@ public final class RecurrenceRule
 					mParts.remove(Part.BYSETPOS);
 				}
 			}
-
 		}
+		/**
+		 * Check for invalid rules when a numeric value is set in BYDAY.
+		 */
+		checkForInvalidNumericInByDay(freq);
 	}
 
 
