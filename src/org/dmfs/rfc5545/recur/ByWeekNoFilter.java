@@ -17,21 +17,14 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.List;
-
-import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits or expands recurrence rules by week of year. In <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> this is allowed
- * for YEARLY rules only. However since RFC 2445 allows this part with every frequency we handle all combinations.
+ * A filter expands recurrence rules by week of year. This is allowed for yearly rules only.
  * <p>
- * In particular that means YEARLY and MONTHLY rules are expanded and all other frequencies are filtered.
- * </p>
- * <p>
- * In case of MONTHLY rules or YEARLY rules with BYMONTH part this filter expands also weeks overlap the expanded month if any BY*DAY rules follows. That means
- * two subsequent interval sets can include the same week. The BY*DAY filters will take care of filtering those.
+ * If a BYMONTH part is present and any BY*DAY rules follows this filter also expands weeks that overlap the expanded month. That means two subsequent interval
+ * sets can include the same week. The BY*DAY filters will take care of filtering those.
  * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -41,7 +34,7 @@ final class ByWeekNoFilter extends ByFilter
 	/**
 	 * The week number to let pass or the expand.
 	 */
-	private final List<Integer> mByWeekNo;
+	private final int[] mByWeekNo;
 
 	/**
 	 * The scope of this part.
@@ -63,11 +56,11 @@ final class ByWeekNoFilter extends ByFilter
 
 	public ByWeekNoFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(previous, calendarTools, start, rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY);
+		super(previous, calendarTools, start, true /* always expand */);
 
-		mByWeekNo = rule.getByPart(Part.BYWEEKNO);
+		mByWeekNo = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYWEEKNO));
 
-		mScope = rule.getFreq() == Freq.MONTHLY || rule.getFreq() == Freq.YEARLY && rule.hasPart(Part.BYMONTH) ? Scope.MONTHLY : Scope.YEARLY;
+		mScope = rule.hasPart(Part.BYMONTH) ? Scope.MONTHLY : Scope.YEARLY;
 
 		// allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
 		mAllowOverlappingWeeks = mScope == Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
@@ -81,15 +74,7 @@ final class ByWeekNoFilter extends ByFilter
 	@Override
 	boolean filter(long instance)
 	{
-		/*
-		 * RFC 5545 doesn't specify filtering for BYWEEKNO, it's allowed for expansion of YEARLY rules, only. However RFC 2445 doesn't have any restrictions, so
-		 * we should be able to filter BYWEEKNO.
-		 */
-		mHelper.set(Instance.year(instance), Instance.month(instance), 1);
-		// get the number of weeks in that year
-		int yearWeeks = mHelper.getActualMaximum(Calendar.WEEK_OF_YEAR);
-		int weekOfYear = mCalendarMetrics.getWeekOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
-		return (!mByWeekNo.contains(weekOfYear) && !mByWeekNo.contains(weekOfYear - 1 - yearWeeks)) || weekOfYear > yearWeeks;
+		throw new UnsupportedOperationException("ByWeekNo doesn't support filtering, since it's allowed in YEARLY rules only.");
 	}
 
 
