@@ -581,11 +581,18 @@ public final class RecurrenceRule
 				String value = keyvalue.substring(equals + 1);
 
 				Part part = Part.valueOf(key);
-				Object partValue = null;
+				if (mParts.containsKey(part))
+				{
+					throw new InvalidRecurrenceRuleException(key + " must not occur twice.");
+				}
 
 				try
 				{
-					partValue = part.converter.parse(value);
+					Object partValue = part.converter.parse(value);
+					if (partValue != null)
+					{
+						this.mParts.put(part, partValue);
+					}
 				}
 				catch (InvalidRecurrenceRuleException e)
 				{
@@ -599,14 +606,6 @@ public final class RecurrenceRule
 					}
 				}
 
-				if (partValue != null)
-				{
-					if (this.mParts.containsKey(part))
-					{
-						throw new InvalidRecurrenceRuleException(key + " must not occur twice.");
-					}
-					this.mParts.put(part, partValue);
-				}
 			}
 			else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
 			{
