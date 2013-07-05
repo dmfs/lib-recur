@@ -742,7 +742,7 @@ public final class RecurrenceRule
 			// in RFC 5545 BYWEEKNO can be used with YEARLY rules only
 			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 			{
-				mParts.remove(Part.BYWEEKNO);
+				mParts.put(Part.FREQ, Freq.YEARLY);
 			}
 		}
 		/**
