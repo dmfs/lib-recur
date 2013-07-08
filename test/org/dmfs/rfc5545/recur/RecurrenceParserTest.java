@@ -1,6 +1,7 @@
 package org.dmfs.rfc5545.recur;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -23,6 +24,7 @@ public class RecurrenceParserTest
 
 		public Exception exception;
 		public Set<String> invalidRules = new HashSet<String>();
+		public Set<String> mustContain = new HashSet<String>();
 
 
 		public TestRuleWithException(String rule)
@@ -84,6 +86,36 @@ public class RecurrenceParserTest
 			for (String droppedRule : invalidRules)
 			{
 				assertFalse("Invalid rule detected that should have been dropped", rule.contains(droppedRule));
+			}
+		}
+
+
+		/**
+		 * A set of attributes the toString() output must contain.
+		 * 
+		 * @param mustContain
+		 *            the attributes
+		 */
+
+		public TestRuleWithException setObligatoryRuleParts(String... mustContain)
+		{
+			this.mustContain = new HashSet<String>();
+			this.mustContain.addAll(Arrays.asList(mustContain));
+			return this;
+		}
+
+
+		/**
+		 * Asserts that the toString() ouput contains the rule parts in <code>mustContain</code>
+		 * 
+		 * @param rule
+		 *            Rule that is returned by RecurrenceRule.toString
+		 */
+		public void assertObligatoryRuleParts(String rule)
+		{
+			for (String obligatoryRule : mustContain)
+			{
+				assertTrue("Missing rule in the output of toString", rule.contains(obligatoryRule));
 			}
 		}
 
@@ -184,8 +216,8 @@ public class RecurrenceParserTest
 		 */
 		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
-		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC5545_LAX).setInstances(0));
-		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC2445_LAX).setInstances(0));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC5545_LAX).setObligatoryRuleParts("FREQ=YEARLY"));
+		mRules.add(new TestRuleWithException("FREQ=MONTHLY;BYWEEKNO=26", RfcMode.RFC2445_LAX).setObligatoryRuleParts("FREQ=YEARLY"));
 
 		/**
 		 * BYSETPOS must only be used in conjunction with another BYxxx rule.
@@ -194,7 +226,7 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1;COUNT=2", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1;COUNT=2", RfcMode.RFC2445_STRICT).setException(new InvalidRecurrenceRuleException("")));
-		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC5545_LAX).setInstances(0));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC5545_LAX).setInvalidRules("BYSETPOS="));
 
 		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
@@ -205,11 +237,14 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC2445_LAX).setInvalidRules("BYDAY="));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC2445_LAX).setInvalidRules("BYDAY="));
 
+		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;COUNT=MO").setException(new InvalidRecurrenceRuleException("")));
+		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;INTERVAL=MO").setException(new InvalidRecurrenceRuleException("")));
+
 		/**
 		 * Test for other keywords.
 		 */
-		// addUniqueKeyWordTests();
-		// addInvalidWhiteSpaceTests();
+		addUniqueKeyWordTests();
+		addInvalidWhiteSpaceTests();
 
 		for (TestRuleWithException rule : mRules)
 		{
