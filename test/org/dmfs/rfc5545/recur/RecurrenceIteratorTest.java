@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
@@ -32,6 +33,7 @@ import org.junit.Test;
 public class RecurrenceIteratorTest
 {
 	public final static int MAX_ITERATIONS = 10000;
+	private final static int MAX_BUFFER = 10;
 
 	private final static Calendar FLOATING_TEST_START_DATE = Calendar.parse("19850501T133912");
 	private final static Calendar ABSOLUTE_TEST_START_DATE = Calendar.parse("19850501T133912Z");
@@ -237,9 +239,12 @@ public class RecurrenceIteratorTest
 	@Test
 	public void testWalkingStart() throws InvalidRecurrenceRuleException
 	{
+
 		for (TestRule rule : mTestRules)
 		{
 			Calendar lastInstance = null;
+			List<RecurrenceIterator> instanceIterators = new LinkedList<RecurrenceIterator>();
+
 			try
 			{
 				RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
@@ -260,35 +265,37 @@ public class RecurrenceIteratorTest
 					r1.setStart(ALLDAY_TEST_START_DATE);
 				}
 
-				RecurrenceIterator it = r1.iterator();
+				RecurrenceIterator mainIterator = r1.iterator();
 
-				if (!it.hasNext())
+				if (!mainIterator.hasNext())
 				{
 					continue;
 				}
-				lastInstance = it.nextCalendar();
 
 				RecurrenceRule r2 = new RecurrenceRule(rule.rule, rule.mode);
 
 				int count = 1;
-				while (it.hasNext() && count < MAX_ITERATIONS)
+				while (mainIterator.hasNext() && count < MAX_ITERATIONS)
 				{
+					lastInstance = mainIterator.nextCalendar();
 					count++;
-
 					RecurrenceIterator i2 = r2.iterator(lastInstance);
+					instanceIterators.add(i2);
+					if (instanceIterators.size() > MAX_BUFFER)
+					{
+						instanceIterators.remove(0);
+					}
 
-					// first instance of r2 should be lastInstance
-					String errMsg = "";
-					// errMsg = "error on first instance of rule " + rule.rule + " after " + count + " iterations ";
-					assertEquals(errMsg, lastInstance, i2.nextCalendar());
+					for (RecurrenceIterator iter : instanceIterators)
+					{
+						if (!iter.hasNext())
+						{
+							fail("Expected another instance! rule=" + rule.rule + " lastInstance=" + lastInstance);
+						}
+						Calendar upcoming = iter.nextCalendar();
+						assertEquals(lastInstance, upcoming);
+					}
 
-					lastInstance = it.nextCalendar();
-
-					Calendar upcoming2 = i2.nextCalendar();
-
-					// check that the second instance of i2 equals the current instance of i
-					// errMsg = "error on rule " + rule.rule + " after " + count + " iterations ";
-					assertEquals(errMsg, lastInstance, upcoming2);
 				}
 			}
 			catch (ArrayIndexOutOfBoundsException e)
@@ -1069,10 +1076,18 @@ public class RecurrenceIteratorTest
 		// every Tuesday in 201201 (including start date)
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131;BYDAY=TU").setStart("20120101").setInstances(5 + 1).setWeekdays(Calendar.TUESDAY));
 
+		// time change
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101;BYMONTH=3;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30").setStart("20120101T010101").setInstances(9));
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101Z;BYMONTH=3;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30")
+		// .setStart("20120101T010101", "Europe/Berlin").setInstances(1));
+		mTestRules
+			.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101;BYMONTH=10;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30").setStart("20120101T010101").setInstances(9));
+
+		// leap years
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=30000101;BYMONTH=2;BYMONTHDAY=29").setStart("20000101").setInstances(25 * 10 - 7 + 1));
 		/**
 		 * bysetpos
 		 */
-
 		mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20121231;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1").setStart("20120101").setInstances(12 + 1)
 			.setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
 
