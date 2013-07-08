@@ -244,7 +244,7 @@ public class RecurrenceParserTest
 		 * Test for other keywords.
 		 */
 		addUniqueKeyWordTests();
-		addInvalidWhiteSpaceTests();
+		// addInvalidWhiteSpaceTests();
 
 		for (TestRuleWithException rule : mRules)
 		{
@@ -258,6 +258,7 @@ public class RecurrenceParserTest
 
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 				rule.assertInvalidRules(r.toString());
+				rule.assertObligatoryRuleParts(r.toString());
 				r.setStart(rule.start);
 				RecurrenceIterator it = r.iterator();
 				Set<Calendar> instances = new HashSet<Calendar>();
