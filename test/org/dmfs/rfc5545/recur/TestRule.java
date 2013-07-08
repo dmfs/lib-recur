@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,6 +84,13 @@ public class TestRule
 	public TestRule setStart(String start)
 	{
 		this.start = Calendar.parse(start);
+		return this;
+	}
+
+
+	public TestRule setStart(String start, String tzId)
+	{
+		this.start = Calendar.parse(TimeZone.getTimeZone(tzId), start);
 		return this;
 	}
 
