@@ -206,4 +206,54 @@ public final class Instance
 	{
 		return (int) ((instance & WEEKDAY_MASK) >> WEEKDAY_POS);
 	}
+
+
+	/**
+	 * Validates the given instance using the provided {@link CalendarMetrics}.
+	 * <p>
+	 * At present this method doesn't check for leap seconds and it doesn't honor daylight saving switches. So it validates times between 2:00h and 3:00 to
+	 * <code>true</code> even if the local time can't have these values due to daylight savings.
+	 * </p>
+	 * 
+	 * @param instance
+	 *            The instance to test.
+	 * @param calendarMetrics
+	 *            The {@link CalendarMetrics} to use.
+	 * @return <code>true</code> if the date is valid, <code>false</code> otherwise.
+	 */
+	public static boolean validate(long instance, CalendarMetrics calendarMetrics)
+	{
+		int year = year(instance);
+		int month = month(instance);
+
+		if (month < 0 || month >= calendarMetrics.getMonthsPerYear(year))
+		{
+			return false;
+		}
+
+		int day = dayOfMonth(instance);
+		if (day < 1 || day > calendarMetrics.getDaysPerMonth(year, month))
+		{
+			return false;
+		}
+
+		int hour = hour(instance);
+		if (hour < 0 || hour > 23)
+		{
+			return false;
+		}
+
+		int minute = minute(instance);
+		if (minute < 0 || minute > 59)
+		{
+			return false;
+		}
+
+		int second = second(instance);
+		if (second < 0 || second > 59) // we don't support leap seconds yet
+		{
+			return false;
+		}
+		return true;
+	}
 }

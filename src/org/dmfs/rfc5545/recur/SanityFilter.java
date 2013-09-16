@@ -51,13 +51,6 @@ final class SanityFilter extends RuleIterator
 	private final long mStart;
 
 	/**
-	 * A helper for date calculations.
-	 * 
-	 * TODO: get rid of it.
-	 */
-	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
-
-	/**
 	 * A {@link LongArray} that contains the instances to return.
 	 */
 	private final LongArray mResultSet = new LongArray();
@@ -65,7 +58,6 @@ final class SanityFilter extends RuleIterator
 	/**
 	 * Helper for calendar calculations.
 	 */
-	@SuppressWarnings("unused")
 	private final CalendarMetrics mCalendarMetrics;
 
 	/**
@@ -95,7 +87,6 @@ final class SanityFilter extends RuleIterator
 	@Override
 	public long next()
 	{
-		Calendar helper = mHelper;
 		if (mFirst && mFilterByStart)
 		{
 			// mStart is always the first result
@@ -121,21 +112,9 @@ final class SanityFilter extends RuleIterator
 					continue;
 				}
 
-				int year = Instance.year(next);
-				int month = Instance.month(next);
-				int dayOfMonth = Instance.dayOfMonth(next);
-				int hour = Instance.hour(next);
-				int minute = Instance.minute(next);
-				int second = Instance.second(next);
-
-				helper.set(year, month, dayOfMonth, hour, minute, second);
-
 				simpleInstance = Instance.maskWeekday(next);
 
-				// System.out.println("ex " + Long.toHexString(next) + "    " + Long.toHexString(simpleInstance) + "    "
-				// + Long.toHexString(Instance.makeFast(mHelper)));
-
-			} while (mFilterByStart && mStart >= simpleInstance || Instance.makeFast(helper) != simpleInstance);
+			} while (mFilterByStart && mStart >= simpleInstance || !Instance.validate(simpleInstance, mCalendarMetrics));
 
 			return next;
 		}
@@ -145,7 +124,6 @@ final class SanityFilter extends RuleIterator
 	@Override
 	LongArray nextSet()
 	{
-		Calendar helper = mHelper;
 		LongArray resultSet = mResultSet;
 
 		resultSet.clear();
@@ -171,21 +149,9 @@ final class SanityFilter extends RuleIterator
 			{
 				long next = prev.next();
 
-				int year = Instance.year(next);
-				int month = Instance.month(next);
-				int dayOfMonth = Instance.dayOfMonth(next);
-				int hour = Instance.hour(next);
-				int minute = Instance.minute(next);
-				int second = Instance.second(next);
-
-				helper.set(year, month, dayOfMonth, hour, minute, second);
-
 				simpleInstance = Instance.maskWeekday(next);
 
-				// System.out.println("ex " + Long.toHexString(next) + "    " + Long.toHexString(simpleInstance) + "    "
-				// + Long.toHexString(Instance.makeFast(mHelper)));
-
-				if ((!mFilterByStart || mStart < simpleInstance) && Instance.makeFast(helper) == simpleInstance)
+				if ((!mFilterByStart || mStart < simpleInstance) && Instance.validate(simpleInstance, mCalendarMetrics))
 				{
 					resultSet.add(next);
 				}
