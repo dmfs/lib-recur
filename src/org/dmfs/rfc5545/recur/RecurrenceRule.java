@@ -578,6 +578,13 @@ public final class RecurrenceRule
 					String value = keyvalue.substring(equals + 1);
 
 					Part part = Part.valueOf(key);
+					
+					if ((mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT) && mParts.containsKey(part))
+					{
+						// strict modes don't allow duplicate parts
+						throw new InvalidRecurrenceRuleException("duplicate part " + part + "  in " + recur);
+					}
+
 					Object partValue = part.converter.parse(value);
 					if (partValue != null)
 					{
