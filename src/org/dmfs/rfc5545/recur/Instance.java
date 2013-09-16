@@ -214,6 +214,7 @@ public final class Instance
 	 * At present this method doesn't check for leap seconds and it doesn't honor daylight saving switches. So it validates times between 2:00h and 3:00 to
 	 * <code>true</code> even if the local time can't have these values due to daylight savings.
 	 * </p>
+	 * TODO: add check for daylight saving switches
 	 * 
 	 * @param instance
 	 *            The instance to test.
