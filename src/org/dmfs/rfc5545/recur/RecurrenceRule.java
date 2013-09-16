@@ -468,6 +468,11 @@ public final class RecurrenceRule
 	 */
 	private Calendar mStart;
 
+	/**
+	 * Pre-built "FREQ=" string, used for validation in RFC2445_STRICT mode.
+	 */
+	private final static String FREQ_PREFIX = Part.FREQ.name() + "=";
+
 
 	/**
 	 * Create a new recurrence rule from String using the {@link RfcMode} {@link RfcMode#RFC5545_LAX}. The parser will be quite tolerant and skip any invalid
@@ -560,7 +565,7 @@ public final class RecurrenceRule
 
 		String[] parts = recur.split(";");
 
-		if (mode == RfcMode.RFC2445_STRICT && parts.length > 0 && !Part.FREQ.name().equals(parts[0]))
+		if (mode == RfcMode.RFC2445_STRICT && parts.length > 0 && !parts[0].startsWith(FREQ_PREFIX))
 		{
 			// in RFC2445 rules must start with "FREQ=" !
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
@@ -569,49 +574,110 @@ public final class RecurrenceRule
 		// now parse each part and add it to mParts.
 		for (String keyvalue : parts)
 		{
-			try
+			int equals = keyvalue.indexOf("=");
+			if (equals > 0)
 			{
-				int equals = keyvalue.indexOf("=");
-				if (equals > 0)
+				String key = keyvalue.substring(0, equals);
+				String value = keyvalue.substring(equals + 1);
+
+				Part part = Part.valueOf(key);
+
+				if ((mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT) && mParts.containsKey(part))
 				{
-					String key = keyvalue.substring(0, equals);
-					String value = keyvalue.substring(equals + 1);
+					// strict modes don't allow duplicate parts
+					throw new InvalidRecurrenceRuleException("duplicate part " + part + "  in " + recur);
+				}
 
-					Part part = Part.valueOf(key);
-					
-					if ((mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT) && mParts.containsKey(part))
-					{
-						// strict modes don't allow duplicate parts
-						throw new InvalidRecurrenceRuleException("duplicate part " + part + "  in " + recur);
-					}
-
+				try
+				{
 					Object partValue = part.converter.parse(value);
 					if (partValue != null)
 					{
 						this.mParts.put(part, partValue);
 					}
 				}
-				else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+				catch (InvalidRecurrenceRuleException e)
 				{
-					// strict modes throw on empty parts
-					throw new InvalidRecurrenceRuleException("Found empty part in " + recur);
+					if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+					{
+						throw e;
+					}
+					else
+					{
+						// just skip invalid parts in lax modes
+					}
 				}
+
 			}
-			catch (InvalidRecurrenceRuleException e)
+			else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
 			{
-				if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
-				{
-					throw e;
-				}
-				else
-				{
-					// just skip invalid parts in lax modes
-				}
+				// strict modes throw on empty parts
+				throw new InvalidRecurrenceRuleException("Found empty part in " + recur);
 			}
+
 		}
 
 		// validate the rule
 		validate();
+	}
+
+
+	/**
+	 * Checks for invalid rules when a numeric value is set in BYDAY. Depending on the mode either an exception is thrown or the BYDAY rule is simply dropped.
+	 * 
+	 * @param freq
+	 *            The {@link Freq} specified in the rule.
+	 * @throws InvalidRecurrenceRuleException
+	 *             if the mode is set to RFC5545_STRICT and an invalid rule is detected.
+	 */
+	private void checkForInvalidNumericInByDay(Freq freq) throws InvalidRecurrenceRuleException
+	{
+		if (mParts.containsKey(Part.BYDAY))
+		{
+			@SuppressWarnings("unchecked")
+			List<WeekdayNum> values = (ArrayList<WeekdayNum>) mParts.get(Part.BYDAY);
+
+			for (WeekdayNum value : values)
+			{
+				if (value.pos != 0) // user specified integer in BYDAY rule
+				{
+					/**
+					 * https://tools.ietf.org/html/rfc5545#section-3.3.10
+					 * "The BYDAY rule part MUST NOT be specified with a numeric value when the FREQ rule part is not set to MONTHLY or YEARLY."
+					 */
+					if (freq != Freq.YEARLY && freq != Freq.MONTHLY)
+					{
+						if (mode == RfcMode.RFC5545_STRICT)
+						{
+							final String errMsg = "The BYDAY rule part must not be specified with a numeric value when the FREQ "
+								+ "rule part is not set to MONTHLY or YEARLY.";
+							throw new InvalidRecurrenceRuleException(errMsg);
+						}
+						else
+						{
+							mParts.remove(Part.BYDAY);
+						}
+					}
+					/**
+					 * https://tools.ietf.org/html/rfc5545#section-3.3.10
+					 * "Furthermore, the BYDAY rule part MUST NOT be specified with a numeric value with the FREQ rule part set to YEARLY when the BYWEEKNO rule part is specified."
+					 */
+					else if (freq == Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
+					{
+						if (mode == RfcMode.RFC5545_STRICT)
+						{
+							final String errMsg = "The BYDAY rule part must not be specified with a numeric value with"
+								+ " the FREQ rule part set to YEARLY when BYWEEKNO is set";
+							throw new InvalidRecurrenceRuleException(errMsg);
+						}
+						else
+						{
+							mParts.remove(Part.BYDAY);
+						}
+					}
+				}
+			}
+		}
 	}
 
 
@@ -631,6 +697,11 @@ public final class RecurrenceRule
 			throw new InvalidRecurrenceRuleException("FREQ part is missing");
 		}
 
+		if (mParts.containsKey(Part.UNTIL) && mParts.containsKey(Part.COUNT))
+		{
+			throw new InvalidRecurrenceRuleException("UNTIL and COUNT must not occur in the same rule.");
+		}
+
 		if (getInterval() == 0)
 		{
 			if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
@@ -644,14 +715,16 @@ public final class RecurrenceRule
 			}
 		}
 
-		if (mode == RfcMode.RFC5545_STRICT)
+		if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
 		{
-			// in RFC 5545 BYWEEKNO can be used with YEARLY rules only
 			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 			{
-				throw new InvalidRecurrenceRuleException("In RFC 5545, BYWEEKNO is allowed in YEARLY rules only");
+				throw new InvalidRecurrenceRuleException("BYWEEKNO is allowed in YEARLY rules only");
 			}
+		}
 
+		if (mode == RfcMode.RFC5545_STRICT)
+		{
 			// in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
 			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && mParts.containsKey(Part.BYYEARDAY))
 			{
@@ -663,28 +736,47 @@ public final class RecurrenceRule
 			{
 				throw new InvalidRecurrenceRuleException("In RFC 5545, BYMONTHDAY is not allowed in WEEKLY rules");
 			}
+
 		}
 
-		if (mode == RfcMode.RFC5545_LAX)
+		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
 		{
 			// in RFC 5545 BYWEEKNO can be used with YEARLY rules only
 			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 			{
-				mParts.remove(Part.BYWEEKNO);
-			}
-
-			// in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
-			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && mParts.containsKey(Part.BYYEARDAY))
-			{
-				mParts.remove(Part.BYYEARDAY);
-			}
-
-			// in RFC 5545 BYMONTHAY must not be used in WEEKLY rules
-			if (freq == Freq.WEEKLY && mParts.containsKey(Part.BYMONTHDAY))
-			{
-				mParts.remove(Part.BYMONTHDAY);
+				mParts.put(Part.FREQ, Freq.YEARLY);
 			}
 		}
+		/**
+		 * BYSETPOS is only valid in combination with another BYxxx rule. We therefore check the number of elements. If this number is larger than cnt the rule
+		 * contains another BYxxx rule and is therefore valid.
+		 */
+		if (mParts.containsKey(Part.BYSETPOS))
+		{
+
+			int cnt = 2; // FREQ and BYSETPOS
+			if (mParts.containsKey(Part.UNTIL) || mParts.containsKey(Part.COUNT))
+			{
+				cnt++;
+			}
+			if (mParts.size() - cnt <= 0)
+			{
+				if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+				{
+					// we're in strict mode => throw exception
+					throw new InvalidRecurrenceRuleException("BYSETPOS must only be used in conjunction with another BYxxx rule.");
+				}
+				else
+				{
+					// we're in lax mode => drop BYSETPOS
+					mParts.remove(Part.BYSETPOS);
+				}
+			}
+		}
+		/**
+		 * Check for invalid rules when a numeric value is set in BYDAY.
+		 */
+		checkForInvalidNumericInByDay(freq);
 	}
 
 

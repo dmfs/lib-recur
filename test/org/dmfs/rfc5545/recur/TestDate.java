@@ -1,7 +1,6 @@
 package org.dmfs.rfc5545.recur;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.TimeZone;
@@ -134,7 +133,7 @@ public class TestDate
 		}
 		else
 		{
-			assertNull(cal.getTimeZone());
+			assertEquals(TimeZone.getTimeZone("UTC"), cal.getTimeZone());
 		}
 	}
 
@@ -155,7 +154,7 @@ public class TestDate
 		assertTrue(calClone.isFloating());
 		assertTrue(calClone.isAllDay());
 
-		assertNull(calClone.getTimeZone());
+		assertEquals(TimeZone.getTimeZone("UTC"), calClone.getTimeZone());
 
 	}
 

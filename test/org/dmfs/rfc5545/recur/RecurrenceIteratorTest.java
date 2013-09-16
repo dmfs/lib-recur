@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
@@ -31,7 +32,8 @@ import org.junit.Test;
 
 public class RecurrenceIteratorTest
 {
-	private final static int MAX_ITERATIONS = 10000;
+	public final static int MAX_ITERATIONS = 10000;
+	private final static int MAX_BUFFER = 10;
 
 	private final static Calendar FLOATING_TEST_START_DATE = Calendar.parse("19850501T133912");
 	private final static Calendar ABSOLUTE_TEST_START_DATE = Calendar.parse("19850501T133912Z");
@@ -237,9 +239,12 @@ public class RecurrenceIteratorTest
 	@Test
 	public void testWalkingStart() throws InvalidRecurrenceRuleException
 	{
+
 		for (TestRule rule : mTestRules)
 		{
 			Calendar lastInstance = null;
+			List<RecurrenceIterator> instanceIterators = new LinkedList<RecurrenceIterator>();
+
 			try
 			{
 				RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
@@ -260,35 +265,37 @@ public class RecurrenceIteratorTest
 					r1.setStart(ALLDAY_TEST_START_DATE);
 				}
 
-				RecurrenceIterator it = r1.iterator();
+				RecurrenceIterator mainIterator = r1.iterator();
 
-				if (!it.hasNext())
+				if (!mainIterator.hasNext())
 				{
 					continue;
 				}
-				lastInstance = it.nextCalendar();
 
 				RecurrenceRule r2 = new RecurrenceRule(rule.rule, rule.mode);
 
 				int count = 1;
-				while (it.hasNext() && count < MAX_ITERATIONS)
+				while (mainIterator.hasNext() && count < MAX_ITERATIONS)
 				{
+					lastInstance = mainIterator.nextCalendar();
 					count++;
-
 					RecurrenceIterator i2 = r2.iterator(lastInstance);
+					instanceIterators.add(i2);
+					if (instanceIterators.size() > MAX_BUFFER)
+					{
+						instanceIterators.remove(0);
+					}
 
-					// first instance of r2 should be lastInstance
-					String errMsg = "";
-					// errMsg = "error on first instance of rule " + rule.rule + " after " + count + " iterations ";
-					assertEquals(errMsg, lastInstance, i2.nextCalendar());
+					for (RecurrenceIterator iter : instanceIterators)
+					{
+						if (!iter.hasNext())
+						{
+							fail("Expected another instance! rule=" + rule.rule + " lastInstance=" + lastInstance);
+						}
+						Calendar upcoming = iter.nextCalendar();
+						assertEquals(lastInstance, upcoming);
+					}
 
-					lastInstance = it.nextCalendar();
-
-					Calendar upcoming2 = i2.nextCalendar();
-
-					// check that the second instance of i2 equals the current instance of i
-					// errMsg = "error on rule " + rule.rule + " after " + count + " iterations ";
-					assertEquals(errMsg, lastInstance, upcoming2);
 				}
 			}
 			catch (ArrayIndexOutOfBoundsException e)
@@ -385,7 +392,7 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=3TH;COUNT=2").setCount(2).setWeekdays(Calendar.THURSDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYDAY=1FR").setCount(10).setWeekdays(Calendar.FRIDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYMONTHDAY=1,-1").setCount(10).setMonthdays(1, 28, 29, 30, 31));
-		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15").setCount(10).setMonthdays(1, 15));
+		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15").setCount(10).setMonthdays(2, 15));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;INTERVAL=18;BYMONTHDAY=10,11,12,13,14,15").setCount(10).setMonthdays(10, 11, 12, 13, 14, 15));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=10;INTERVAL=2;BYDAY=1SU,-1SU").setCount(10).setWeekdays(Calendar.SUNDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3").setCount(3));
@@ -1057,8 +1064,42 @@ public class RecurrenceIteratorTest
 
 		// the fourth month of each year from 2012 until 2019
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTH=4").setStart("20120101").setInstances(9).setMonths(4).setMonthdays(1));
+		// the fifth day of each year
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYYEARDAY=5").setStart("20120101").setInstances(9).setMonths(1).setMonthdays(5));
 
-		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120101"));
+		// 20120101 was a Sunday
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYWEEKNO=20").setStart("20120101").setInstances(9).setMonths(5).setWeekdays(Calendar.SUNDAY)
+			.setSeconds(0).setMinutes(0).setHours(0));
+
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTHDAY=5").setStart("20120101").setInstances(12 * 8 + 1).setMonthdays(5));
+
+		// every Tuesday in 201201 (including start date)
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131;BYDAY=TU").setStart("20120101").setInstances(5 + 1).setWeekdays(Calendar.TUESDAY));
+
+		// time change
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101;BYMONTH=3;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30").setStart("20120101T010101").setInstances(9));
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101Z;BYMONTH=3;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30")
+		// .setStart("20120101T010101", "Europe/Berlin").setInstances(1));
+		mTestRules
+			.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101;BYMONTH=10;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30").setStart("20120101T010101").setInstances(9));
+
+		// leap years
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=30000101;BYMONTH=2;BYMONTHDAY=29").setStart("20000101").setInstances(25 * 10 - 7 + 1));
+		/**
+		 * bysetpos
+		 */
+		mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20121231;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1").setStart("20120101").setInstances(12 + 1)
+			.setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+
+		/**
+		 * Fixme: commented out until fixed. BY[HOUR,MINUTE,SECOND] aren't expanded correctly. (Compare github issue #7)
+		 */
+		// mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20120131T120000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1));
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1).setHours(12));
+		//
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120103T000000;BYMINUTE=12").setStart("20120101T000000").setInstances(2 * 24 + 1).setMinutes(12));
+		//
+		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1).setHours(12));
+
 	}
 }

@@ -34,10 +34,15 @@ public abstract class StaticUtils
 	 * 
 	 * @param list
 	 *            The {@link List} to convert.
-	 * @return an int[].
+	 * @return an int[] or <code>null</code> if <code>list</code> is <code>null</code>.
 	 */
 	public static int[] ListToSortedArray(List<Integer> list)
 	{
+		if (list == null)
+		{
+			return null;
+		}
+
 		int count = list.size();
 		int[] result = new int[count];
 		int last = Integer.MIN_VALUE;

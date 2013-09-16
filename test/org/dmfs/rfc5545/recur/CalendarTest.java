@@ -2,7 +2,6 @@ package org.dmfs.rfc5545.recur;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -198,7 +197,7 @@ public class CalendarTest
 	{
 		Calendar cal = Calendar.parse(stampWithTime);
 		assertTrue(cal.isFloating());
-		assertNull(cal.getTimeZone());
+		assertEquals(TimeZone.getTimeZone("UTC"), cal.getTimeZone());
 		cal.setTimeZone(timeZone);
 		assertFalse(cal.isFloating());
 		assertEquals(timeZone, cal.getTimeZone());

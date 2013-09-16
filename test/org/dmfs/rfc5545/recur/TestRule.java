@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,9 @@ public class TestRule
 	public Set<Integer> weekdays = null;
 	public Set<Integer> monthdays = null;
 	public Set<Integer> weeks = null;
+	public Set<Integer> hours = null;
+	public Set<Integer> minutes = null;
+	public Set<Integer> seconds = null;
 	public boolean floating = false;
 	public boolean allday = false;
 	public Calendar start = null;
@@ -80,6 +84,13 @@ public class TestRule
 	public TestRule setStart(String start)
 	{
 		this.start = Calendar.parse(start);
+		return this;
+	}
+
+
+	public TestRule setStart(String start, String tzId)
+	{
+		this.start = Calendar.parse(TimeZone.getTimeZone(tzId), start);
 		return this;
 	}
 
@@ -145,6 +156,30 @@ public class TestRule
 	}
 
 
+	public TestRule setHours(Integer... hours)
+	{
+		this.hours = new HashSet<Integer>();
+		this.hours.addAll(Arrays.asList(hours));
+		return this;
+	}
+
+
+	public TestRule setMinutes(Integer... minutes)
+	{
+		this.minutes = new HashSet<Integer>();
+		this.minutes.addAll(Arrays.asList(minutes));
+		return this;
+	}
+
+
+	public TestRule setSeconds(Integer... seconds)
+	{
+		this.seconds = new HashSet<Integer>();
+		this.seconds.addAll(Arrays.asList(seconds));
+		return this;
+	}
+
+
 	public void assertCount(int count)
 	{
 		if (this.count > 0 && until == null)
@@ -159,7 +194,7 @@ public class TestRule
 		if (count == -1 && until != null)
 		{
 			String errMsg = "";
-			errMsg = "instance " + instance + " after " + until;
+			// errMsg = "instance " + instance + " after " + until;
 			assertTrue(errMsg, !instance.after(until));
 		}
 	}
@@ -209,6 +244,39 @@ public class TestRule
 	}
 
 
+	public void assertHours(Calendar instance)
+	{
+		if (hours != null)
+		{
+			String errMsg = "";
+			// errMsg = "hour of " + instance + " not in " + hours + " rule: " + rule;
+			assertTrue(errMsg, hours.contains(instance.get(Calendar.HOUR)));
+		}
+	}
+
+
+	public void assertMinutes(Calendar instance)
+	{
+		if (minutes != null)
+		{
+			String errMsg = "";
+			// errMsg = "minute of " + instance + " not in " + minutes + " rule: " + rule;
+			assertTrue(errMsg, minutes.contains(instance.get(Calendar.MINUTE)));
+		}
+	}
+
+
+	public void assertSeconds(Calendar instance)
+	{
+		if (seconds != null)
+		{
+			String errMsg = "";
+			// errMsg = "hour of " + instance + " not in " + seconds + " rule: " + rule;
+			assertTrue(errMsg, seconds.contains(instance.get(Calendar.SECOND)));
+		}
+	}
+
+
 	public void testInstance(Calendar instance)
 	{
 		if (printInstances)
@@ -218,6 +286,11 @@ public class TestRule
 		assertMonth(instance);
 		assertWeekday(instance);
 		assertUntil(instance);
+		assertWeek(instance);
+		assertMonthday(instance);
+		assertHours(instance);
+		assertMinutes(instance);
+		assertSeconds(instance);
 	}
 
 
