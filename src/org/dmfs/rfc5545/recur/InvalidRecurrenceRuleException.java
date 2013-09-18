@@ -26,7 +26,7 @@ public class InvalidRecurrenceRuleException extends Exception
 {
 
 	/**
-	 * generated serial id.
+	 * Generated serial id.
 	 */
 	private static final long serialVersionUID = 2282570760598972553L;
 

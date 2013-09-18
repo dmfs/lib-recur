@@ -169,7 +169,7 @@ public abstract class CalendarMetrics
 
 
 	/**
-	 * Get the weekday of the first day in the given year.
+	 * Get the weekday of the first day (which is January the 1st in a Gregorian Calendar) in the given year.
 	 * 
 	 * @param year
 	 *            The year.
@@ -180,6 +180,7 @@ public abstract class CalendarMetrics
 
 	/**
 	 * Get the day of year of the start of the first week in a year. Note this method returns values below 1 if the start of the week is in the previous year.
+	 * The result depends on the values of {@link #weekStart} and {@link #minDaysInFirstWeek}.
 	 * 
 	 * @param year
 	 *            The year.

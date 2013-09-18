@@ -146,6 +146,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	@Override
 	public int getDayOfWeek(int year, int yearDay)
 	{
+		/* using Gauss's algorithm, see http://en.wikipedia.org/wiki/Calculating_the_day_of_the_week#Gauss.27s_algorithm */
 		int y = year - 1;
 		return (yearDay + 5 * (y & 3) + 4 * (y % 100) + 6 * (y % 400)) % 7;
 	}
