@@ -148,7 +148,8 @@ public class RecurrenceIteratorTest
 				Calendar instance = it.nextCalendar();
 				// check that the previous instance is always before the next instance
 				String errMsg = "";
-				// errMsg = "instance no " + count + " " + lastInstance + " not before " + instance + " in rule " + rule.rule;
+				// errMsg = "instance no " + count + " " + lastInstance + " not before " + instance + " in rule " + new RecurrenceRule(rule.rule,
+				// RfcMode.RFC5545_LAX).toString();
 				assertTrue(errMsg, lastInstance.before(instance));
 
 				lastInstance = instance;
@@ -712,8 +713,7 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=2"));
 		mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=31"));
 		mTestRules.add(new TestRule("FREQ=DAILY;WKST=MO;"));
-		// won't work with all start dates
-		// mTestRules.add(new TestRule("FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16"));
+		mTestRules.add(new TestRule("FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16").setStart("20120101T101010"));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=2SA;INTERVAL=1"));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=+2TH").setWeekdays(Calendar.THURSDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13").setWeekdays(Calendar.FRIDAY).setMonthdays(13));
@@ -807,7 +807,7 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=TH;BYMONTH=6,7,8").setMonths(6, 7, 8).setWeekdays(Calendar.THURSDAY));
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMINUTE=0;BYHOUR=2;BYDAY=-1SU;BYMONTH=10").setMonths(10).setWeekdays(Calendar.SUNDAY));
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMINUTE=0;BYHOUR=2;BYDAY=1SU;BYMONTH=11").setMonths(11).setWeekdays(Calendar.SUNDAY));
-		// mTestRules.add(new TestRule("FREQ=YEARLY;BYMINUTE=0;BYHOUR=2;BYDAY=-1SU;BYMONTH=3").setMonths(3));
+		mTestRules.add(new TestRule("FREQ=YEARLY;BYMINUTE=0;BYHOUR=2;BYDAY=-1SU;BYMONTH=3").setStart("20120101T020001").setMonths(3));
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMINUTE=0;BYHOUR=2;BYDAY=2SU;BYMONTH=3").setMonths(3).setWeekdays(Calendar.SUNDAY));
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1").setMonths(1));
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=10;BYDAY=-1FR").setMonths(10).setWeekdays(Calendar.FRIDAY));

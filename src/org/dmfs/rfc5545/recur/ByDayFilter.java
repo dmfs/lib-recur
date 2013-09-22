@@ -93,6 +93,7 @@ final class ByDayFilter extends ByFilter
 	 *            The packed day int.
 	 * @return The weekday.
 	 */
+	@SuppressWarnings("unused")
 	private static int unpackWeekday(int packedDay)
 	{
 		return packedDay & 0xff;
@@ -106,6 +107,7 @@ final class ByDayFilter extends ByFilter
 	 *            The packed day int.
 	 * @return The position.
 	 */
+	@SuppressWarnings("unused")
 	private static int unpackPos(int packedDay)
 	{
 		return packedDay >> 8;

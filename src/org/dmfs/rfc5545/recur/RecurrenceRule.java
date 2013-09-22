@@ -31,20 +31,19 @@ import java.util.regex.Pattern;
  * Builder and parser for recurrence rule strings that comply with <a href="http://tools.ietf.org/html/rfc2445#section-4.3.10">RFC 2445</a> or <a
  * href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
  * <p>
- * This class implements {@link Iterable} to iterate all instances of a rule. To use this feature be sure to set a start date using {@link #setStart(Calendar)}
- * first. Also note that some rule may recur forever (or at least many times), so don't forget to add some kind of limiter.
- * </p>
- * <p>
- * The goal if this implementation is to satisfy the following qualities:
+ * The goal of this implementation is to satisfy the following qualities:
  * </p>
  * <ul>
  * <li>correctness: The instances returned by the iterator shall be correct for all common cases, i.e. they follow all rules defined in RFC 5545/RFC 2445.</li>
- * <li>completeness: The iterator shall support all valid combinations defined RFC 5545/RFC 2445 and return reasonable results for edge cases that are not
- * explicitly mentioned.</li>
- * <li>performance: The iterator shall be as efficient as possible.
+ * <li>completeness: The iterator shall support all valid combinations defined by RFC 5545 and RFC 2445 and return reasonable results for edge cases that are
+ * not explicitly mentioned.</li>
+ * <li>performance: The iterator shall be as efficient (in speed and memory utilization) as possible.
  * </ul>
  * <p>
  * TODO: Add validator and a validator log.
+ * </p>
+ * <p>
+ * TODO: Add proper implementation of the {@link #equals(Object)} method.
  * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -122,6 +121,9 @@ public final class RecurrenceRule
 
 		/**
 		 * Get an ordinal value that is compatible with {@link java.util.Calendar}.
+		 * <p>
+		 * TODO: remove when we don't need it any more.
+		 * </p>
 		 * 
 		 * @return A number between 1 (for {@link #SU}) and 7 (for {@link #SA}).
 		 */
@@ -425,7 +427,7 @@ public final class RecurrenceRule
 			}
 			else
 			{
-				return null;
+				throw new InvalidRecurrenceRuleException("invalid weeknum: '" + value + "'");
 			}
 		}
 
@@ -452,6 +454,23 @@ public final class RecurrenceRule
 			return pos == 0 ? weekday.name() : Integer.valueOf(pos) + weekday.name();
 		}
 	}
+
+	/**
+	 * Type safe and <code>null</code> safe way to test an object for equality with 1.
+	 * 
+	 * This one works even if <code>other</code> is <code>null</code> or not an integer.
+	 * 
+	 * <pre>
+	 * if (ONE.equals(other)) ...
+	 * </pre>
+	 * 
+	 * This one fails if other is not an integer.
+	 * 
+	 * <pre>
+	 * if (other == 1)
+	 * </pre>
+	 */
+	private final static Integer ONE = 1;
 
 	/**
 	 * The parser mode. This can not be changed once the rule has been created.
@@ -571,6 +590,8 @@ public final class RecurrenceRule
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
 		}
 
+		boolean tolerant = mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX;
+
 		// now parse each part and add it to mParts.
 		for (String keyvalue : parts)
 		{
@@ -580,7 +601,21 @@ public final class RecurrenceRule
 				String key = keyvalue.substring(0, equals);
 				String value = keyvalue.substring(equals + 1);
 
-				Part part = Part.valueOf(key);
+				Part part;
+				try
+				{
+					part = Part.valueOf(key);
+				}
+				catch (IllegalArgumentException e)
+				{
+					if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+					{
+						throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
+					}
+
+					// ignore part in lax modes.
+					continue;
+				}
 
 				if ((mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT) && mParts.containsKey(part))
 				{
@@ -590,8 +625,8 @@ public final class RecurrenceRule
 
 				try
 				{
-					Object partValue = part.converter.parse(value);
-					if (partValue != null)
+					Object partValue = part.converter.parse(value, tolerant);
+					if (partValue != null && (part != Part.INTERVAL || !ONE.equals(partValue)))
 					{
 						this.mParts.put(part, partValue);
 					}
@@ -691,22 +726,24 @@ public final class RecurrenceRule
 	{
 		Freq freq = (Freq) mParts.get(Part.FREQ);
 
-		// FREQ is mandatory
+		// FREQ is mandatory part of each rule
 		if (!mParts.containsKey(Part.FREQ))
 		{
 			throw new InvalidRecurrenceRuleException("FREQ part is missing");
 		}
 
+		// UNTIL and COUNT are mutually exclusive
 		if (mParts.containsKey(Part.UNTIL) && mParts.containsKey(Part.COUNT))
 		{
 			throw new InvalidRecurrenceRuleException("UNTIL and COUNT must not occur in the same rule.");
 		}
 
-		if (getInterval() == 0)
+		// interval must not be 0 or less
+		if (getInterval() <= 0)
 		{
 			if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
 			{
-				throw new InvalidRecurrenceRuleException("INTERVAL must not be 0");
+				throw new InvalidRecurrenceRuleException("INTERVAL must not be <= 0");
 			}
 			else
 			{
@@ -741,7 +778,7 @@ public final class RecurrenceRule
 
 		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
 		{
-			// in RFC 5545 BYWEEKNO can be used with YEARLY rules only
+			// BYWEEKNO can be used with YEARLY rules only
 			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 			{
 				mParts.put(Part.FREQ, Freq.YEARLY);
@@ -1349,11 +1386,13 @@ public final class RecurrenceRule
 		 * 
 		 * @param value
 		 *            The string representation of the value.
+		 * @param tolerant
+		 *            <code>true</code> to ignore any errors if possible
 		 * @return An instance of <T> with the correct value.
 		 * @throws InvalidRecurrenceRuleException
 		 *             if the value is invalid.
 		 */
-		public abstract T parse(String value) throws InvalidRecurrenceRuleException;
+		public abstract T parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException;
 
 
 		/**
@@ -1388,11 +1427,13 @@ public final class RecurrenceRule
 		 * 
 		 * @param value
 		 *            The list element to parse.
+		 * @param tolerant
+		 *            <code>true</code> to ignore any errors if possible
 		 * @return The value of the list element.
 		 * @throws InvalidRecurrenceRuleException
 		 *             if the list element is invalid.
 		 */
-		abstract T parseValue(String value) throws InvalidRecurrenceRuleException;
+		abstract T parseValue(String value, boolean tolerant) throws InvalidRecurrenceRuleException;
 
 
 		/**
@@ -1410,13 +1451,30 @@ public final class RecurrenceRule
 
 
 		@Override
-		public Collection<T> parse(String value) throws InvalidRecurrenceRuleException
+		public Collection<T> parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			List<T> result = new ArrayList<T>();
 			String[] values = value.split(",");
 			for (String val : values)
 			{
-				result.add(parseValue(val));
+				try
+				{
+					result.add(parseValue(val, tolerant));
+				}
+				catch (InvalidRecurrenceRuleException e)
+				{
+					if (!tolerant)
+					{
+						throw e;
+					}
+				}
+				catch (Exception e)
+				{
+					if (!tolerant)
+					{
+						throw new InvalidRecurrenceRuleException("could not parse list '" + value + "'", e);
+					}
+				}
 			}
 			if (result.size() > 0)
 			{
@@ -1489,7 +1547,7 @@ public final class RecurrenceRule
 
 
 		@Override
-		Integer parseValue(String value) throws InvalidRecurrenceRuleException
+		Integer parseValue(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -1515,9 +1573,9 @@ public final class RecurrenceRule
 	private static class WeekdayListConverter extends ListValueConverter<WeekdayNum>
 	{
 		@Override
-		WeekdayNum parseValue(String value) throws InvalidRecurrenceRuleException
+		WeekdayNum parseValue(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
-			return WeekdayNum.valueOf(value, true);
+			return WeekdayNum.valueOf(value, tolerant);
 		}
 	}
 
@@ -1529,9 +1587,16 @@ public final class RecurrenceRule
 	private static class WeekdayConverter extends ValueConverter<Weekday>
 	{
 		@Override
-		public Weekday parse(String value)
+		public Weekday parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
-			return Weekday.valueOf(value);
+			try
+			{
+				return Weekday.valueOf(value);
+			}
+			catch (IllegalArgumentException e)
+			{
+				throw new InvalidRecurrenceRuleException("illegal weekday: " + value);
+			}
 		}
 	}
 
@@ -1543,9 +1608,16 @@ public final class RecurrenceRule
 	private static class IntConverter extends ValueConverter<Integer>
 	{
 		@Override
-		public Integer parse(String value)
+		public Integer parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
-			return Integer.parseInt(value);
+			try
+			{
+				return Integer.parseInt(value);
+			}
+			catch (NumberFormatException e)
+			{
+				throw new InvalidRecurrenceRuleException("illegal int value: " + value);
+			}
 		}
 	}
 
@@ -1557,7 +1629,7 @@ public final class RecurrenceRule
 	private static class FreqConverter extends ValueConverter<Freq>
 	{
 		@Override
-		public Freq parse(String value) throws InvalidRecurrenceRuleException
+		public Freq parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -1578,7 +1650,7 @@ public final class RecurrenceRule
 	private static class DateTimeConverter extends ValueConverter<Calendar>
 	{
 		@Override
-		public Calendar parse(String value) throws InvalidRecurrenceRuleException
+		public Calendar parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{

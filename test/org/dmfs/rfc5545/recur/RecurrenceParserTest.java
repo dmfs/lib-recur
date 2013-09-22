@@ -169,9 +169,10 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_LAX).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
 
 		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
-		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("")));
+		// mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("")));
 
-		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYMONHT=2").setException(new InvalidRecurrenceRuleException("unknown keyword")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYMONHT=2", RfcMode.RFC5545_STRICT)
+			.setException(new InvalidRecurrenceRuleException("unknown keyword")));
 
 		/**
 		 * Missing value for BYxxx rule.
@@ -237,8 +238,8 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC2445_LAX).setInvalidRules("BYDAY="));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC2445_LAX).setInvalidRules("BYDAY="));
 
-		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;COUNT=MO").setException(new InvalidRecurrenceRuleException("")));
-		// mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;INTERVAL=MO").setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;COUNT=MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;INTERVAL=MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 
 		/**
 		 * Test for other keywords.
@@ -298,7 +299,7 @@ public class RecurrenceParserTest
 			}
 			if (!caughtException && rule.exception != null)
 			{
-				fail("Expected exception: " + rule.exception);
+				fail("Expected exception: " + rule.exception + " for rule " + rule.rule);
 			}
 			caughtException = false;
 
