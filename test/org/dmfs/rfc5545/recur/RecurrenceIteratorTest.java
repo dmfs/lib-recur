@@ -166,69 +166,6 @@ public class RecurrenceIteratorTest
 
 
 	/**
-	 * FIXME: we need more test rules that have a fixed start date, otherwise almost no rule will be optimized
-	 * 
-	 * @throws InvalidRecurrenceRuleException
-	 */
-	@Test
-	public void testOptimize() throws InvalidRecurrenceRuleException
-	{
-		for (TestRule rule : mTestRules)
-		{
-			RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
-			RecurrenceRule r2 = new RecurrenceRule(rule.rule, rule.mode);
-			if (rule.start != null)
-			{
-				r1.setStart(rule.start);
-				r2.setStart(rule.start);
-			}
-			else if (!rule.floating)
-			{
-				r1.setStart(ABSOLUTE_TEST_START_DATE);
-				r2.setStart(ABSOLUTE_TEST_START_DATE);
-			}
-			else if (!rule.allday)
-			{
-				r1.setStart(FLOATING_TEST_START_DATE);
-				r2.setStart(FLOATING_TEST_START_DATE);
-			}
-			else
-			{
-				r1.setStart(ALLDAY_TEST_START_DATE);
-				r2.setStart(ALLDAY_TEST_START_DATE);
-			}
-			r2.optimize();
-
-			int count = 0;
-			RecurrenceIterator i1 = r1.iterator();
-			RecurrenceIterator i2 = r2.iterator();
-			while (i1.hasNext() && i2.hasNext())
-			{
-				Calendar c1 = i1.nextCalendar();
-				Calendar c2 = i2.nextCalendar();
-
-				// check that the instances always equal
-				String errMsg = "";
-				// errMsg = "instances " + c1 + " and " + c2 + " do not equal in rule " + rule.rule;
-				assertEquals(errMsg, c1, c2);
-
-				count++;
-
-				if (count == MAX_ITERATIONS)
-				{
-					break;
-				}
-			}
-
-			String errMsg = "";
-			// errMsg = "rule not properly optimized: " + rule.rule;
-			assertEquals(errMsg, i1.hasNext(), i2.hasNext());
-		}
-
-	}
-
-
-	/**
 	 * This test ensures that the rule is correctly evaluated when you move the start to a later instance. To do so it iterates over one rule and starts a new
 	 * iteration for every instance (using that instance as the start date). Then it compares the next instances of both iterations.
 	 * <p>
