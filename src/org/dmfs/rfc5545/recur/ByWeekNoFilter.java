@@ -129,7 +129,7 @@ final class ByWeekNoFilter extends ByFilter
 						// create a new instance and adjust day values
 						int offset = (dayOfWeek - firstDayOfWeek + 7) % 7;
 						set.add(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
-							minute, second, dayOfWeek));
+							minute, second));
 					}
 					else
 					{
@@ -140,7 +140,7 @@ final class ByWeekNoFilter extends ByFilter
 							// create a new instance and adjust day values
 							int offset = (dayOfWeek - firstDayOfWeek - 6) % 7;
 							set.add(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
-								minute, second, dayOfWeek));
+								minute, second));
 						}
 					}
 				}

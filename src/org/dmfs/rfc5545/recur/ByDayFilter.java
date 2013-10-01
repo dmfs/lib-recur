@@ -231,7 +231,7 @@ final class ByDayFilter extends ByFilter
 						}
 						mHelper.set(Calendar.WEEK_OF_YEAR, weekOfYear);
 						mHelper.set(Calendar.DAY_OF_WEEK, day.weekday.toCalendarDay());
-						set.add(Instance.makeFast(mHelper));
+						set.add(Instance.make(mHelper));
 					}
 					break;
 
@@ -249,14 +249,14 @@ final class ByDayFilter extends ByFilter
 						 * overlapping weeks
 						 */
 						{
-							set.add(Instance.makeFast(mHelper));
+							set.add(Instance.make(mHelper));
 						}
 						else if (mMonths == null && mHelper.get(Calendar.MONTH) == month)
 						/*
 						 * the rule is MONTHLY with BYWEEKNOfilter, so add only instances in the original month
 						 */
 						{
-							set.add(Instance.makeFast(mHelper));
+							set.add(Instance.make(mHelper));
 						}
 					}
 					break;

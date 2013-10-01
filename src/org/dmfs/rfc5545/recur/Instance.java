@@ -77,24 +77,6 @@ public final class Instance
 		int year = defaults.get(Calendar.YEAR);
 		int month = defaults.get(Calendar.MONTH);
 		int dayOfMonth = defaults.get(Calendar.DAY_OF_MONTH);
-		int dayOfWeek = defaults.get(Calendar.DAY_OF_WEEK);
-		int hour = defaults.get(Calendar.HOUR_OF_DAY);
-		int minute = defaults.get(Calendar.MINUTE);
-		int second = defaults.get(Calendar.SECOND);
-		return make(year, month, dayOfMonth, hour, minute, second, dayOfWeek);
-	}
-
-
-	/**
-	 * Like {@link #make(Calendar)}, but doesn't set the field DAY_OF_WEEK.
-	 * 
-	 * @param defaults
-	 */
-	public static long makeFast(Calendar defaults)
-	{
-		int year = defaults.get(Calendar.YEAR);
-		int month = defaults.get(Calendar.MONTH);
-		int dayOfMonth = defaults.get(Calendar.DAY_OF_MONTH);
 		int hour = defaults.get(Calendar.HOUR_OF_DAY);
 		int minute = defaults.get(Calendar.MINUTE);
 		int second = defaults.get(Calendar.SECOND);

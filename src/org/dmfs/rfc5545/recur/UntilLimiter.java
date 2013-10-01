@@ -49,7 +49,7 @@ final class UntilLimiter extends Limiter
 			// switch until to the time zone of start
 			until.setTimeZone(start.getTimeZone());
 		}
-		mUntil = Instance.makeFast(until);
+		mUntil = Instance.make(until);
 	}
 
 

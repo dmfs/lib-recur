@@ -23,20 +23,6 @@ public class InstanceTest
 
 
 	@Test
-	public void testMakeFastCalendar()
-	{
-		long i = Instance.makeFast(new Calendar(2000, 2, 20, 3, 45, 36));
-		assertEquals(2000, Instance.year(i));
-		assertEquals(2, Instance.month(i));
-		assertEquals(20, Instance.dayOfMonth(i));
-		assertEquals(3, Instance.hour(i));
-		assertEquals(45, Instance.minute(i));
-		assertEquals(36, Instance.second(i));
-		assertEquals(0, Instance.dayOfWeek(i));
-	}
-
-
-	@Test
 	public void testMakeIntIntIntIntIntIntInt()
 	{
 		long i = Instance.make(2000, 2, 20, 3, 45, 36, Calendar.MONDAY);

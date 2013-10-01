@@ -84,7 +84,7 @@ abstract class ByFilter extends RuleIterator
 	public ByFilter(RuleIterator previous, CalendarMetrics calendarTools, Calendar start, boolean expand)
 	{
 		super(previous);
-		mStart = Instance.makeFast(start);
+		mStart = Instance.make(start);
 		mExpand = expand;
 		mCalendarMetrics = calendarTools;
 	}
