@@ -93,7 +93,7 @@ public abstract class CalendarMetrics
 	 *            The year.
 	 * @param yearDay
 	 *            The day of the year. Must be valid value between 1 and the maximum number of days in that year.
-	 * @return in integer with the day of month in the lowest significant byte and the month in the second lowest significant byte.
+	 * @return an integer with the day of month in the lowest significant byte and the month in the second lowest significant byte.
 	 */
 	public abstract int getMonthAndDayOfYearDay(int year, int yearDay);
 

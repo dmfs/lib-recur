@@ -57,13 +57,6 @@ final class ByDayFilter extends ByFilter
 	private final int[] mPackedDays;
 
 	/**
-	 * A Helper for calendar calculations.
-	 * 
-	 * TODO: ditch this and use {@link CalendarMetrics} instead for all calculations.
-	 */
-	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
-
-	/**
 	 * The list of months if a BYMONTH part is specified in the rule. We need this to filter by month if the rule has a monthly and weekly scope.
 	 * 
 	 * TODO: replace by an array of ints
@@ -139,10 +132,6 @@ final class ByDayFilter extends ByFilter
 		}
 		mHasPositions = hasPositions;
 
-		// set up helper
-		mHelper.setMinimalDaysInFirstWeek(4);
-		mHelper.setFirstDayOfWeek(rule.getWeekStart().toCalendarDay());
-
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
 			// we have to filter by month
@@ -210,6 +199,7 @@ final class ByDayFilter extends ByFilter
 		int minute = Instance.minute(instance);
 		int second = Instance.second(instance);
 		int weekOfYear = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);
+
 		for (WeekdayNum day : mByDay)
 		{
 			switch (mScope)
@@ -217,21 +207,32 @@ final class ByDayFilter extends ByFilter
 				case WEEKLY:
 					if (day.pos == 0 || day.pos == 1) // ignore any positional days
 					{
-						mHelper.set(year, month, dayOfMonth, hour, minute, second);
+						int tempYear = year;
+						if (weekOfYear > 10 && month < 1)
+						{
+							// week is in previous ISO year
+							--tempYear;
+						}
+						else if (weekOfYear < 10 && month > 4)
+						{
+							// week is in next ISO year
+							++tempYear;
+						}
 
-						if (weekOfYear == 1 && month > 0)
+						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day.weekday.ordinal());
+
+						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
+
+						if (yearDay < 1)
 						{
-							// this day of calendar week 1 belongs to the previous year
-							mHelper.set(Calendar.YEAR, year + 1);
+							--tempYear;
 						}
-						else if (weekOfYear >= 10 && month == 0)
+						else if (yearDay > calendarMetrics.getDaysPerYear(tempYear))
 						{
-							// this day of the last calendar week belongs to the next year
-							mHelper.set(Calendar.YEAR, year - 1);
+							++tempYear;
 						}
-						mHelper.set(Calendar.WEEK_OF_YEAR, weekOfYear);
-						mHelper.set(Calendar.DAY_OF_WEEK, day.weekday.toCalendarDay());
-						set.add(Instance.make(mHelper));
+
+						set.add(Instance.make(tempYear, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 					}
 					break;
 
@@ -239,24 +240,36 @@ final class ByDayFilter extends ByFilter
 
 					if (day.pos == 0 || day.pos == 1) // ignore any positional days
 					{
-						mHelper.set(year, 1, 1, hour, minute, second);
-						mHelper.set(Calendar.WEEK_OF_YEAR, weekOfYear);
-						mHelper.set(Calendar.DAY_OF_WEEK, day.weekday.toCalendarDay());
-
-						if (mMonths != null && mMonths.contains(mHelper.get(Calendar.MONTH) + 1))
-						/*
-						 * the rule is WEEKLY with BYMONTH filter or MONTHLY or YEARLY with BYMONTH and BYWEEKNO filter, so filter by month because we may have
-						 * overlapping weeks
-						 */
+						int tempYear = year;
+						if (weekOfYear > 10 && month < 1)
 						{
-							set.add(Instance.make(mHelper));
+							// week is in previous ISO year
+							--tempYear;
 						}
-						else if (mMonths == null && mHelper.get(Calendar.MONTH) == month)
-						/*
-						 * the rule is MONTHLY with BYWEEKNOfilter, so add only instances in the original month
-						 */
+						else if (weekOfYear < 10 && month > 4)
 						{
-							set.add(Instance.make(mHelper));
+							// week is in next ISO year
+							++tempYear;
+						}
+
+						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day.weekday.ordinal());
+
+						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
+
+						if (yearDay < 1)
+						{
+							--tempYear;
+						}
+						else if (yearDay > calendarMetrics.getDaysPerYear(tempYear))
+						{
+							++tempYear;
+						}
+
+						int newMonth = CalendarMetrics.month(monthAndDay);
+
+						if (mMonths != null && mMonths.contains(newMonth + 1) || mMonths == null && newMonth == month)
+						{
+							set.add(Instance.make(tempYear, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}
 					}
 					break;
