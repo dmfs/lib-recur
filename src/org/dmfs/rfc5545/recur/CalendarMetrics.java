@@ -169,6 +169,24 @@ public abstract class CalendarMetrics
 
 
 	/**
+	 * Get the day of the year for the specified ISO week date, see <a href="http://en.wikipedia.org/wiki/ISO_week_date">ISO week date</a>
+	 * <p>
+	 * If the day belongs to the previous year a zero or negative value is returned. If the day belongs to the next year the result is larger than
+	 * {@link #getDaysPerYear(int)} for <code>year</code>.
+	 * </p>
+	 * 
+	 * @param year
+	 *            The year.
+	 * @param weekOfYear
+	 *            The ISO week of the year.
+	 * @param dayOfWeek
+	 *            The day of the week.
+	 * @return The day of year.
+	 */
+	public abstract int getYearDayOfIsoYear(int year, int weekOfYear, int dayOfWeek);
+
+
+	/**
 	 * Get the weekday of the first day (which is January the 1st in a Gregorian Calendar) in the given year.
 	 * 
 	 * @param year
@@ -188,4 +206,16 @@ public abstract class CalendarMetrics
 	 */
 	public abstract int getYearDayOfFirstWeekStart(int year);
 
+
+	/**
+	 * Get the day of year of the start of the given week in a year. Note this method returns values below 1 if the start of the week is in the previous year.
+	 * The result depends on the values of {@link #weekStart} and {@link #minDaysInFirstWeek}.
+	 * 
+	 * @param year
+	 *            The year.
+	 * @param week
+	 *            The week.
+	 * @return The day of year.
+	 */
+	public abstract int getYearDayOfWeekStart(int year, int week);
 }

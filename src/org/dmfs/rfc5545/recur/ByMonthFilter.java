@@ -44,16 +44,6 @@ final class ByMonthFilter extends ByFilter
 	 */
 	private final boolean mAllowOverlappingWeeks;
 
-	/**
-	 * The start of the week as defined by the rule.
-	 */
-	private final int mWeekStart;
-
-	/**
-	 * A helper for calendar calculations.
-	 */
-	private final Calendar mHelper;
-
 
 	public ByMonthFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
@@ -66,20 +56,6 @@ final class ByMonthFilter extends ByFilter
 		 * The day filters will remove the invalid instances later.
 		 */
 		mAllowOverlappingWeeks = rule.getFreq() == Freq.WEEKLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
-
-		if (mAllowOverlappingWeeks)
-		{
-			mWeekStart = rule.getWeekStart().toCalendarDay();
-
-			mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
-			mHelper.setMinimalDaysInFirstWeek(4);
-			mHelper.setFirstDayOfWeek(mWeekStart);
-		}
-		else
-		{
-			mWeekStart = 0;
-			mHelper = null;
-		}
 	}
 
 
@@ -99,25 +75,30 @@ final class ByMonthFilter extends ByFilter
 			}
 			int year = Instance.year(instance);
 			int dayOfMonth = Instance.dayOfMonth(instance);
-			int hour = Instance.hour(instance);
-			int minute = Instance.minute(instance);
-			int second = Instance.second(instance);
+			int weekOfYear = mCalendarMetrics.getWeekOfYear(year, month, dayOfMonth);
 
-			mHelper.set(year, month, dayOfMonth, hour, minute, second);
-			// force calculation of the WEEK_OF_YEAR and DAY_OF_WEEK fields.
-			mHelper.get(Calendar.WEEK_OF_YEAR);
+			// TODO: find a better way to determine the actual ISO year
+			if (weekOfYear > 10 && month < 1)
+			{
+				// week is in previous ISO year
+				--year;
+			}
+			else if (weekOfYear < 10 && month > 4)
+			{
+				// week is in next ISO year
+				++year;
+			}
 
-			/*
-			 * Check if the current week overlaps any of the months in mMonths, i.e. if the month of the end or the start of the week is in mMonths.
-			 */
-			mHelper.set(Calendar.DAY_OF_WEEK, mWeekStart); // set to first day of the week
-			if (StaticUtils.linearSearch(mMonths, mHelper.get(Calendar.MONTH) + 1) >= 0)
+			int yearDayOfWeekStart = mCalendarMetrics.getYearDayOfWeekStart(year, weekOfYear);
+
+			// check if the month of the week start is in mMonths
+			if (StaticUtils.linearSearch(mMonths, mCalendarMetrics.getMonthOfYearDay(year, yearDayOfWeekStart) + 1) >= 0)
 			{
 				return false;
 			}
 
-			mHelper.add(Calendar.DAY_OF_MONTH, 6); // set to last day of the week
-			return StaticUtils.linearSearch(mMonths, mHelper.get(Calendar.MONTH) + 1) < 0;
+			// check if the month of the week end is in mMonths
+			return StaticUtils.linearSearch(mMonths, mCalendarMetrics.getMonthOfYearDay(year, yearDayOfWeekStart + 6) + 1) < 0;
 		}
 	}
 

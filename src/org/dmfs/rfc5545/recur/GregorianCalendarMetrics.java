@@ -204,6 +204,20 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	@Override
 	public int getMonthOfYearDay(int year, int yearDay)
 	{
+		int yearDays;
+
+		while (yearDay < 1)
+		{
+			--year;
+			yearDay += getDaysPerYear(year);
+		}
+
+		while (yearDay > (yearDays = getDaysPerYear(year)))
+		{
+			++year;
+			yearDay -= yearDays;
+		}
+
 		int month = (yearDay >> 5) + 1; // get a good estimation for the first month to check
 		if (month < 12 && getYearDaysForMonth(year, month) < yearDay)
 		{
@@ -233,4 +247,17 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 		return monthAndDay(month, yearDay - getYearDaysForMonth(year, month));
 	}
 
+
+	@Override
+	public int getYearDayOfIsoYear(int year, int weekOfYear, int dayOfWeek)
+	{
+		return weekOfYear * 7 - 7 + (dayOfWeek - weekStart + 7) % 7 + getYearDayOfFirstWeekStart(year);
+	}
+
+
+	@Override
+	public int getYearDayOfWeekStart(int year, int week)
+	{
+		return getYearDayOfFirstWeekStart(year) + (week - 1) * 7;
+	}
 }
