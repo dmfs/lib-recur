@@ -46,7 +46,7 @@ public final class RecurrenceIterator
 	/**
 	 * A helper for date calculations.
 	 */
-	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
+	private final Calendar mHelper;
 
 
 	/**
@@ -61,7 +61,7 @@ public final class RecurrenceIterator
 	{
 		mRuleIterator = ruleIterator;
 		mStart = start.clone();
-
+		mHelper = start.clone();
 	}
 
 
