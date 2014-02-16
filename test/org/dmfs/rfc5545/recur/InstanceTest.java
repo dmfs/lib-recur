@@ -18,7 +18,6 @@ public class InstanceTest
 		assertEquals(3, Instance.hour(i));
 		assertEquals(45, Instance.minute(i));
 		assertEquals(36, Instance.second(i));
-		assertEquals(Calendar.MONDAY, Instance.dayOfWeek(i));
 	}
 
 
