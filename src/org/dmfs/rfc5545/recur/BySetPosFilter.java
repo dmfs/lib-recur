@@ -61,7 +61,7 @@ final class BySetPosFilter extends RuleIterator
 	{
 		super(previous);
 		mSetPositions = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSETPOS));
-		mStart = Instance.makeFast(start);
+		mStart = Instance.make(start);
 	}
 
 

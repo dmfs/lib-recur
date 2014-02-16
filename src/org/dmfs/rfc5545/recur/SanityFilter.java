@@ -78,7 +78,7 @@ final class SanityFilter extends RuleIterator
 	SanityFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
 		super(previous);
-		mStart = Instance.makeFast(start);
+		mStart = Instance.make(start);
 		mCalendarMetrics = calendarTools;
 		mFilterByStart = !rule.hasPart(Part.BYSETPOS);
 	}

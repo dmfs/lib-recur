@@ -939,6 +939,28 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
 			.setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
 
+		// each day between Jan 27th and Jan 31st that is in week 5: 5 + 5 + 5 + 0 + 2
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
+			.setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(17));
+
+		// every 1st -> 12 * 5 = 60 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTHDAY=1;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonthdays(1).setInstances(60));
+		// every 1st in May, July and December -> 3 * 5 = 15 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=5,7,12;BYMONTHDAY=1;UNTIL=20171231").setStart("20130501").setUntil("20171231").setMonths(5, 7, 12)
+			.setMonthdays(1).setInstances(15));
+		// every 31st -> 7 * 5 = 35 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTHDAY=31;UNTIL=20171231").setStart("20130131").setUntil("20171231").setMonthdays(31).setInstances(35));
+		// every 31st in May, July and December -> 3 * 5 = 15 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=5,7,12;BYMONTHDAY=31;UNTIL=20171231").setStart("20130531").setUntil("20171231").setMonths(5, 7, 12)
+			.setMonthdays(31).setInstances(15));
+
+		// every 2nd last day -> 12 * 5 = 60 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTHDAY=-2;UNTIL=20171231").setStart("20130130").setUntil("20171231").setMonthdays(27, 28, 29, 30)
+			.setInstances(5 * 12));
+		// every 2nd last day in May, July and December -> 3 * 5 = 15 instances
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=5,7,12;BYMONTHDAY=-2;UNTIL=20171231").setStart("20130530").setUntil("20171231").setMonths(5, 7, 12)
+			.setMonthdays(30).setInstances(15));
+
 		mTestRules.add(new TestRule("FREQ=HOURLY;INTERVAL=2;UNTIL=20131231T235959Z").setStart("20120101T000000Z").setUntil("20131231T235959Z")
 			.setInstances(Math.min(MAX_ITERATIONS, 731 * 12)));
 		mTestRules.add(new TestRule("FREQ=MINUTELY;INTERVAL=30;UNTIL=20120630T235959Z").setStart("20120101T000000Z").setUntil("20120630T235959Z")
