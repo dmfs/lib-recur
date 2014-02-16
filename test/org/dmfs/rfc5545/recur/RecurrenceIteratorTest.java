@@ -1022,11 +1022,16 @@ public class RecurrenceIteratorTest
 
 		// leap years
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=30000101;BYMONTH=2;BYMONTHDAY=29").setStart("20000101").setInstances(25 * 10 - 7 + 1));
-		/**
-		 * bysetpos
-		 */
+
+		// bysetpos
 		mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20121231;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1").setStart("20120101").setInstances(12 + 1)
 			.setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+
+		// Rules with invalid UNTIL dates parsed in lax modes, note that 20140701 is not a Monday, but is the first day of the recurring event
+		mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC5545_LAX).setStart("20140701T150000Z")
+			.setInstances(5).setWeekdays(Calendar.MONDAY, Calendar.TUESDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
+		mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC2445_LAX).setStart("20140701T150000Z")
+			.setInstances(5).setWeekdays(Calendar.MONDAY, Calendar.TUESDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
 
 		/**
 		 * Fixme: commented out until fixed. BY[HOUR,MINUTE,SECOND] aren't expanded correctly. (Compare github issue #7)

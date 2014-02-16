@@ -194,7 +194,7 @@ public class TestRule
 		if (count == -1 && until != null)
 		{
 			String errMsg = "";
-			// errMsg = "instance " + instance + " after " + until;
+			// errMsg = "instance " + instance + " after " + until + " in rule " + rule;
 			assertTrue(errMsg, !instance.after(until));
 		}
 	}

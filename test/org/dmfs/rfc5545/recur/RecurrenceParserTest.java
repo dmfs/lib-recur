@@ -242,6 +242,14 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;INTERVAL=MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 
 		/**
+		 * UNTIL value is unvalid, these are examples from the wild
+		 */
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC5545_STRICT)
+			.setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC2445_STRICT)
+			.setException(new InvalidRecurrenceRuleException("")));
+
+		/**
 		 * Test for other keywords.
 		 */
 		addUniqueKeyWordTests();

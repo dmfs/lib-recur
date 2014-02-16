@@ -12,6 +12,9 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 import org.junit.Test;
 
 
+/**
+ * Recurrence equivalence tests ensure that rules that describe the same set of instance also return the same results.
+ */
 public class RecurrenceEquivalenceTest
 {
 

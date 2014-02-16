@@ -95,6 +95,7 @@ public class InvalidRuleTest
 		TEST_RULES.add(new InvalidTestRule("FREQ=YEARLY;INTERVAL=0", "FREQ=YEARLY"));
 		TEST_RULES.add(new InvalidTestRule("FREQ=YEARLY;INTERVAL=-1", "FREQ=YEARLY"));
 		TEST_RULES.add(new InvalidTestRule("FREQ=DAILY;BYWEEKNO=1,5,8", "FREQ=YEARLY;BYWEEKNO=1,5,8"));
+		TEST_RULES.add(new InvalidTestRule("FREQ=MONTHLY;UNTIL=20120924T215959ZZ", "FREQ=MONTHLY;UNTIL=20120924T215959Z"));
 	}
 
 	private static class InvalidTestRule

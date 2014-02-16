@@ -1164,7 +1164,23 @@ public final class RecurrenceRule
 	 */
 	public void setWeekStart(Weekday wkst)
 	{
-		if (wkst == Weekday.MO)
+		setWeekStart(wkst, false);
+	}
+
+
+	/**
+	 * Set the start of the week. If the start is set to {@link Weekday#MO} the WKST part is effectively removed (unless <code>keepWkStMo == true</code>), since
+	 * that's the default value. This value is important for rules having a BYWEEKNO or BYDAY part.
+	 * 
+	 * @param wkst
+	 *            The start of the week to use when calculating the instances.
+	 * @param keepWkStMo
+	 *            set to <code>true</code> to keep the WKST field if the value is {@link Weekday#MO}. Since Monday is the default adding it is not necessary,
+	 *            but some implementations might be broken and use a different weekstart if it's not explicitly specified.
+	 */
+	public void setWeekStart(Weekday wkst, boolean keepWkStMo)
+	{
+		if (wkst == Weekday.MO && !keepWkStMo)
 		{
 			// Monday is the default, so just remove the part
 			mParts.remove(Part.WKST);
@@ -1576,6 +1592,18 @@ public final class RecurrenceRule
 			}
 			catch (Exception e)
 			{
+				// some broken clients created UNTIL dates that end with "ZZ" - check that in tolerant mode
+				if (tolerant && value != null && value.endsWith("ZZ"))
+				{
+					try
+					{
+						return Calendar.parse(value.substring(0, value.length() - 1));
+					}
+					catch (Exception e2)
+					{
+						// just fall through
+					}
+				}
 				throw new InvalidRecurrenceRuleException("Invalid UNTIL date: " + value, e);
 			}
 		}
