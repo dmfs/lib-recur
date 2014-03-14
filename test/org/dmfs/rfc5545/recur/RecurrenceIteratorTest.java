@@ -290,7 +290,9 @@ public class RecurrenceIteratorTest
 				System.out.println("z " + lastInstance);
 
 				// first instance of r2 should be lastInstance
-				assertEquals("error on first instance of rule " + rule.rule + " after " + count + " iterations ", lastInstance, i2.nextCalendar());
+				String error1 = "";
+				// error1 = "error on first instance of rule " + rule.rule + " after " + count + " iterations ";
+				assertEquals(error1, lastInstance, i2.nextCalendar());
 
 				lastInstance = it.nextCalendar();
 				System.out.println("x " + lastInstance);
@@ -300,7 +302,9 @@ public class RecurrenceIteratorTest
 				System.out.println("n " + lastInstance + "   " + upcoming2);
 
 				// check that the second instance of i2 equals the current instance of i
-				assertEquals("error on rule " + rule.rule + " after " + count + " iterations ", lastInstance, upcoming2);
+				String error2 = "";
+				// error2 = "error on rule " + rule.rule + " after " + count + " iterations ";
+				assertEquals(error2, lastInstance, upcoming2);
 			}
 		}
 		catch (ArrayIndexOutOfBoundsException e)
