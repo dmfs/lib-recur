@@ -17,9 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.List;
-
-import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
@@ -33,13 +30,13 @@ class BySecondFilter extends ByFilter
 	/**
 	 * The list of minutes from the recurrence rule.
 	 */
-	private final List<Integer> mSeconds;
+	private final int[] mSeconds;
 
 
-	public BySecondFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public BySecondFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
 	{
-		super(previous, calendarTools, start, rule.getFreq() != Freq.SECONDLY);
-		mSeconds = rule.getByPart(Part.BYSECOND);
+		super(calendarTools);
+		mSeconds = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSECOND));
 	}
 
 
@@ -47,17 +44,7 @@ class BySecondFilter extends ByFilter
 	boolean filter(long instance)
 	{
 		// filter all minutes not in the list
-		return !mSeconds.contains(Instance.second(instance));
+		return StaticUtils.linearSearch(mSeconds, Instance.second(instance)) < 0;
 	}
 
-
-	@Override
-	void expand(LongArray instances, long instance, long start)
-	{
-		// add a new instance for every second in the list
-		for (int second : mSeconds)
-		{
-			instances.add(Instance.setSecond(instance, second));
-		}
-	}
 }

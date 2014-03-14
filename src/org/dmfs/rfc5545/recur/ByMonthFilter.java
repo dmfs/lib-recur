@@ -22,19 +22,18 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits or expands recurrence rules by month. Months are expanded for yearly rules only.
+ * A filter that limits recurrence rules by month.
  * <p>
  * If the rule has a weekly scope (i.e. when FREQ=WEEKLY and any by-day filter is present), this filter allows weeks that overlap the month to pass. This
  * ensures the by day filters can expand all relevant instances. The expanding by-day filter will take care of filtering days not belonging to this month.
  * </p>
- * 
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
 final class ByMonthFilter extends ByFilter
 {
 	/**
-	 * The list of months to let pass or to expand.
+	 * The list of months to let pass.
 	 */
 	private final int[] mMonths;
 
@@ -45,9 +44,9 @@ final class ByMonthFilter extends ByFilter
 	private final boolean mAllowOverlappingWeeks;
 
 
-	public ByMonthFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByMonthFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
 	{
-		super(previous, calendarTools, start, rule.getFreq() == Freq.YEARLY);
+		super(calendarMetrics);
 		mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
 
 		/*
@@ -99,23 +98,6 @@ final class ByMonthFilter extends ByFilter
 
 			// check if the month of the week end is in mMonths
 			return StaticUtils.linearSearch(mMonths, mCalendarMetrics.getMonthOfYearDay(year, yearDayOfWeekStart + 6) + 1) < 0;
-		}
-	}
-
-
-	@Override
-	void expand(LongArray set, long instance, long start)
-	{
-		for (int month : mMonths)
-		{
-			long newInstance = Instance.setMonth(instance, month - 1);
-			if (newInstance < start)
-			{
-				// instance is before start, nothing to do here
-				continue;
-			}
-
-			set.add(newInstance);
 		}
 	}
 }

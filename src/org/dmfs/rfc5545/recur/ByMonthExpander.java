@@ -21,30 +21,38 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limitsrecurrence rules by hour.
+ * A filter that expands recurrence rules by month. Months are expanded for yearly rules only.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class ByHourFilter extends ByFilter
+final class ByMonthExpander extends ByExpander
 {
 	/**
-	 * The hour list from the rule.
+	 * The list of months to let pass or to expand.
 	 */
-	private final int[] mHours;
+	private final int[] mMonths;
 
 
-	public ByHourFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
+	public ByMonthExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(calendarTools);
-		mHours = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYHOUR));
+		super(previous, calendarTools, start);
+		mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
 	}
 
 
 	@Override
-	boolean filter(long instance)
+	void expand(long instance, long start)
 	{
-		// check that the hour of the instance is in mHours
-		return StaticUtils.linearSearch(mHours, Instance.hour(instance)) < 0;
-	}
+		for (int month : mMonths)
+		{
+			long newInstance = Instance.setMonth(instance, month - 1);
+			if (newInstance < start)
+			{
+				// instance is before start, nothing to do here
+				continue;
+			}
 
+			addInstance(newInstance);
+		}
+	}
 }

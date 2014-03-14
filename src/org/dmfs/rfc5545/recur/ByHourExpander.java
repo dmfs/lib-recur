@@ -17,29 +17,36 @@
 
 package org.dmfs.rfc5545.recur;
 
+import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
+
+
 /**
- * An abstract by-part filter.
+ * A filter that limits or expands recurrence rules by hour.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-abstract class ByFilter
+final class ByHourExpander extends ByExpander
 {
+	/**
+	 * The hour list from the rule.
+	 */
+	private final int[] mHours;
 
-	final CalendarMetrics mCalendarMetrics;
 
-
-	public ByFilter(CalendarMetrics calendarMetrics)
+	public ByHourExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		mCalendarMetrics = calendarMetrics;
+		super(previous, calendarTools, start);
+		mHours = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYHOUR));
 	}
 
 
-	/**
-	 * Filter an instance. This method determines if a given {@link Instance} should be removed from the result set or not.
-	 * 
-	 * @param instance
-	 *            The instance to filter.
-	 * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
-	 */
-	abstract boolean filter(long instance);
+	@Override
+	void expand(long instance, long start)
+	{
+		// add a new instance for every hour in mHours
+		for (int hour : mHours)
+		{
+			addInstance(Instance.setHour(instance, hour));
+		}
+	}
 }

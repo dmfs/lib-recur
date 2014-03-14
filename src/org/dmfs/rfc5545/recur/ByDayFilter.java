@@ -19,6 +19,7 @@ package org.dmfs.rfc5545.recur;
 
 import java.util.List;
 
+import org.dmfs.rfc5545.recur.ByExpander.Scope;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
@@ -55,13 +56,6 @@ final class ByDayFilter extends ByFilter
 	 * An array of the weekdays and their positions in a packed form that allows us to find them with a simple integer comparison
 	 */
 	private final int[] mPackedDays;
-
-	/**
-	 * The list of months if a BYMONTH part is specified in the rule. We need this to filter by month if the rule has a monthly and weekly scope.
-	 * 
-	 * TODO: replace by an array of ints
-	 */
-	private final List<Integer> mMonths;
 
 
 	/**
@@ -107,10 +101,9 @@ final class ByDayFilter extends ByFilter
 	}
 
 
-	public ByDayFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
 	{
-		super(previous, calendarTools, start, ((rule.getFreq() == Freq.YEARLY || rule.getFreq() == Freq.MONTHLY) && !rule.hasPart(Part.BYYEARDAY) && !rule
-			.hasPart(Part.BYMONTHDAY)) || rule.getFreq() == Freq.WEEKLY);
+		super(calendarMetrics);
 		mByDay = rule.getByDayPart();
 
 		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
@@ -131,16 +124,6 @@ final class ByDayFilter extends ByFilter
 
 		}
 		mHasPositions = hasPositions;
-
-		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
-		{
-			// we have to filter by month
-			mMonths = rule.getByPart(Part.BYMONTH);
-		}
-		else
-		{
-			mMonths = null;
-		}
 	}
 
 
@@ -187,171 +170,4 @@ final class ByDayFilter extends ByFilter
 		}
 	}
 
-
-	@Override
-	void expand(LongArray set, long instance, long start)
-	{
-		CalendarMetrics calendarMetrics = mCalendarMetrics;
-		int year = Instance.year(instance);
-		int month = Instance.month(instance);
-		int dayOfMonth = Instance.dayOfMonth(instance);
-		int hour = Instance.hour(instance);
-		int minute = Instance.minute(instance);
-		int second = Instance.second(instance);
-		int weekOfYear = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);
-
-		for (WeekdayNum day : mByDay)
-		{
-			switch (mScope)
-			{
-				case WEEKLY:
-					if (day.pos == 0 || day.pos == 1) // ignore any positional days
-					{
-						int tempYear = year;
-						if (weekOfYear > 10 && month < 1)
-						{
-							// week is in previous ISO year
-							--tempYear;
-						}
-						else if (weekOfYear < 10 && month > 4)
-						{
-							// week is in next ISO year
-							++tempYear;
-						}
-
-						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day.weekday.ordinal());
-
-						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
-
-						if (yearDay < 1)
-						{
-							--tempYear;
-						}
-						else if (yearDay > calendarMetrics.getDaysPerYear(tempYear))
-						{
-							++tempYear;
-						}
-
-						set.add(Instance.make(tempYear, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
-					}
-					break;
-
-				case WEEKLY_AND_MONTHLY: // the rule is either MONTHLY with BYWEEKNO expansion, WEEKLY with BYMONTH filter or YEARLY with BYMONTH and BYWEEKNO
-
-					if (day.pos == 0 || day.pos == 1) // ignore any positional days
-					{
-						int tempYear = year;
-						if (weekOfYear > 10 && month < 1)
-						{
-							// week is in previous ISO year
-							--tempYear;
-						}
-						else if (weekOfYear < 10 && month > 4)
-						{
-							// week is in next ISO year
-							++tempYear;
-						}
-
-						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day.weekday.ordinal());
-
-						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
-
-						if (yearDay < 1)
-						{
-							--tempYear;
-						}
-						else if (yearDay > calendarMetrics.getDaysPerYear(tempYear))
-						{
-							++tempYear;
-						}
-
-						int newMonth = CalendarMetrics.month(monthAndDay);
-
-						if (mMonths != null && mMonths.contains(newMonth + 1) || mMonths == null && newMonth == month)
-						{
-							set.add(Instance.make(tempYear, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
-						}
-					}
-					break;
-
-				case MONTHLY: // the rule is MONTHLY or there is a BYMONTH filter present
-
-					// get the first week day and the number of days of this month
-					int weekDayOfFirstInMonth = calendarMetrics.getDayOfWeek(year, month, 1) + 1;
-					int monthDays = calendarMetrics.getDaysPerMonth(year, month);
-
-					// get the first instance of the weekday in this month
-					int firstDay = (day.weekday.toCalendarDay() - weekDayOfFirstInMonth + 7) % 7 + 1;
-
-					if (day.pos == 0)
-					{
-						// add all instances of this weekday of this month
-						for (int dayOfMonthx = firstDay; dayOfMonthx <= monthDays; dayOfMonthx += 7)
-						{
-							set.add(Instance.setDayOfMonth(instance, dayOfMonthx));
-						}
-					}
-					else
-					{
-						int maxDays = 1 + (monthDays - firstDay) / 7;
-						// add just one position
-
-						if (day.pos > 0 && day.pos <= maxDays || day.pos < 0 && day.pos + maxDays + 1 > 0)
-						{
-							set.add(Instance.setDayOfMonth(instance, firstDay + (day.pos > 0 ? day.pos - 1 : day.pos + maxDays) * 7));
-						}
-					}
-					break;
-
-				case YEARLY: // no other BY* filters are present
-
-					// calculate the first occurrence of this weekday in this year
-					int firstWeekdayOfYear = (day.weekday.ordinal() - calendarMetrics.getWeekDayOfFirstYearDay(year) + 7) % 7 + 1;
-
-					int yearDays = calendarMetrics.getDaysPerYear(year);
-
-					if (day.pos == 0)
-					{
-						// add an instance for every occurrence if this week day.
-						for (int dayOfYear = firstWeekdayOfYear; dayOfYear <= yearDays; dayOfYear += 7)
-						{
-							int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-							set.add(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
-						}
-					}
-					else
-					{
-						if (day.pos > 0)
-						{
-							int dayOfYear = firstWeekdayOfYear + (day.pos - 1) * 7;
-							if (dayOfYear <= yearDays)
-							{
-								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								set.add(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
-							}
-						}
-						else
-						{
-							// calculate the last occurrence of this weekday in this year
-							int lastWeekdayOfYear = firstWeekdayOfYear + yearDays - yearDays % 7;
-							if (lastWeekdayOfYear > yearDays)
-							{
-								// we have ended up in the next year, go back one week
-								lastWeekdayOfYear -= 7;
-							}
-
-							// calculate the actual instance
-							int dayOfYear = lastWeekdayOfYear + (day.pos + 1) * 7;
-							if (dayOfYear > 0)
-							{
-								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								set.add(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
-							}
-						}
-					}
-					break;
-			}
-		}
-		set.sort();
-	}
 }

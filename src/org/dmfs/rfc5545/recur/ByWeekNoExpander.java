@@ -29,7 +29,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class ByWeekNoFilter extends ByFilter
+final class ByWeekNoExpander extends ByExpander
 {
 	/**
 	 * The week number to let pass or the expand.
@@ -54,9 +54,9 @@ final class ByWeekNoFilter extends ByFilter
 	private final boolean mAllowOverlappingWeeks;
 
 
-	public ByWeekNoFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByWeekNoExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
-		super(previous, calendarTools, start, true /* always expand */);
+		super(previous, calendarTools, start);
 
 		mByWeekNo = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYWEEKNO));
 
@@ -72,14 +72,7 @@ final class ByWeekNoFilter extends ByFilter
 
 
 	@Override
-	boolean filter(long instance)
-	{
-		throw new UnsupportedOperationException("ByWeekNo doesn't support filtering, since it's allowed in YEARLY rules only.");
-	}
-
-
-	@Override
-	void expand(LongArray set, long instance, long notBefore)
+	void expand(long instance, long notBefore)
 	{
 		int year = Instance.year(instance);
 		int month = Instance.month(instance);
@@ -116,7 +109,7 @@ final class ByWeekNoFilter extends ByFilter
 				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
 				if (mHelper.get(Calendar.MONTH) == month)
 				{
-					set.add(Instance.make(mHelper));
+					addInstance(Instance.make(mHelper));
 				}
 				else
 				{
@@ -128,7 +121,7 @@ final class ByWeekNoFilter extends ByFilter
 					{
 						// create a new instance and adjust day values
 						int offset = (dayOfWeek - firstDayOfWeek + 7) % 7;
-						set.add(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
+						addInstance(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
 							minute, second));
 					}
 					else
@@ -139,8 +132,8 @@ final class ByWeekNoFilter extends ByFilter
 						{
 							// create a new instance and adjust day values
 							int offset = (dayOfWeek - firstDayOfWeek - 6) % 7;
-							set.add(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
-								minute, second));
+							addInstance(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset,
+								hour, minute, second));
 						}
 					}
 				}
@@ -155,7 +148,7 @@ final class ByWeekNoFilter extends ByFilter
 				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
 				if (mHelper.get(Calendar.MONTH) == month)
 				{
-					set.add(Instance.make(mHelper));
+					addInstance(Instance.make(mHelper));
 				}
 			}
 			else
@@ -164,7 +157,7 @@ final class ByWeekNoFilter extends ByFilter
 				mHelper.set(year, month, dayOfMonth, hour, minute, second);
 				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
 				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-				set.add(Instance.make(mHelper));
+				addInstance(Instance.make(mHelper));
 			}
 		}
 	}

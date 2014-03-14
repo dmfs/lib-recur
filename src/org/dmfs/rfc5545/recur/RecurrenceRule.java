@@ -149,9 +149,24 @@ public final class RecurrenceRule
 		 */
 		FREQ(new FreqConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
 			{
-				return new FreqIterator(rule, calendarTools, start);
+				return new FreqIterator(rule, calendarMetrics, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("FREQ doesn't have a filter.");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// the frequency generator always expands
+				return true;
 			}
 		},
 
@@ -160,19 +175,48 @@ public final class RecurrenceRule
 		 */
 		INTERVAL(new IntConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
 			{
 				throw new UnsupportedOperationException("INTERVAL doesn't have an iterator.");
 			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("INTERVAL doesn't have a filter.");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("INTERVAL doesn't support expansion nor filtering");
+			}
 		},
+
 		/**
 		 * The start day of a week. The value must be a {@link Weekday}. This is relevant if any of {@link Part#BYDAY} or {@link Part#BYWEEKNO} are present.
 		 */
 		WKST(new WeekdayConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
 			{
 				throw new UnsupportedOperationException("WKST doesn't have an iterator.");
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("WKST doesn't have a filter.");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("WKST doesn't support expansion nor filtering.");
 			}
 		},
 
@@ -181,9 +225,23 @@ public final class RecurrenceRule
 		 */
 		BYMONTH(new IntListConverter(1, 12)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
 			{
-				return new ByMonthFilter(rule, previous, calendarTools, start);
+				return new ByMonthExpander(rule, previous, calendarMetrics, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new ByMonthFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				return rule.getFreq() == Freq.YEARLY;
 			}
 		},
 
@@ -192,9 +250,25 @@ public final class RecurrenceRule
 		 */
 		BYWEEKNO(new IntListConverter(-53, 53).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByWeekNoFilter(rule, previous, calendarTools, start);
+				return new ByWeekNoExpander(rule, previous, calendarTools, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				// no filter defined
+				return null;
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// byweekno always expands
+				return true;
 			}
 		},
 
@@ -203,9 +277,25 @@ public final class RecurrenceRule
 		 */
 		BYYEARDAY(new IntListConverter(-366, 366).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
 			{
-				return new ByYearDayFilter(rule, previous, calendarTools, start);
+				return new ByYearDayExpander(rule, previous, calendarMetrics, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new ByYearDayFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// expand in a yearly, monthly or weekly scope
+				Freq freq = rule.getFreq();
+				return freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY;
 			}
 		},
 
@@ -214,9 +304,25 @@ public final class RecurrenceRule
 		 */
 		BYMONTHDAY(new IntListConverter(-31, 31).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByMonthDayFilter(rule, previous, calendarTools, start);
+				return new ByMonthDayExpander(rule, previous, calendarTools, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new ByMonthDayFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// expand in a yearly, monthly or weekly scope if byyearday is not present
+				Freq freq = rule.getFreq();
+				return (freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY /* for RFC 2445 */) && !(rule.hasPart(Part.BYYEARDAY));
 			}
 		},
 
@@ -225,9 +331,26 @@ public final class RecurrenceRule
 		 */
 		BYDAY(new WeekdayListConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByDayFilter(rule, previous, calendarTools, start);
+				return new ByDayExpander(rule, previous, calendarTools, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new ByDayFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// expands in a yearly or monthly scope if neither byyearday nor bymonthday are present and in a weekly scope.
+				Freq freq = rule.getFreq();
+				return ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && !rule.hasPart(Part.BYYEARDAY) && !rule.hasPart(Part.BYMONTHDAY))
+					|| freq == Freq.WEEKLY;
 			}
 		},
 
@@ -236,9 +359,25 @@ public final class RecurrenceRule
 		 */
 		BYHOUR(new IntListConverter(0, 23)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByHourFilter(rule, previous, calendarTools, start);
+				return new ByHourExpander(rule, previous, calendarTools, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new ByHourFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// expands whenever the scope is larger than an hour
+				Freq freq = rule.getFreq();
+				return freq != Freq.SECONDLY && freq != Freq.MINUTELY && freq != Freq.HOURLY;
 			}
 		},
 		/**
@@ -246,9 +385,25 @@ public final class RecurrenceRule
 		 */
 		BYMINUTE(new IntListConverter(0, 59)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new ByMinuteFilter(rule, previous, calendarTools, start);
+				return new ByMinuteExpander(rule, previous, calendarTools, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new ByMinuteFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// expands whenever the scope is larger than a minute
+				Freq freq = rule.getFreq();
+				return freq != Freq.SECONDLY && freq != Freq.MINUTELY;
 			}
 		},
 		/**
@@ -256,9 +411,24 @@ public final class RecurrenceRule
 		 */
 		BYSECOND(new IntListConverter(0, 60)) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
-				return new BySecondFilter(rule, previous, calendarTools, start);
+				return new BySecondExpander(rule, previous, calendarTools, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				return new BySecondFilter(rule, calendarMetrics);
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				// expands whenever the scope is larger than a second
+				return rule.getFreq() != Freq.SECONDLY;
 			}
 		},
 
@@ -267,9 +437,23 @@ public final class RecurrenceRule
 		 */
 		BYSETPOS(new IntListConverter(-366, 366).noZero()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				return new BySetPosFilter(rule, previous, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("BYSETPOS doesn't support  filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("BYSETPOS doesn't support expansion nor filtering");
 			}
 		},
 
@@ -279,10 +463,25 @@ public final class RecurrenceRule
 		 */
 		UNTIL(new DateTimeConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				return new UntilLimiter(rule, previous, start);
 			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("UNTIL doesn't support  filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("UNTIL doesn't support expansion nor filtering");
+			}
+
 		},
 
 		/**
@@ -291,10 +490,25 @@ public final class RecurrenceRule
 		 */
 		COUNT(new IntConverter()) {
 			@Override
-			RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 			{
 				return new CountLimiter(rule, previous);
 			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("COUNT doesn't support  filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("COUNT doesn't support expansion nor filtering");
+			}
+
 		};
 
 		/**
@@ -331,8 +545,35 @@ public final class RecurrenceRule
 		 * @throws UnsupportedOperationException
 		 *             If this part does not have a {@link RuleIterator}.
 		 */
-		abstract RuleIterator getRuleIterator(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+		abstract RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
 			throws UnsupportedOperationException;
+
+
+		/**
+		 * Return a {@link ByFilter}.
+		 * <p>
+		 * <strong>Note:</strong> {@link #FREQ}, {@link #INTERVAL} and {@link #WKST} don't support this method and throw an
+		 * {@link UnsupportedOperationException}.
+		 * </p>
+		 * 
+		 * @param rule
+		 *            The rule to iterate.
+		 * @return The {@link RuleIterator} for this part.
+		 * 
+		 * @throws UnsupportedOperationException
+		 *             If this part does not have a {@link ByFilter}.
+		 */
+		abstract ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException;
+
+
+		/**
+		 * Returns whether this part expands intsances or not.
+		 * 
+		 * @param rule
+		 *            The rule this part belongs to.
+		 * @return <code>true</code> if this rule expans instances, <code>false</code> if it filters instances for the givem rule.
+		 */
+		abstract boolean expands(RecurrenceRule rule);
 	}
 
 	/**
@@ -1242,7 +1483,7 @@ public final class RecurrenceRule
 			}
 		}
 
-		CalendarMetrics calendarTools = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
+		CalendarMetrics calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
 		boolean sanityFilterAdded = false;
 		RuleIterator iterator = null;
 
@@ -1255,14 +1496,22 @@ public final class RecurrenceRule
 				if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
 				{
 					// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
-					iterator = new SanityFilter(this, iterator, calendarTools, start);
+					iterator = new SanityFilter(this, iterator, calendarMetrics, start);
+					iterator = p.getExpander(this, iterator, calendarMetrics, start);
 					sanityFilterAdded = true;
 				}
-				iterator = p.getRuleIterator(this, iterator, calendarTools, start);
+				else if (!p.expands(this))
+				{
+					((ByExpander) iterator).addFilter(p.getFilter(this, calendarMetrics));
+				}
+				else
+				{
+					iterator = p.getExpander(this, iterator, calendarMetrics, start);
+				}
 			}
 		}
 		// add a SanityFilter if not already done.
-		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarTools, start), start);
+		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarMetrics, start), start);
 	}
 
 
