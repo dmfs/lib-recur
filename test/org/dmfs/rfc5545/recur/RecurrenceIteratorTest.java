@@ -317,7 +317,7 @@ public class RecurrenceIteratorTest
 	{
 
 		/*
-		 * Add a number of recurrence rules takes from the internet.
+		 * Add a number of recurrence rules taken from the internet.
 		 */
 
 		/* rules limited by COUNT */
