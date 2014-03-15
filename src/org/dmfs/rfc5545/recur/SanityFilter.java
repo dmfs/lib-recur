@@ -63,7 +63,7 @@ final class SanityFilter extends RuleIterator
 	/**
 	 * Whether we have to filter the results by start date (i.e. remove all instances preceding the start date).
 	 */
-	private final boolean mFilterByStart;
+	private final boolean mFilterStart;
 
 
 	/**
@@ -75,29 +75,31 @@ final class SanityFilter extends RuleIterator
 	 * @param start
 	 *            The earliest date to let pass.
 	 */
-	SanityFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	SanityFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous);
-		mStart = Instance.make(start);
+		mStart = start;
 		mCalendarMetrics = calendarTools;
-		mFilterByStart = !rule.hasPart(Part.BYSETPOS);
+		mFilterStart = !rule.hasPart(Part.BYSETPOS);
 	}
 
 
 	@Override
 	public long next()
 	{
-		if (mFirst && mFilterByStart)
+		long start = mStart;
+		CalendarMetrics calendarMetrics = mCalendarMetrics;
+
+		if (mFirst && mFilterStart)
 		{
 			// mStart is always the first result
 			mFirst = false;
-			return mStart;
+			return start;
 		}
 		else
 		{
 			int counter = -1;
 			long next;
-			// skip all instances that precede start
 			long simpleInstance = 0;
 			do
 			{
@@ -107,14 +109,9 @@ final class SanityFilter extends RuleIterator
 				}
 
 				next = mPrevious.next();
-				if (next == Long.MIN_VALUE)
-				{
-					continue;
-				}
-
 				simpleInstance = Instance.maskWeekday(next);
 
-			} while (mFilterByStart && mStart >= simpleInstance || !Instance.validate(simpleInstance, mCalendarMetrics));
+			} while (start >= simpleInstance && mFilterStart || !Instance.validate(simpleInstance, calendarMetrics));
 
 			return next;
 		}
@@ -125,13 +122,15 @@ final class SanityFilter extends RuleIterator
 	LongArray nextSet()
 	{
 		LongArray resultSet = mResultSet;
+		long start = mStart;
+		CalendarMetrics calendarMetrics = mCalendarMetrics;
 
 		resultSet.clear();
-		if (mFirst && mFilterByStart)
+		if (mFirst && mFilterStart)
 		{
 			// mStart is always the first result
 			mFirst = false;
-			resultSet.add(mStart);
+			resultSet.add(start);
 		}
 
 		int counter = 0;
@@ -151,7 +150,7 @@ final class SanityFilter extends RuleIterator
 
 				simpleInstance = Instance.maskWeekday(next);
 
-				if ((!mFilterByStart || mStart < simpleInstance) && Instance.validate(simpleInstance, mCalendarMetrics))
+				if ((start < simpleInstance || !mFilterStart) && Instance.validate(simpleInstance, calendarMetrics))
 				{
 					resultSet.add(next);
 				}

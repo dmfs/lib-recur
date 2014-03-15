@@ -141,7 +141,7 @@ public class RecurrenceEquivalenceTest
 			"FREQ=DAILY;BYMONTH=12;BYMONTHDAY=1")));
 
 		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12"), new TestRule(
-			"FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=27")).setStart("20100327"));
+			"FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=27"), new TestRule("FREQ=DAILY;BYMONTH=12;BYMONTHDAY=27")).setStart("20100327"));
 
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=1"), new TestRule("FREQ=YEARLY;BYMONTH=2")));
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=3"), new TestRule("FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=3")).setStart("20100505"));

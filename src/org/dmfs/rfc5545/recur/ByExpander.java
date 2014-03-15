@@ -54,6 +54,9 @@ abstract class ByExpander extends RuleIterator
 	 */
 	private final LongArray mResultSet = new LongArray();
 
+	/**
+	 * The {@link CalendarMetrics} to use.
+	 */
 	final CalendarMetrics mCalendarMetrics;
 
 	/**
@@ -61,8 +64,14 @@ abstract class ByExpander extends RuleIterator
 	 */
 	private final ByFilter[] mFilters = new ByFilter[8];
 
+	/**
+	 * The number of {@link ByFilter}s in {@link #mFilters}.
+	 */
 	int mFilterCount = 0;
 
+	/**
+	 * Indicates that we have to sort the result.
+	 */
 	private boolean mNeedsSorting = false;
 
 
@@ -75,14 +84,20 @@ abstract class ByExpander extends RuleIterator
 	 * @param start
 	 *            The first instance.
 	 */
-	public ByExpander(RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByExpander(RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous);
-		mStart = Instance.make(start);
+		mStart = start;
 		mCalendarMetrics = calendarTools;
 	}
 
 
+	/**
+	 * Set whether the resulting set needs sorting.
+	 * 
+	 * @param needsSorting
+	 *            <code>true</code> if the the set needs to be sorted, <code>false</code>otherwise.
+	 */
 	void setNeedsSorting(boolean needsSorting)
 	{
 		mNeedsSorting = needsSorting;
@@ -133,12 +148,24 @@ abstract class ByExpander extends RuleIterator
 	}
 
 
+	/**
+	 * Add a filter to this expander. A filter is applied before an instance is added to the resulting set.
+	 * 
+	 * @param filter
+	 *            The {@link ByFilter} to add.
+	 */
 	final void addFilter(ByFilter filter)
 	{
 		mFilters[mFilterCount++] = filter;
 	}
 
 
+	/**
+	 * Add an instance to the result set. The instance is not added if it's filtered.
+	 * 
+	 * @param instance
+	 *            The instance to add.
+	 */
 	final void addInstance(long instance)
 	{
 		if (mFilterCount == 0 || !filter(instance))
@@ -149,8 +176,7 @@ abstract class ByExpander extends RuleIterator
 
 
 	/**
-	 * Filter an instance. This method determines if a given {@link Instance} should be removed from the result set or not. Make sure you call it for every
-	 * instance in {@link #expand(LongArray, long, long)}
+	 * Filter an instance. This method determines if a given {@link Instance} should be removed from the result set or not.
 	 * 
 	 * @param instance
 	 *            The instance to filter.

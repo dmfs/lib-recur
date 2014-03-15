@@ -33,7 +33,7 @@ final class ByMinuteExpander extends ByExpander
 	private final int[] mMinutes;
 
 
-	public ByMinuteExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByMinuteExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
 		mMinutes = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMINUTE));

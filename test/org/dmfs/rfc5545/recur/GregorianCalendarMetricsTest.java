@@ -436,8 +436,8 @@ public class GregorianCalendarMetricsTest
 						testCal.set(year, 0, 1);
 						testCal.set(java.util.Calendar.DAY_OF_YEAR, yearDay);
 						String errMsg = "";
-						errMsg = "getMonthOfYearDay failed for year=" + year + " yearDay=" + yearDay + " weekStart=" + weekStart + " minDays="
-							+ minDaysInFirstWeek;
+						// errMsg = "getMonthOfYearDay failed for year=" + year + " yearDay=" + yearDay + " weekStart=" + weekStart + " minDays=" +
+						// minDaysInFirstWeek;
 
 						assertEquals(errMsg, testCal.get(Calendar.MONTH), tools.getMonthOfYearDay(year, yearDay));
 

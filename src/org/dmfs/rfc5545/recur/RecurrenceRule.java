@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,7 +135,7 @@ public final class RecurrenceRule
 		 */
 		FREQ(new FreqConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
 				return new FreqIterator(rule, calendarMetrics, start);
 			}
@@ -160,7 +161,7 @@ public final class RecurrenceRule
 		 */
 		INTERVAL(new IntConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
 				throw new UnsupportedOperationException("INTERVAL doesn't have an iterator.");
 			}
@@ -185,7 +186,7 @@ public final class RecurrenceRule
 		 */
 		WKST(new WeekdayConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
 				throw new UnsupportedOperationException("WKST doesn't have an iterator.");
 			}
@@ -210,7 +211,7 @@ public final class RecurrenceRule
 		 */
 		BYMONTH(new IntListConverter(1, 12)) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
 				return new ByMonthExpander(rule, previous, calendarMetrics, start);
 			}
@@ -235,7 +236,7 @@ public final class RecurrenceRule
 		 */
 		BYWEEKNO(new IntListConverter(-53, 53).noZero()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new ByWeekNoExpander(rule, previous, calendarTools, start);
 			}
@@ -262,7 +263,7 @@ public final class RecurrenceRule
 		 */
 		BYYEARDAY(new IntListConverter(-366, 366).noZero()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
 				return new ByYearDayExpander(rule, previous, calendarMetrics, start);
 			}
@@ -289,7 +290,7 @@ public final class RecurrenceRule
 		 */
 		BYMONTHDAY(new IntListConverter(-31, 31).noZero()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new ByMonthDayExpander(rule, previous, calendarTools, start);
 			}
@@ -316,7 +317,7 @@ public final class RecurrenceRule
 		 */
 		BYDAY(new WeekdayListConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new ByDayExpander(rule, previous, calendarTools, start);
 			}
@@ -344,7 +345,7 @@ public final class RecurrenceRule
 		 */
 		BYHOUR(new IntListConverter(0, 23)) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new ByHourExpander(rule, previous, calendarTools, start);
 			}
@@ -370,7 +371,7 @@ public final class RecurrenceRule
 		 */
 		BYMINUTE(new IntListConverter(0, 59)) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new ByMinuteExpander(rule, previous, calendarTools, start);
 			}
@@ -396,7 +397,7 @@ public final class RecurrenceRule
 		 */
 		BYSECOND(new IntListConverter(0, 60)) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new BySecondExpander(rule, previous, calendarTools, start);
 			}
@@ -422,7 +423,7 @@ public final class RecurrenceRule
 		 */
 		BYSETPOS(new IntListConverter(-366, 366).noZero()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new BySetPosFilter(rule, previous, start);
 			}
@@ -448,9 +449,9 @@ public final class RecurrenceRule
 		 */
 		UNTIL(new DateTimeConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
-				return new UntilLimiter(rule, previous, start);
+				return new UntilLimiter(rule, previous, startTimeZone);
 			}
 
 
@@ -475,7 +476,7 @@ public final class RecurrenceRule
 		 */
 		COUNT(new IntConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
 				return new CountLimiter(rule, previous);
 			}
@@ -530,7 +531,7 @@ public final class RecurrenceRule
 		 * @throws UnsupportedOperationException
 		 *             If this part does not have a {@link RuleIterator}.
 		 */
-		abstract RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, Calendar start)
+		abstract RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			throws UnsupportedOperationException;
 
 
@@ -1470,33 +1471,65 @@ public final class RecurrenceRule
 
 		CalendarMetrics calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
 		boolean sanityFilterAdded = false;
-		RuleIterator iterator = null;
+		long startInstance = Instance.make(start);
 
-		// since FREQ is the first part anyway we don't have to create it separately
-		for (Part p : mParts.keySet())
+		RuleIterator iterator = FastBirthdayIterator.getInstance(this, calendarMetrics, startInstance);
+		TimeZone startTimeZone = start.isFloating() ? null : start.getTimeZone();
+
+		if (iterator != null)
 		{
-			// add a filter for each rule part
-			if (p != Part.INTERVAL && p != Part.WKST)
+			if (hasPart(Part.UNTIL))
 			{
-				if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
+				iterator = Part.UNTIL.getExpander(this, new SanityFilter(this, iterator, calendarMetrics, startInstance), calendarMetrics, startInstance,
+					startTimeZone);
+				sanityFilterAdded = true;
+			}
+			else if (hasPart(Part.COUNT))
+			{
+				iterator = Part.COUNT.getExpander(this, new SanityFilter(this, iterator, calendarMetrics, startInstance), calendarMetrics, startInstance,
+					startTimeZone);
+				sanityFilterAdded = true;
+			}
+		}
+		else if ((iterator = FastWeeklyIterator.getInstance(this, calendarMetrics, startInstance)) != null)
+		{
+			if (hasPart(Part.UNTIL))
+			{
+				iterator = Part.UNTIL.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+			}
+			// COUNT is already taken care of by FastWeeklyIterator
+
+			// we don't need a sanitiy filter in this case
+			sanityFilterAdded = true;
+		}
+		else
+		{
+			// since FREQ is the first part anyway we don't have to create it separately
+			for (Part p : mParts.keySet())
+			{
+				// add a filter for each rule part
+				if (p != Part.INTERVAL && p != Part.WKST)
 				{
-					// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
-					iterator = new SanityFilter(this, iterator, calendarMetrics, start);
-					iterator = p.getExpander(this, iterator, calendarMetrics, start);
-					sanityFilterAdded = true;
-				}
-				else if (!p.expands(this))
-				{
-					((ByExpander) iterator).addFilter(p.getFilter(this, calendarMetrics));
-				}
-				else
-				{
-					iterator = p.getExpander(this, iterator, calendarMetrics, start);
+					if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
+					{
+						// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
+						iterator = new SanityFilter(this, iterator, calendarMetrics, startInstance);
+						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+						sanityFilterAdded = true;
+					}
+					else if (!p.expands(this))
+					{
+						((ByExpander) iterator).addFilter(p.getFilter(this, calendarMetrics));
+					}
+					else
+					{
+						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+					}
 				}
 			}
 		}
 		// add a SanityFilter if not already done.
-		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarMetrics, start), start);
+		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarMetrics, startInstance), start);
 	}
 
 

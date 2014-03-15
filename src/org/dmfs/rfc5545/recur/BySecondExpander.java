@@ -33,7 +33,7 @@ class BySecondExpander extends ByExpander
 	private final int[] mSeconds;
 
 
-	public BySecondExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public BySecondExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
 		mSeconds = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSECOND));

@@ -33,7 +33,7 @@ final class ByMonthExpander extends ByExpander
 	private final int[] mMonths;
 
 
-	public ByMonthExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByMonthExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
 		mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));

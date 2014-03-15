@@ -49,7 +49,7 @@ final class ByMonthDayExpander extends ByExpander
 	private final int[] mMonths;
 
 
-	public ByMonthDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByMonthDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		/*
 		 * Even though RFC 5545 doesn't explicitly say it, we filter YEARLY, MONTHLY or WEEKLY rules if BYYEARDAY has been specified. BYYEARDAY is evaluated

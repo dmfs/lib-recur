@@ -57,11 +57,11 @@ final class BySetPosFilter extends RuleIterator
 	private final long mStart;
 
 
-	public BySetPosFilter(RecurrenceRule rule, RuleIterator previous, Calendar start)
+	public BySetPosFilter(RecurrenceRule rule, RuleIterator previous, long start)
 	{
 		super(previous);
 		mSetPositions = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSETPOS));
-		mStart = Instance.make(start);
+		mStart = start;
 	}
 
 

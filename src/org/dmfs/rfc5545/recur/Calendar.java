@@ -20,6 +20,7 @@ package org.dmfs.rfc5545.recur;
 import java.io.StringWriter;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 
 /**
@@ -41,6 +42,11 @@ public class Calendar extends GregorianCalendar
 	 * Static instance of the time zone UTC.
 	 */
 	public final static TimeZone UTC = TimeZone.getTimeZone("UTC");
+
+	/**
+	 * The pattern that all date time strings must match.
+	 */
+	private final static Pattern PATTERN_DATE_TIME = Pattern.compile("\\d{8}(T\\d{6}Z?)?");
 
 	/**
 	 * Indicates that this calendar instance is an all-day instance.
@@ -334,23 +340,35 @@ public class Calendar extends GregorianCalendar
 			throw new NullPointerException("a date-time string must not be null");
 		}
 
-		if (string.length() == 8)
+		try
 		{
-			return new Calendar(Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
-				Integer.parseInt(string.substring(6, 8)));
+			if (!PATTERN_DATE_TIME.matcher(string).matches())
+			{
+				throw new IllegalArgumentException("illegal date-time string: " + string);
+			}
+
+			if (string.length() == 8)
+			{
+				return new Calendar(Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string.substring(
+					6, 8)));
+			}
+			else if (string.length() == 15 && string.charAt(8) == 'T')
+			{
+				return new Calendar(timeZone, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string
+					.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)), Integer.parseInt(string
+					.substring(13, 15)));
+			}
+			else if (string.length() == 16 && string.charAt(8) == 'T' && string.charAt(15) == 'Z')
+			{
+				Calendar result = new Calendar(UTC, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
+					Integer.parseInt(string.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)),
+					Integer.parseInt(string.substring(13, 15)));
+				return result;
+			}
 		}
-		else if (string.length() == 15 && string.charAt(8) == 'T')
+		catch (NumberFormatException e)
 		{
-			return new Calendar(timeZone, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string
-				.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)), Integer.parseInt(string.substring(13,
-				15)));
-		}
-		else if (string.length() == 16 && string.charAt(8) == 'T' && string.charAt(15) == 'Z')
-		{
-			Calendar result = new Calendar(UTC, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1, Integer.parseInt(string
-				.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)), Integer.parseInt(string.substring(13,
-				15)));
-			return result;
+			throw new IllegalArgumentException("illegal characters in date-time string: " + string, e);
 		}
 		throw new IllegalArgumentException("illegal date-time string: " + string);
 	}

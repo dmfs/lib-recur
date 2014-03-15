@@ -54,7 +54,7 @@ final class ByWeekNoExpander extends ByExpander
 	private final boolean mAllowOverlappingWeeks;
 
 
-	public ByWeekNoExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByWeekNoExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
 

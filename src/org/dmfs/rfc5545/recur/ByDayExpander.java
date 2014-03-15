@@ -93,7 +93,7 @@ final class ByDayExpander extends ByExpander
 	}
 
 
-	public ByDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
 
@@ -218,11 +218,11 @@ final class ByDayExpander extends ByExpander
 				case MONTHLY: // the rule is MONTHLY or there is a BYMONTH filter present
 
 					// get the first week day and the number of days of this month
-					int weekDayOfFirstInMonth = calendarMetrics.getDayOfWeek(year, month, 1) + 1;
+					int weekDayOfFirstInMonth = calendarMetrics.getDayOfWeek(year, month, 1);
 					int monthDays = calendarMetrics.getDaysPerMonth(year, month);
 
 					// get the first instance of the weekday in this month
-					int firstDay = (day + 1 - weekDayOfFirstInMonth + 7) % 7 + 1;
+					int firstDay = (day - weekDayOfFirstInMonth + 7) % 7 + 1;
 
 					if (pos == 0)
 					{

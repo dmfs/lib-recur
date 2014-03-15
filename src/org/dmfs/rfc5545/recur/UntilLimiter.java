@@ -17,6 +17,9 @@
 
 package org.dmfs.rfc5545.recur;
 
+import java.util.TimeZone;
+
+
 /**
  * A {@link Limiter} that filters all instances after a certain date (the one specified in the UNTIL part).
  * 
@@ -40,14 +43,14 @@ final class UntilLimiter extends Limiter
 	 * @param start
 	 *            The first instance. This is used to determine if the iterated instances are floating or not.
 	 */
-	public UntilLimiter(RecurrenceRule rule, RuleIterator previous, Calendar start)
+	public UntilLimiter(RecurrenceRule rule, RuleIterator previous, TimeZone startTimezone)
 	{
 		super(previous);
 		Calendar until = rule.getUntil().clone();
-		if (!start.isFloating())
+		if (startTimezone != null)
 		{
 			// switch until to the time zone of start
-			until.setTimeZone(start.getTimeZone());
+			until.setTimeZone(startTimezone);
 		}
 		mUntil = Instance.make(until);
 	}

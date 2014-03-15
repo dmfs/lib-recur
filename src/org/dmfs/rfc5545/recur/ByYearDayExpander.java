@@ -22,8 +22,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits or expands recurrence rules by day of year. This filter expands instances for YEARLY, MONTHLY and WEEKLY rules and filters instances for
- * DAILY, HOURLY, MINUTELY and SECONDLY rules.
+ * A filter that expands recurrence rules by day of year. This filter expands instances for YEARLY, MONTHLY and WEEKLY rules.
  * <p>
  * <strong>Note: </strong> <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> Doesn't allow BYYEARDAY to be used with DAILY, WEEKLY and
  * MONTHLY rules, but RFC 2445 does. This filter tries to return a reasonable result for these cases. In particular that means we expand MONTHLY and WEEKLY
@@ -57,7 +56,7 @@ final class ByYearDayExpander extends ByExpander
 	private final int[] mMonths;
 
 
-	public ByYearDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
+	public ByYearDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
 
