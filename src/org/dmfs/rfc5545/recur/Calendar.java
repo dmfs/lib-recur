@@ -43,7 +43,7 @@ public class Calendar extends GregorianCalendar
 	public final static TimeZone UTC = TimeZone.getTimeZone("UTC");
 
 	/**
-	 * Indicates that this calendar instance is and all-day instance.
+	 * Indicates that this calendar instance is an all-day instance.
 	 */
 	private boolean mAllDay;
 
@@ -203,20 +203,6 @@ public class Calendar extends GregorianCalendar
 		}
 	}
 
-/*
-	@Override
-	public TimeZone getTimeZone()
-	{
-		if (mIsFloating)
-		{
-			return null;
-		}
-		else
-		{
-			return super.getTimeZone();
-		}
-	}
-*/
 
 	/**
 	 * Convert this instance to an all-day instance. This will drop all time zone and time information.
@@ -388,7 +374,8 @@ public class Calendar extends GregorianCalendar
 			TimeZone tz = getTimeZone();
 			if (tz != null && "UTC".equals(tz.getID()))
 			{
-				if (!isFloating()) {
+				if (!isFloating())
+				{
 					result.write('Z');
 				}
 			}
