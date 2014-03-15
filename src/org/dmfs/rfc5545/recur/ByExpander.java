@@ -17,9 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.TreeSet;
-
-
 /**
  * An abstract by-part filter. Depending on a parameter it expands or limits the instances returned by the previous filter.
  * 
@@ -60,7 +57,7 @@ abstract class ByExpander extends RuleIterator
 	final CalendarMetrics mCalendarMetrics;
 
 	/**
-	 * The filters to apply after an expansion. We never will have more than 8 filters.
+	 * The filters to apply after an expansion. We never have more than 8 filters.
 	 */
 	private final ByFilter[] mFilters = new ByFilter[8];
 
@@ -174,10 +171,8 @@ abstract class ByExpander extends RuleIterator
 
 
 	/**
-	 * Expand an instance. This method expands an {@link Instance} into the given {@link TreeSet}.
+	 * Expand an instance. This method expands an {@link Instance}.
 	 * 
-	 * @param instances
-	 *            The {@link TreeSet} that gets the results.
 	 * @param instance
 	 *            The instance to expand.
 	 * @param start
