@@ -17,6 +17,9 @@
 
 package org.dmfs.rfc5545.recur;
 
+import java.util.TimeZone;
+
+
 /**
  * An iterator for recurrence rules.
  * <p>
@@ -36,7 +39,6 @@ public final class RecurrenceIterator
 	/**
 	 * The first event to iterate;
 	 */
-	private Calendar mStart;
 
 	/**
 	 * The upcoming instance, if any.
@@ -47,6 +49,26 @@ public final class RecurrenceIterator
 	 * A helper for date calculations.
 	 */
 	private final Calendar mHelper;
+
+	/**
+	 * Whether the start instance is an all day instance.
+	 */
+	private final boolean mAllDay;
+
+	/**
+	 * The time zone oft the start instance or <code>null</code> if it's a floating time
+	 */
+	private final TimeZone mTimeZone;
+
+	/**
+	 * Caches the upcoming calendar after a call to {@link #peekCalendar()}.
+	 */
+	private Calendar mNextCalendar;
+
+	/**
+	 * Caches the upcoming millis after a call to {@link #peekMillis()}.
+	 */
+	private long mNextMillis = Long.MIN_VALUE;
 
 
 	/**
@@ -60,7 +82,8 @@ public final class RecurrenceIterator
 	RecurrenceIterator(RuleIterator ruleIterator, Calendar start)
 	{
 		mRuleIterator = ruleIterator;
-		mStart = start.clone();
+		mAllDay = start.isAllDay();
+		mTimeZone = start.isFloating() ? null : start.getTimeZone();
 		mHelper = start.clone();
 	}
 
@@ -72,6 +95,13 @@ public final class RecurrenceIterator
 	 */
 	public long nextMillis()
 	{
+		if (mNextMillis != Long.MIN_VALUE)
+		{
+			mNextMillis = Long.MIN_VALUE;
+			mNextCalendar = null;
+			return mNextMillis;
+		}
+
 		long instance = mNextInstance;
 		if (instance == Long.MIN_VALUE)
 		{
@@ -100,6 +130,13 @@ public final class RecurrenceIterator
 	 */
 	public Calendar nextCalendar()
 	{
+		if (mNextCalendar != null)
+		{
+			mNextCalendar = null;
+			mNextMillis = Long.MIN_VALUE;
+			return mNextCalendar;
+		}
+
 		long instance = mNextInstance;
 		if (instance == Long.MIN_VALUE)
 		{
@@ -119,13 +156,13 @@ public final class RecurrenceIterator
 
 		Calendar result = mHelper.clone();
 
-		if (mStart.isAllDay())
+		if (mAllDay)
 		{
 			result.toAllDay();
 		}
 		else
 		{
-			result.setTimeZone(mStart.isFloating() ? null : mStart.getTimeZone());
+			result.setTimeZone(mTimeZone);
 		}
 
 		return result;
@@ -146,6 +183,11 @@ public final class RecurrenceIterator
 	 */
 	public long peekMillis()
 	{
+		if (mNextMillis != Long.MIN_VALUE)
+		{
+			return mNextMillis;
+		}
+
 		long instance = mNextInstance;
 		if (instance == Long.MIN_VALUE)
 		{
@@ -160,7 +202,7 @@ public final class RecurrenceIterator
 		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
 			Instance.second(instance));
 
-		return mHelper.getTimeInMillis();
+		return mNextMillis = mHelper.getTimeInMillis();
 	}
 
 
@@ -172,6 +214,11 @@ public final class RecurrenceIterator
 	 */
 	public Calendar peekCalendar()
 	{
+		if (mNextCalendar != null)
+		{
+			return mNextCalendar;
+		}
+
 		long instance = mNextInstance;
 		if (instance == Long.MIN_VALUE)
 		{
@@ -186,15 +233,15 @@ public final class RecurrenceIterator
 		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
 			Instance.second(instance));
 
-		Calendar result = mHelper.clone();
+		Calendar result = mNextCalendar = mHelper.clone();
 
-		if (mStart.isAllDay())
+		if (mAllDay)
 		{
 			result.isAllDay();
 		}
 		else
 		{
-			result.setTimeZone(mStart.isFloating() ? null : mStart.getTimeZone());
+			result.setTimeZone(mTimeZone);
 		}
 
 		return result;
@@ -222,6 +269,8 @@ public final class RecurrenceIterator
 		{
 			--skip;
 		}
+		mNextCalendar = null;
+		mNextMillis = Long.MIN_VALUE;
 	}
 
 
@@ -248,6 +297,9 @@ public final class RecurrenceIterator
 			skip(1);
 			next = peekMillis();
 		}
+
+		mNextCalendar = null;
+		mNextMillis = Long.MIN_VALUE;
 	}
 
 
