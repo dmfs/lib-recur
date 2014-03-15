@@ -66,7 +66,7 @@ final class ByWeekNoExpander extends ByExpander
 		mAllowOverlappingWeeks = mScope == Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
 
 		// initialize helper
-		mHelper.setFirstDayOfWeek(rule.getWeekStart().toCalendarDay());
+		mHelper.setFirstDayOfWeek(rule.getWeekStart().ordinal() + 1);
 		mHelper.setMinimalDaysInFirstWeek(4);
 	}
 

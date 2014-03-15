@@ -111,27 +111,12 @@ public final class RecurrenceRule
 	 * Enumeration of valid week days. The weekdays are ordered, so you can use the ordinal value to get the week day number (i.e.
 	 * <code>Weekday.SU.ordinal() == 0</code>, <code>Weekday.MO.ordinal() == 1 </code>...).
 	 * <p>
-	 * Please not that the ordinal value is not compatible with the day values of {@link java.util.Calendar}. Use {@link #toCalendarDay()} to get a value that
-	 * is compatible to {@link java.util.Calendar}.
+	 * Please not that the ordinal value is not compatible with the day values of {@link java.util.Calendar}.
 	 * </p>
 	 */
 	public enum Weekday
 	{
 		SU, MO, TU, WE, TH, FR, SA;
-
-		/**
-		 * Get an ordinal value that is compatible with {@link java.util.Calendar}.
-		 * <p>
-		 * TODO: remove when we don't need it any more.
-		 * </p>
-		 * 
-		 * @return A number between 1 (for {@link #SU}) and 7 (for {@link #SA}).
-		 */
-		public int toCalendarDay()
-		{
-			// in java.util.Calendar SU is 1
-			return ordinal() + 1;
-		}
 	}
 
 	/**
