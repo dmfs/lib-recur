@@ -100,6 +100,12 @@ public final class Instance
 	}
 
 
+	public static long setYear(long instance, int year)
+	{
+		return (instance & ~YEAR_MASK) | (((long) year + YEAR_BIAS) << YEAR_POS);
+	}
+
+
 	public static long setMonth(long instance, int month)
 	{
 		return (instance & ~MONTH_MASK) | (((long) month + MONTH_BIAS) << MONTH_POS);
