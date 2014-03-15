@@ -25,8 +25,8 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
 
 
 /**
- * A filter that limits or expands recurrence rules by day of week. This filter expands instances for YEARLY, MONTHLY and WEEKLY rules with respect to the
- * exceptions mentioned in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
+ * An expander that expands recurrence rules by day of week. It expands instances for YEARLY, MONTHLY and WEEKLY rules with respect to the exceptions mentioned
+ * in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
  * <p>
  * In particular that means YEARLY and MONTHLY rules are filtered instead of expanded when a BYYEARDAY or BYMONTH day parts are present in the rule. RFC 5545
  * forbids BYYEARDAY to be used with MONTHLY rules, but RFC 2445 allows it, so we've expanded the definition to that case.
@@ -37,9 +37,9 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
 final class ByDayExpander extends ByExpander
 {
 	/**
-	 * The list of week days to let pass or to expand.
+	 * The list of week days to expand.
 	 */
-	private final List<WeekdayNum> mByDay;
+	private final int[] mByDay;
 
 	/**
 	 * The scope of this rule.
@@ -48,10 +48,23 @@ final class ByDayExpander extends ByExpander
 
 	/**
 	 * The list of months if a BYMONTH part is specified in the rule. We need this to filter by month if the rule has a monthly and weekly scope.
-	 * 
-	 * TODO: replace by an array of ints
 	 */
-	private final List<Integer> mMonths;
+	private final int[] mMonths;
+
+
+	/**
+	 * Get a packed representation of a {@link WeekdayNum}.
+	 * 
+	 * @param pos
+	 *            The position of the day or <code>0</code>.
+	 * @param day
+	 *            The number of the weekday.
+	 * @return An int that contains the position and the weekday.
+	 */
+	private static int packWeekday(int pos, int day)
+	{
+		return (pos << 8) + day;
+	}
 
 
 	/**
@@ -61,7 +74,6 @@ final class ByDayExpander extends ByExpander
 	 *            The packed day int.
 	 * @return The weekday.
 	 */
-	@SuppressWarnings("unused")
 	private static int unpackWeekday(int packedDay)
 	{
 		return packedDay & 0xff;
@@ -75,7 +87,6 @@ final class ByDayExpander extends ByExpander
 	 *            The packed day int.
 	 * @return The position.
 	 */
-	@SuppressWarnings("unused")
 	private static int unpackPos(int packedDay)
 	{
 		return packedDay >> 8;
@@ -85,7 +96,16 @@ final class ByDayExpander extends ByExpander
 	public ByDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
 	{
 		super(previous, calendarTools, start);
-		mByDay = rule.getByDayPart();
+
+		// get the list of WeekDayNums and convert it into an array
+		List<WeekdayNum> byDay = rule.getByDayPart();
+		mByDay = new int[byDay.size()];
+
+		for (int i = 0, l = byDay.size(); i < l; ++i)
+		{
+			WeekdayNum weekdayNum = byDay.get(i);
+			mByDay[i] = packWeekday(weekdayNum.pos, weekdayNum.weekday.ordinal());
+		}
 
 		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
 			: Scope.WEEKLY)
@@ -94,14 +114,14 @@ final class ByDayExpander extends ByExpander
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
 			// we have to filter by month
-			mMonths = rule.getByPart(Part.BYMONTH);
+			mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
 		}
 		else
 		{
 			mMonths = null;
 		}
 
-		// nor now always sort the result
+		// for now always sort the result
 		setNeedsSorting(true);
 	}
 
@@ -118,12 +138,15 @@ final class ByDayExpander extends ByExpander
 		int second = Instance.second(instance);
 		int weekOfYear = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);
 
-		for (WeekdayNum day : mByDay)
+		for (int packedDay : mByDay)
 		{
+			int pos = unpackPos(packedDay);
+			int day = unpackWeekday(packedDay);
+
 			switch (mScope)
 			{
 				case WEEKLY:
-					if (day.pos == 0 || day.pos == 1) // ignore any positional days
+					if (pos == 0 || pos == 1) // ignore any positional days
 					{
 						int tempYear = year;
 						if (weekOfYear > 10 && month < 1)
@@ -137,7 +160,7 @@ final class ByDayExpander extends ByExpander
 							++tempYear;
 						}
 
-						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day.weekday.ordinal());
+						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day);
 
 						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
 
@@ -156,7 +179,7 @@ final class ByDayExpander extends ByExpander
 
 				case WEEKLY_AND_MONTHLY: // the rule is either MONTHLY with BYWEEKNO expansion, WEEKLY with BYMONTH filter or YEARLY with BYMONTH and BYWEEKNO
 
-					if (day.pos == 0 || day.pos == 1) // ignore any positional days
+					if (pos == 0 || pos == 1) // ignore any positional days
 					{
 						int tempYear = year;
 						if (weekOfYear > 10 && month < 1)
@@ -170,7 +193,7 @@ final class ByDayExpander extends ByExpander
 							++tempYear;
 						}
 
-						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day.weekday.ordinal());
+						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day);
 
 						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
 
@@ -185,7 +208,7 @@ final class ByDayExpander extends ByExpander
 
 						int newMonth = CalendarMetrics.month(monthAndDay);
 
-						if (mMonths != null && mMonths.contains(newMonth + 1) || mMonths == null && newMonth == month)
+						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth + 1) > 0 || mMonths == null && newMonth == month)
 						{
 							addInstance(Instance.make(tempYear, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}
@@ -199,9 +222,9 @@ final class ByDayExpander extends ByExpander
 					int monthDays = calendarMetrics.getDaysPerMonth(year, month);
 
 					// get the first instance of the weekday in this month
-					int firstDay = (day.weekday.toCalendarDay() - weekDayOfFirstInMonth + 7) % 7 + 1;
+					int firstDay = (day + 1 - weekDayOfFirstInMonth + 7) % 7 + 1;
 
-					if (day.pos == 0)
+					if (pos == 0)
 					{
 						// add all instances of this weekday of this month
 						for (int dayOfMonthx = firstDay; dayOfMonthx <= monthDays; dayOfMonthx += 7)
@@ -214,9 +237,9 @@ final class ByDayExpander extends ByExpander
 						int maxDays = 1 + (monthDays - firstDay) / 7;
 						// add just one position
 
-						if (day.pos > 0 && day.pos <= maxDays || day.pos < 0 && day.pos + maxDays + 1 > 0)
+						if (pos > 0 && pos <= maxDays || pos < 0 && pos + maxDays + 1 > 0)
 						{
-							addInstance(Instance.setDayOfMonth(instance, firstDay + (day.pos > 0 ? day.pos - 1 : day.pos + maxDays) * 7));
+							addInstance(Instance.setDayOfMonth(instance, firstDay + (pos > 0 ? pos - 1 : pos + maxDays) * 7));
 						}
 					}
 					break;
@@ -224,11 +247,11 @@ final class ByDayExpander extends ByExpander
 				case YEARLY: // no other BY* filters are present
 
 					// calculate the first occurrence of this weekday in this year
-					int firstWeekdayOfYear = (day.weekday.ordinal() - calendarMetrics.getWeekDayOfFirstYearDay(year) + 7) % 7 + 1;
+					int firstWeekdayOfYear = (day - calendarMetrics.getWeekDayOfFirstYearDay(year) + 7) % 7 + 1;
 
 					int yearDays = calendarMetrics.getDaysPerYear(year);
 
-					if (day.pos == 0)
+					if (pos == 0)
 					{
 						// add an instance for every occurrence if this week day.
 						for (int dayOfYear = firstWeekdayOfYear; dayOfYear <= yearDays; dayOfYear += 7)
@@ -239,9 +262,9 @@ final class ByDayExpander extends ByExpander
 					}
 					else
 					{
-						if (day.pos > 0)
+						if (pos > 0)
 						{
-							int dayOfYear = firstWeekdayOfYear + (day.pos - 1) * 7;
+							int dayOfYear = firstWeekdayOfYear + (pos - 1) * 7;
 							if (dayOfYear <= yearDays)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
@@ -260,7 +283,7 @@ final class ByDayExpander extends ByExpander
 							}
 
 							// calculate the actual instance
-							int dayOfYear = lastWeekdayOfYear + (day.pos + 1) * 7;
+							int dayOfYear = lastWeekdayOfYear + (pos + 1) * 7;
 							if (dayOfYear > 0)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);

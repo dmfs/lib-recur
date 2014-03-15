@@ -21,7 +21,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits or expands recurrence rules by hour.
+ * A filter that expands recurrence rules by hour.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */

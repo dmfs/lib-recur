@@ -35,11 +35,6 @@ abstract class ByExpander extends RuleIterator
 	private final static int MAX_EMPTY_SETS = 1000;
 
 	/**
-	 * Stop iterating (throwing an exception) if this number of instances have been filtered in a line.
-	 */
-	private final static int MAX_EMPTY_INSTANCES = 1000;
-
-	/**
 	 * The scope of a part. Depending on the frequency and preceding filters some filters operate within a specific scope.
 	 */
 	protected enum Scope
@@ -64,9 +59,12 @@ abstract class ByExpander extends RuleIterator
 
 	final CalendarMetrics mCalendarMetrics;
 
+	/**
+	 * The filters to apply after an expansion. We never will have more than 8 filters.
+	 */
 	private final ByFilter[] mFilters = new ByFilter[8];
 
-	private int mFilterCount = 0;
+	int mFilterCount = 0;
 
 	private boolean mNeedsSorting = false;
 
@@ -128,21 +126,23 @@ abstract class ByExpander extends RuleIterator
 				expand(prev.next(), mStart);
 			}
 		} while (!resultSet.hasNext());
+
 		if (mNeedsSorting)
 		{
 			resultSet.sort();
 		}
+
 		return resultSet;
 	}
 
 
-	void addFilter(ByFilter filter)
+	final void addFilter(ByFilter filter)
 	{
 		mFilters[mFilterCount++] = filter;
 	}
 
 
-	void addInstance(long instance)
+	final void addInstance(long instance)
 	{
 		if (mFilterCount == 0 || !filter(instance))
 		{
@@ -159,7 +159,7 @@ abstract class ByExpander extends RuleIterator
 	 *            The instance to filter.
 	 * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
 	 */
-	boolean filter(long instance)
+	final boolean filter(long instance)
 	{
 		ByFilter[] filters = mFilters;
 		for (int i = 0, count = mFilterCount; i < count; ++i)

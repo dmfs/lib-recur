@@ -97,7 +97,7 @@ final class BySetPosFilter extends RuleIterator
 			}
 
 			LongArray nextSet = mPrevious.nextSet();
-			nextSet.sort();
+
 			int limit = nextSet.size() + 1;
 			int pos = 1;
 

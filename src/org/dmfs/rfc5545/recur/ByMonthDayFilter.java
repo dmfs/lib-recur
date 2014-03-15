@@ -21,12 +21,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits or expands recurrence rules by day of month. This filter expands instances for YEARLY, MONTHLY and WEEKLY rules.
- * <p>
- * <strong>Note: </strong><a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> doesn't allow BYMONTHDAY to be used with WEEKLY rules, but
- * RFC 2445 does. A reasonable solution seems to be to expand if BYYEARDAY is not specified, but expand only days that are in the same week. The same approach
- * is taken for YEARLY rules if BYWEEKNO is present.
- * </p>
+ * A filter that limits recurrence rules by day of month.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */

@@ -23,9 +23,6 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 /**
  * The base frequency iterator for recurrence rules. On every call to {@link #next()} or {@link #nextSet()} it returns a new date according to the frequency and
  * interval specified in a recurrence rule.
- * <p>
- * TODO: Apply all filters up to the first expansion.
- * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -205,7 +202,7 @@ public final class FreqIterator extends ByExpander
 					break;
 
 			}
-		} while (filter(result));
+		} while (mFilterCount > 0 && filter(result));
 
 		return result;
 	}

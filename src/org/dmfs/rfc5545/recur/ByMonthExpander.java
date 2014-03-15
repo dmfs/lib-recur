@@ -28,7 +28,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 final class ByMonthExpander extends ByExpander
 {
 	/**
-	 * The list of months to let pass or to expand.
+	 * The list of months to expand.
 	 */
 	private final int[] mMonths;
 

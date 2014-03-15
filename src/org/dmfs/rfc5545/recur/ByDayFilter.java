@@ -26,22 +26,12 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
 
 
 /**
- * A filter that limits or expands recurrence rules by day of week. This filter expands instances for YEARLY, MONTHLY and WEEKLY rules with respect to the
- * exceptions mentioned in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
- * <p>
- * In particular that means YEARLY and MONTHLY rules are filtered instead of expanded when a BYYEARDAY or BYMONTH day parts are present in the rule. RFC 5545
- * forbids BYYEARDAY to be used with MONTHLY rules, but RFC 2445 allows it, so we've expanded the definition to that case.
- * </p>
+ * A filter that limits recurrence rules by day of week.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
 final class ByDayFilter extends ByFilter
 {
-	/**
-	 * The list of week days to let pass or to expand.
-	 */
-	private final List<WeekdayNum> mByDay;
-
 	/**
 	 * The scope of this rule.
 	 */
@@ -104,22 +94,23 @@ final class ByDayFilter extends ByFilter
 	public ByDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
 	{
 		super(calendarMetrics);
-		mByDay = rule.getByDayPart();
+		List<WeekdayNum> byDay = rule.getByDayPart();
 
 		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
 			: Scope.WEEKLY)
 			: (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
 
 		boolean hasPositions = false;
-		mPackedDays = new int[mByDay.size()];
+
+		mPackedDays = new int[byDay.size()];
 		int count = 0;
-		for (WeekdayNum w : mByDay)
+		for (WeekdayNum w : byDay)
 		{
 			if (w.pos != 0)
 			{
 				hasPositions = true;
 			}
-			mPackedDays[count] = packWeekday(w.pos, w.weekday.toCalendarDay());
+			mPackedDays[count] = packWeekday(w.pos, w.weekday.ordinal());
 			++count;
 
 		}
@@ -134,11 +125,10 @@ final class ByDayFilter extends ByFilter
 		int year = Instance.year(instance);
 		int month = Instance.month(instance);
 		int dayOfMonth = Instance.dayOfMonth(instance);
-		int dayOfWeek = mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth) + 1;
+		int dayOfWeek = mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth);
 
 		if (!mHasPositions)
 		{
-			// return !mSimpleDaySet.contains(mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth) + 1);
 			return StaticUtils.linearSearch(mPackedDays, packWeekday(0, dayOfWeek)) < 0;
 		}
 		else
