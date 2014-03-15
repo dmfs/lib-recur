@@ -47,7 +47,7 @@ final class ByMonthFilter extends ByFilter
 	public ByMonthFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
 	{
 		super(calendarMetrics);
-		mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
+		mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
 
 		/*
 		 * If we expand day-wise in a weekly interval we'll have to keep overlapping weeks, otherwise we may loose instances.

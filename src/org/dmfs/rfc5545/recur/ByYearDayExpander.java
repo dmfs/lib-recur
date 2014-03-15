@@ -17,8 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.List;
-
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
@@ -56,7 +54,7 @@ final class ByYearDayExpander extends ByExpander
 	/**
 	 * The list of months if a BYMONTH part is specified in the rule. We need this to filter by month if the rule has a monthly and weekly scope.
 	 */
-	private final List<Integer> mMonths;
+	private final int[] mMonths;
 
 
 	public ByYearDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, Calendar start)
@@ -74,7 +72,7 @@ final class ByYearDayExpander extends ByExpander
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
 			// we have to filter by month
-			mMonths = rule.getByPart(Part.BYMONTH);
+			mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
 		}
 		else
 		{
@@ -188,7 +186,7 @@ final class ByYearDayExpander extends ByExpander
 					{
 						long newInstance = Instance.make(mHelper);
 						int newMonth = mHelper.get(Calendar.MONTH);
-						if (mMonths != null && mMonths.contains(newMonth) || mMonths == null && newMonth == month)
+						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
 							addInstance(newInstance);
 						}
@@ -205,7 +203,7 @@ final class ByYearDayExpander extends ByExpander
 						 */
 						newWeek2 = mHelper.get(Calendar.WEEK_OF_YEAR);
 						int newMonth = mHelper.get(Calendar.MONTH);
-						if (newWeek2 == oldWeek2 && mMonths != null && mMonths.contains(newMonth) || mMonths == null && newMonth == month)
+						if (newWeek2 == oldWeek2 && mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
 							addInstance(Instance.make(mHelper));
 						}
@@ -222,7 +220,7 @@ final class ByYearDayExpander extends ByExpander
 						 */
 						newWeek2 = mHelper.get(Calendar.WEEK_OF_YEAR);
 						int newMonth = mHelper.get(Calendar.MONTH);
-						if (newWeek2 == oldWeek2 && mMonths != null && mMonths.contains(newMonth) || mMonths == null && newMonth == month)
+						if (newWeek2 == oldWeek2 && mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
 							addInstance(Instance.make(mHelper));
 						}

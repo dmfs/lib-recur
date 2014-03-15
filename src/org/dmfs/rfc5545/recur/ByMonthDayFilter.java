@@ -42,7 +42,7 @@ final class ByMonthDayFilter extends ByFilter
 		super(calendarMetrics);
 
 		// get a sorted list of th month days
-		mMonthDays = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTHDAY));
+		mMonthDays = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTHDAY));
 
 	}
 

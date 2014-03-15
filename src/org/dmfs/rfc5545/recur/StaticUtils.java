@@ -64,6 +64,33 @@ public abstract class StaticUtils
 
 
 	/**
+	 * Convert a {@link List} of {@link Integer}s to an array of <code>int</code>s.
+	 * 
+	 * @param list
+	 *            The {@link List} to convert.
+	 * @return an int[] or <code>null</code> if <code>list</code> is <code>null</code>.
+	 */
+	public static int[] ListToArray(List<Integer> list)
+	{
+		if (list == null)
+		{
+			return null;
+		}
+
+		int count = list.size();
+		int[] result = new int[count];
+
+		for (int i = 0; i < count; ++i)
+		{
+			int element = list.get(i);
+			result[i] = element;
+		}
+
+		return result;
+	}
+
+
+	/**
 	 * Perform a linear search for an integer in a given array. For small fields a linear search can be faster than a binary search. So use this if you know
 	 * your field contains a couple of entries only.
 	 * 
