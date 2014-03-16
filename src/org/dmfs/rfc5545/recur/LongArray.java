@@ -28,7 +28,7 @@ import java.util.Arrays;
 public final class LongArray
 {
 	/**
-	 * The default number of entries. 32 should hold most expansion interval sets.
+	 * The default number of entries. 48 should hold most expansion interval sets.
 	 */
 	private final static int DEFAULT_SIZE = 48;
 
