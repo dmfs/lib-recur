@@ -25,6 +25,9 @@ package org.dmfs.rfc5545.recur;
 abstract class ByFilter
 {
 
+	/**
+	 * The {@link CalendarMetrics} to use.
+	 */
 	final CalendarMetrics mCalendarMetrics;
 
 

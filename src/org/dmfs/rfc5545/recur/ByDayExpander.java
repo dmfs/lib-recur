@@ -25,12 +25,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
 
 
 /**
- * An expander that expands recurrence rules by day of week. It expands instances for YEARLY, MONTHLY and WEEKLY rules with respect to the exceptions mentioned
- * in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
- * <p>
- * In particular that means YEARLY and MONTHLY rules are filtered instead of expanded when a BYYEARDAY or BYMONTH day parts are present in the rule. RFC 5545
- * forbids BYYEARDAY to be used with MONTHLY rules, but RFC 2445 allows it, so we've expanded the definition to that case.
- * </p>
+ * An expander that expands recurrence rules by day of week.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */

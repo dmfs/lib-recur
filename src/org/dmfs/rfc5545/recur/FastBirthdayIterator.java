@@ -25,6 +25,10 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 /**
  * Fast path for birthday type rules (i.e. instances that recur once a year on the same day and month).
+ * <p>
+ * Be sure to add a {@link SanityFilter} right after this to filter invalid dates like Feb 29th in non-leap years and to inject the start date if it's not
+ * synchronized with the rule. Also you'll have to add a {@link CountLimiter} or {@link UntilLimiter} if needed.
+ * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -51,10 +55,12 @@ public final class FastBirthdayIterator extends ByExpander
 	 * 
 	 * @param rule
 	 *            The rule to iterate.
+	 * @param calendarMetrics
+	 *            The {@link CalendarMetrics} to use.
 	 * @param start
 	 *            The first instance to iterate.
 	 */
-	public FastBirthdayIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long firstInstance)
+	private FastBirthdayIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long firstInstance)
 	{
 		super(null, calendarMetrics, firstInstance);
 
@@ -65,7 +71,7 @@ public final class FastBirthdayIterator extends ByExpander
 
 
 	/**
-	 * Get an instance of a {@link FastBirthdayIterator}.
+	 * Get an instance of a {@link FastBirthdayIterator} for the given rule.
 	 * 
 	 * @param rule
 	 *            The {@link RecurrenceRule} to iterate.
@@ -73,7 +79,7 @@ public final class FastBirthdayIterator extends ByExpander
 	 *            The {@link CalendarMetrics} to use.
 	 * @param start
 	 *            The first instance.
-	 * @return A {@link FastBirthdayIterator} instance or <code>null</code> if the rule is not siutable for this kind of optimization.
+	 * @return A {@link FastBirthdayIterator} instance or <code>null</code> if the rule is not suitable for this kind of optimization.
 	 */
 	public static FastBirthdayIterator getInstance(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
 	{
@@ -92,11 +98,13 @@ public final class FastBirthdayIterator extends ByExpander
 			|| (freq == Freq.YEARLY && months == null && days == null))
 		{
 
+			// adjust month if given
 			if (months != null)
 			{
 				start = Instance.setMonth(start, months.get(0) - 1);
 			}
 
+			// adjust day of month if given
 			if (days != null)
 			{
 				start = Instance.setDayOfMonth(start, days.get(0));

@@ -18,7 +18,7 @@
 package org.dmfs.rfc5545.recur;
 
 /**
- * An abstract by-part filter. Depending on a parameter it expands or limits the instances returned by the previous filter.
+ * An abstract by-part expander.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -45,7 +45,7 @@ abstract class ByExpander extends RuleIterator
 	private final long mStart;
 
 	/**
-	 * The set we work on.
+	 * The set we work on. This comes from the previous instance.
 	 */
 	private LongArray mWorkingSet = null;
 
@@ -76,11 +76,12 @@ abstract class ByExpander extends RuleIterator
 
 
 	/**
-	 * Create a new filter that filters the instances returned by the previous {@link RuleIterator}. The parameter <code>expand</code> determines whether the
-	 * filter should limit or expand the instances.
+	 * Create a new expander that expands the instances returned by the previous {@link RuleIterator}.
 	 * 
 	 * @param previous
 	 *            The preceding {@link RuleIterator}.
+	 * @param calendarTools
+	 *            The {@link CalendarMetrics} to use.
 	 * @param start
 	 *            The first instance.
 	 */
@@ -182,7 +183,7 @@ abstract class ByExpander extends RuleIterator
 	 *            The instance to filter.
 	 * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
 	 */
-	final boolean filter(long instance)
+	private final boolean filter(long instance)
 	{
 		ByFilter[] filters = mFilters;
 		for (int i = 0, count = mFilterCount; i < count; ++i)
