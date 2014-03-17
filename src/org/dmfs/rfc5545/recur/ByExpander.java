@@ -183,7 +183,7 @@ abstract class ByExpander extends RuleIterator
 	 *            The instance to filter.
 	 * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
 	 */
-	private final boolean filter(long instance)
+	final boolean filter(long instance)
 	{
 		ByFilter[] filters = mFilters;
 		for (int i = 0, count = mFilterCount; i < count; ++i)

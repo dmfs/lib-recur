@@ -29,6 +29,11 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 public final class FreqIterator extends ByExpander
 {
 	/**
+	 * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered.
+	 */
+	private final static int MAX_EMPTY_SETS = 1000;
+
+	/**
 	 * The base frequency of the rule.
 	 */
 	private final Freq mFreq;
@@ -89,9 +94,16 @@ public final class FreqIterator extends ByExpander
 	{
 		CalendarMetrics calendarMetrics = mCalendarMetrics;
 		long result;
+		int errorCountdown = MAX_EMPTY_SETS;
 		do
 		{
 			result = Instance.make(mNextYear, mNextMonth, mNextDayOfMonth, mNextHour, mNextMinute, mNextSecond, mNextDayOfWeek);
+
+			// ensure we're not trapped in an infinite loop
+			if (--errorCountdown < 0)
+			{
+				throw new IllegalArgumentException("too many empty recurrence sets");
+			}
 
 			switch (mFreq)
 			{
