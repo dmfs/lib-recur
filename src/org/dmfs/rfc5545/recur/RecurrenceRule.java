@@ -23,9 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -587,11 +586,6 @@ public final class RecurrenceRule
 	static class WeekdayNum
 	{
 		/**
-		 * A regular expression that matches the String representation of the weekday set position.
-		 */
-		private final static Pattern WEEKDAYNUM_PATTERN = Pattern.compile("^((-|\\+)?\\d+)?(SU|MO|TU|WE|TH|FR|SA)$");
-
-		/**
 		 * The position of this weekday in the interval. This value is <code>0</code> if this instance means every occurrence of {@link #weekday} in the
 		 * interval.
 		 */
@@ -636,25 +630,27 @@ public final class RecurrenceRule
 		 */
 		public static WeekdayNum valueOf(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
-			Matcher m = WEEKDAYNUM_PATTERN.matcher(value);
-			if (m.matches())
+			try
 			{
-				String pos = m.group(1);
-				int setpos = 0;
-				if (pos != null)
+				int len = value.length();
+				if (len > 2)
 				{
-					setpos = Integer.parseInt(pos.charAt(0) == '+' ? pos.substring(1) : pos);
-					if (!tolerant && (setpos < -53 || setpos > 53 || setpos == 0))
+					// includes a position
+					int pos = Integer.parseInt(value.substring(value.charAt(0) == '+' ? 1 : 0, len - 2));
+					if (!tolerant && (pos == 0 || pos < -53 || pos > 53))
 					{
-						throw new InvalidRecurrenceRuleException("position " + setpos + " of week day out of range");
+						throw new InvalidRecurrenceRuleException("invalid weeknum: '" + value + "'");
 					}
+					return new WeekdayNum(pos, Weekday.valueOf(value.substring(len - 2)));
 				}
-
-				return new WeekdayNum(setpos, Weekday.valueOf(m.group(3)));
+				else
+				{
+					return new WeekdayNum(0, Weekday.valueOf(value));
+				}
 			}
-			else
+			catch (Exception e)
 			{
-				throw new InvalidRecurrenceRuleException("invalid weeknum: '" + value + "'");
+				throw new InvalidRecurrenceRuleException("invalid weeknum: '" + value + "'", e);
 			}
 		}
 
@@ -798,7 +794,7 @@ public final class RecurrenceRule
 		if (recur == null)
 		{
 			// definitely invalid!
-			throw new NullPointerException("recur must not be null");
+			throw new IllegalArgumentException("recur must not be null");
 		}
 
 		mParts.clear();
@@ -806,12 +802,12 @@ public final class RecurrenceRule
 		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
 		{
 			// remove any spaces in LAX modes
-			recur = recur.trim();
+			recur = recur.trim().toUpperCase(Locale.ENGLISH);
 		}
 
 		String[] parts = recur.split(";");
 
-		if (mode == RfcMode.RFC2445_STRICT && parts.length > 0 && !parts[0].startsWith(FREQ_PREFIX))
+		if (mode == RfcMode.RFC2445_STRICT && !parts[0].startsWith(FREQ_PREFIX))
 		{
 			// in RFC2445 rules must start with "FREQ=" !
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
