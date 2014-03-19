@@ -658,9 +658,9 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=2SA;INTERVAL=1"));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=+2TH").setWeekdays(Calendar.THURSDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13").setWeekdays(Calendar.FRIDAY).setMonthdays(13));
-		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYSETPOS=2").setWeekdays(Calendar.FRIDAY));
+		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYSETPOS=2").setWeekdays(Calendar.FRIDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1;WKST=SU").setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
-			Calendar.THURSDAY, Calendar.FRIDAY));
+			Calendar.THURSDAY, Calendar.FRIDAY).setMonthdays(31, 30, 29, 28, 27, 26));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2").setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
 			Calendar.THURSDAY, Calendar.FRIDAY));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SA;BYMONTHDAY=7,8,9,10,11,12,13").setWeekdays(Calendar.SATURDAY).setMonthdays(7, 8, 9, 10, 11, 12, 13));
