@@ -924,12 +924,12 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,3,5;BYDAY=SU,MO,TU,WE,TH,FR,SA;UNTIL=20131231").setStart("20130101").setUntil("20131231")
 			.setMonths(1, 3, 5).setInstances(3 * 31));
 
-		// each month having a 31st day : 1 + 7 * 5
-		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTHDAY=31;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonths(1, 3, 5, 7, 8, 10, 12)
-			.setMonthdays(31).setInstances(36).setMonthdays(31));
+		// each Jan 31st : 1 + 5
+		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTHDAY=31;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonths(1).setInstances(6)
+			.setMonthdays(31));
 
-		// each month having a 29th day: 1 + 11 * 4 + 12
-		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTHDAY=29;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonthdays(29).setInstances(57));
+		// each Jan 29th day: 1 + 5
+		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTHDAY=29;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonthdays(29).setInstances(6));
 
 		// each day between Jan 27th and Jan 31st that is in week 5: 5 + 5 + 5 + 0 + 2
 		mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231").setStart("20130101").setUntil("20171231")
@@ -1034,7 +1034,7 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYWEEKNO=20").setStart("20120101").setInstances(9).setMonths(5).setWeekdays(Calendar.SUNDAY)
 			.setSeconds(0).setMinutes(0).setHours(0));
 
-		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTHDAY=5").setStart("20120101").setInstances(12 * 8 + 1).setMonthdays(5));
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTHDAY=5").setStart("20120101").setInstances(8 + 1).setMonthdays(5));
 
 		// every Tuesday in 201201 (including start date)
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131;BYDAY=TU").setStart("20120101").setInstances(5 + 1).setWeekdays(Calendar.TUESDAY));
@@ -1059,15 +1059,18 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC2445_LAX).setStart("20140701T150000Z")
 			.setInstances(5).setWeekdays(Calendar.MONDAY, Calendar.TUESDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
 
-		/**
-		 * Fixme: commented out until fixed. BY[HOUR,MINUTE,SECOND] aren't expanded correctly. (Compare github issue #7)
-		 */
-		// mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20120131T120000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1));
-		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1).setHours(12));
-		//
-		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120103T000000;BYMINUTE=12").setStart("20120101T000000").setInstances(2 * 24 + 1).setMinutes(12));
-		//
-		// mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(31 + 1).setHours(12));
+		mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20120131T120000;BYHOUR=12").setStart("20120101T000000").setInstances(1 + 1).setHours(12));
+
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(1 + 1).setMonths(1).setMonthdays(1)
+			.setHours(12));
+
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20121124T000000;BYMINUTE=12").setStart("20121123T000000").setInstances(1 + 1).setMonths(11)
+			.setMonthdays(23).setMinutes(12));
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120103T000000;BYMINUTE=12,24,36,48").setStart("20120101T000000").setInstances(1 + 4).setMonths(1)
+			.setMonthdays(1).setMinutes(12, 24, 36, 48));
+
+		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120731T000000;BYHOUR=12").setStart("20120707T000000").setInstances(1 + 1).setMonths(7).setMonthdays(7)
+			.setHours(12));
 
 	}
 }

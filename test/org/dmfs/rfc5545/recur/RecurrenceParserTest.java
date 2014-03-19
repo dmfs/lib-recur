@@ -168,6 +168,9 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("Without 'FREQ='")));
 		mRules.add(new TestRuleWithException("BYDAY=MO", RfcMode.RFC2445_LAX).setException(new InvalidRecurrenceRuleException("without 'FREQ='")));
 
+		/**
+		 * Duplicate FREQ
+		 */
 		mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		// mRules.add(new TestRuleWithException("FREQ=WEEKLY;BYDAY=MO;FREQ=DAILY", RfcMode.RFC5545_LAX).setException(new InvalidRecurrenceRuleException("")));
 
@@ -230,6 +233,7 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYSETPOS=1", RfcMode.RFC5545_LAX).setInvalidRules("BYSETPOS="));
 
 		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=-2SO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 		mRules.add(new TestRuleWithException("FREQ=DAILY;BYDAY=+2MO", RfcMode.RFC5545_LAX).setInvalidRules("BYDAY="));
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYWEEKNO=2;BYDAY=+1MO", RfcMode.RFC5545_LAX).setInvalidRules("BYDAY="));
@@ -294,13 +298,11 @@ public class RecurrenceParserTest
 
 					if (!(e.getClass() == rule.exception.getClass()))
 					{
-						e.printStackTrace();
 						fail("Expected " + rule.exception + ", got " + e);
 					}
 				}
 				else
 				{
-					e.printStackTrace();
 					fail("Exception occured.");
 				}
 
@@ -309,8 +311,6 @@ public class RecurrenceParserTest
 			{
 				fail("Expected exception: " + rule.exception + " for rule " + rule.rule);
 			}
-			caughtException = false;
-
 		}
 	}
 }

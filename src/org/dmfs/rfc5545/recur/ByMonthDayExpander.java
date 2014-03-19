@@ -62,7 +62,7 @@ final class ByMonthDayExpander extends ByExpander
 
 		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
 			: Scope.WEEKLY)
-			: (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
+			: Scope.MONTHLY;
 
 		// We have to sort the expanded set if there are negative month days or we expand multiple month days in a non-monthly scope
 		setNeedsSorting(mMonthDays[0] < 0 || mMonthDays.length > 1 && mScope != Scope.MONTHLY);
@@ -320,33 +320,6 @@ final class ByMonthDayExpander extends ByExpander
 					if (0 < actualDay && actualDay <= monthDays)
 					{
 						addInstance(Instance.setDayOfMonth(instance, actualDay));
-					}
-					break;
-
-				case YEARLY:
-					/*
-					 * YEARLY expansion of BYMONTHDAY is not exactly specified in RFC 5545. There are two possible ways:
-					 * 
-					 * 1) Handle it like MONHTLY expansion and expand only days in the current month.
-					 * 
-					 * 2) Expand it like BYDAY, i.e. expand the day to every occurrence of that specific monthday in the year.
-					 * 
-					 * Since 2) sounds more reasonable, so that's what we do here. At least there is some consistency in the expansion of BYDAY and BYMONTHDAY
-					 * in that case.
-					 */
-					for (int i = year == startYear ? startMonth : 0; i < calendarMetrics.getMonthsPerYear(year); ++i)
-					{
-						int daysInMonth = calendarMetrics.getDaysPerMonth(year, i);
-
-						if (day < 0)
-						{
-							actualDay = day + daysInMonth + 1;
-						}
-
-						if (0 < actualDay && actualDay <= daysInMonth)
-						{
-							addInstance(Instance.setMonthAndDayOfMonth(instance, i, actualDay));
-						}
 					}
 					break;
 			}
