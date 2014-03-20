@@ -152,7 +152,6 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 				case HOURLY:
@@ -173,7 +172,6 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 				case MINUTELY:
@@ -195,7 +193,6 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 				case SECONDLY:
@@ -218,7 +215,6 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 
