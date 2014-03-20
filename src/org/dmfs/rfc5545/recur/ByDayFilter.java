@@ -143,17 +143,20 @@ final class ByDayFilter extends ByFilter
 
 				case WEEKLY_AND_MONTHLY:
 				case MONTHLY:
+				{
 					int nthDay = (dayOfMonth - 1) / 7 + 1;
 					int lastNthDay = (dayOfMonth - mCalendarMetrics.getDaysPerMonth(year, month)) / 7 - 1;
 					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay, dayOfWeek)) < 0)
 						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
+				}
 				case YEARLY:
+				{
 					int yearDay = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
-					int nthDay2 = (yearDay - 1) / 7 + 1;
-					int lastNthDay2 = (yearDay - mCalendarMetrics.getDaysPerYear(year)) / 7 - 1;
-					return (nthDay2 <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay2, dayOfWeek)) < 0)
-						&& (lastNthDay2 >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay2, dayOfWeek)) < 0);
-
+					int nthDay = (yearDay - 1) / 7 + 1;
+					int lastNthDay = (yearDay - mCalendarMetrics.getDaysPerYear(year)) / 7 - 1;
+					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay, dayOfWeek)) < 0)
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
+				}
 				default:
 					return false;
 			}

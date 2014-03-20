@@ -82,7 +82,7 @@ public final class FreqIterator extends ByExpander
 		mNextMonth = Instance.month(start);
 		mNextDayOfMonth = Instance.dayOfMonth(start);
 		mNextDayOfYear = mCalendarMetrics.getDayOfYear(mNextYear, mNextMonth, mNextDayOfMonth);
-		mNextDayOfWeek = mCalendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear) + 1;
+		mNextDayOfWeek = mCalendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 		mNextHour = Instance.hour(start);
 		mNextMinute = Instance.minute(start);
 		mNextSecond = Instance.second(start);
@@ -152,7 +152,7 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear) + 1;
+					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 				case HOURLY:
@@ -173,7 +173,7 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear) + 1;
+					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 				case MINUTELY:
@@ -195,7 +195,7 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear) + 1;
+					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 				case SECONDLY:
@@ -218,7 +218,7 @@ public final class FreqIterator extends ByExpander
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
 					mNextMonth = CalendarMetrics.month(monthAndDay);
 					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear) + 1;
+					mNextDayOfWeek = calendarMetrics.getDayOfWeek(mNextYear, mNextDayOfYear);
 					break;
 				}
 

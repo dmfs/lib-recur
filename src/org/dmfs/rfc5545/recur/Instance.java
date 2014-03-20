@@ -190,6 +190,19 @@ public final class Instance
 	}
 
 
+	/**
+	 * Get the day of week stored in the instance. If the day of week has not been stored, this method returns an invalid value. You have to ensure yourself
+	 * that this value is valid.
+	 * 
+	 * Values are from 0-6 where 0 means Sunday and 7 means Saturday.
+	 * <p>
+	 * Not that this is different from the values the {@link java.util.Calendar} class uses.
+	 * </p>
+	 * 
+	 * @param instance
+	 *            The instance.
+	 * @return The day of the week, if present.
+	 */
 	public static int dayOfWeek(long instance)
 	{
 		return (int) ((instance & WEEKDAY_MASK) >> WEEKDAY_POS);

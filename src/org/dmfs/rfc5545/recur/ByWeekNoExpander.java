@@ -80,7 +80,7 @@ final class ByWeekNoExpander extends ByExpander
 		int hour = Instance.hour(instance);
 		int minute = Instance.minute(instance);
 		int second = Instance.second(instance);
-		int dayOfWeek = Instance.dayOfWeek(instance);
+		int dayOfWeek = Instance.dayOfWeek(instance) + 1 /* adjust to calendar day numbers */;
 
 		// get the number of weeks in that year
 		int yearWeeks = mCalendarMetrics.getWeeksPerYear(year);
