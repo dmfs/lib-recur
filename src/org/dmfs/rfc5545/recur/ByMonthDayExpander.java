@@ -22,7 +22,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that expands recurrence rules by day of month. This filter expands instances for YEARLY, MONTHLY and WEEKLY rules.
+ * An expander that expands recurrence rules by day of month. This expander expands instances for YEARLY, MONTHLY and WEEKLY rules.
  * <p>
  * <strong>Note: </strong><a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> doesn't allow BYMONTHDAY to be used with WEEKLY rules, but
  * RFC 2445 does. A reasonable solution seems to be to expand if BYYEARDAY is not specified, but expand only days that are in the same week. The same approach
@@ -51,13 +51,9 @@ final class ByMonthDayExpander extends ByExpander
 
 	public ByMonthDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
-		/*
-		 * Even though RFC 5545 doesn't explicitly say it, we filter YEARLY, MONTHLY or WEEKLY rules if BYYEARDAY has been specified. BYYEARDAY is evaluated
-		 * prior to BYMONTHDAY and there is no point in expanding these days since they already are expanded.
-		 */
 		super(previous, calendarTools, start);
 
-		// get a sorted list of th month days
+		// get a sorted list of the month days
 		mMonthDays = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTHDAY));
 
 		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
@@ -322,6 +318,8 @@ final class ByMonthDayExpander extends ByExpander
 						addInstance(Instance.setDayOfMonth(instance, actualDay));
 					}
 					break;
+				default:
+					throw new IllegalStateException("invalid scope for ByMonthDayExpander: " + mScope);
 			}
 		}
 	}
