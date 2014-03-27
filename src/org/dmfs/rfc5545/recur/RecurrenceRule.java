@@ -22,8 +22,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 
@@ -706,6 +709,11 @@ public final class RecurrenceRule
 	private EnumMap<Part, Object> mParts = new EnumMap<Part, Object>(Part.class);
 
 	/**
+	 * A map of x-parts. This is only used in RFC 2445 modes.
+	 */
+	private Map<String, String> mXParts = null;
+
+	/**
 	 * The first instance to iterate, if any.
 	 */
 	private Calendar mStart;
@@ -831,7 +839,26 @@ public final class RecurrenceRule
 				}
 				catch (IllegalArgumentException e)
 				{
-					if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+					// X-Parts are rarely used, so we only handle them if no other part matched. That ensures we parse the average case as fast as possible.
+					if (key.length() > 2 && key.charAt(0) == 'X' && key.charAt(1) == '-')
+					{
+						// this is an X-Part
+						switch (mode)
+						{
+							case RFC2445_LAX:
+							case RFC2445_STRICT:
+								setXPart(key, value);
+								break;
+
+							case RFC5545_LAX:
+								// ignore x-parts
+								continue;
+
+							case RFC5545_STRICT:
+								throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
+						}
+					}
+					else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
 					{
 						throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
 					}
@@ -1440,6 +1467,97 @@ public final class RecurrenceRule
 
 
 	/**
+	 * Sets an x-part. x-parts are supported by RFC 2445 only. If {@link #mode} is set to {@link RfcMode#RFC5545_LAX} a call to this method will do nothing. If
+	 * {@link #mode} is set to {@link RfcMode#RFC5545_STRICT} this method will throw an {@link UnsupportedOperationException}.
+	 * <p>
+	 * Note that calling this method in RFC 2445 mode will override any existing x-part of the same name.
+	 * </p>
+	 * 
+	 * @param xname
+	 *            The name of the x-part. Must be a valid identifier.
+	 * @param value
+	 *            The value of the x-part. Must be a valid name.
+	 * 
+	 * @throws UnsupportedOperationException
+	 *             if {@link #mode} is set to {@link RfcMode#RFC5545_STRICT}.
+	 */
+	public void setXPart(String xname, String value)
+	{
+		if (mode == RfcMode.RFC5545_STRICT)
+		{
+			throw new UnsupportedOperationException("x-parts are not supported by RFC5545.");
+		}
+
+		if ((value == null && mXParts == null) || xname == null || mode == RfcMode.RFC5545_LAX)
+		{
+			return;
+		}
+
+		if (value == null)
+		{
+			if (mXParts.remove(xname) == null)
+			{
+				mXParts.remove(xname.toUpperCase(Locale.ENGLISH));
+			}
+		}
+		else
+		{
+			if (xname.length() <= 2 || (xname.charAt(0) != 'X' && xname.charAt(0) != 'x') || xname.charAt(1) != '-')
+			{
+				throw new IllegalArgumentException("invalid x-name: '" + xname + "'");
+			}
+
+			if (mXParts == null)
+			{
+				mXParts = new HashMap<String, String>(8);
+			}
+
+			// TODO: validate xname and value
+			mXParts.put(xname.toUpperCase(Locale.ENGLISH), value);
+		}
+	}
+
+
+	/**
+	 * Returns whether a specific x-part is present in the rule. Since RFC 5545 doesn't support x-parts this method will always return <code>false</code> if
+	 * {@link #mode} equals {@link RfcMode#RFC5545_LAX} or {@link RfcMode#RFC5545_STRICT}.
+	 * 
+	 * @param xname
+	 *            The name of the x-part to check for.
+	 * @return <code>true</code> if the part is present, <code>false</code> otherwise.
+	 */
+	public boolean hasXPart(String xname)
+	{
+		if (xname == null || mXParts == null || mode == RfcMode.RFC5545_LAX || mode == RfcMode.RFC5545_STRICT)
+		{
+			return false;
+		}
+
+		return mXParts.containsKey(xname) || mXParts.containsKey(xname.toUpperCase(Locale.ENGLISH));
+	}
+
+
+	/**
+	 * Returns a specific x-part. Since RFC 5545 doesn't support x-parts this method will always return <code>null</code> if {@link #mode} equals
+	 * {@link RfcMode#RFC5545_LAX} or {@link RfcMode#RFC5545_STRICT}.
+	 * 
+	 * @param xname
+	 *            The name of the x-part to return.
+	 * @return The value of the x-part or <code>null</code>.
+	 */
+	public String getXPart(String xname)
+	{
+		if (xname == null || mXParts == null || mode == RfcMode.RFC5545_LAX || mode == RfcMode.RFC5545_STRICT)
+		{
+			return null;
+		}
+
+		String result = mXParts.get(xname);
+		return result != null ? result : mXParts.get(xname.toUpperCase(Locale.ENGLISH));
+	}
+
+
+	/**
 	 * Get a new {@link RuleIterator} that iterates all instances of this rule.
 	 * <p>
 	 * <strong>Note:</strong> if an UNTIL part is present and it's value is a floating time then start must be floating as well and vice versa. The same applies
@@ -1563,6 +1681,18 @@ public final class RecurrenceRule
 				result.append(part.name());
 				result.append("=");
 				part.converter.serialize(result, value);
+			}
+		}
+
+		if ((mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC2445_STRICT) && mXParts != null && mXParts.size() != 0)
+		{
+			// serialize x-parts
+			for (Entry<String, String> part : mXParts.entrySet())
+			{
+				result.append(";");
+				result.append(part.getKey());
+				result.append("=");
+				result.append(part.getValue());
 			}
 		}
 		return result.toString();

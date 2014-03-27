@@ -1,5 +1,6 @@
 package org.dmfs.rfc5545.recur;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -119,6 +120,57 @@ public class RecurrenceParserTest
 			}
 		}
 
+	}
+
+
+	@Test
+	public void testXParts() throws InvalidRecurrenceRuleException
+	{
+		RecurrenceRule r1 = new RecurrenceRule("FREQ=YEARLY;X-PART=1", RfcMode.RFC2445_STRICT);
+
+		assertEquals("1", r1.getXPart("X-PART"));
+		assertEquals(null, r1.getXPart("X-PARTXY"));
+		assertTrue(r1.hasXPart("X-PART"));
+		assertFalse(r1.hasXPart("X-PARTXY"));
+
+		// override x-part
+
+		r1.setXPart("X-PART", "a");
+
+		assertEquals("a", r1.getXPart("X-PART"));
+		assertEquals(null, r1.getXPart("X-PARTXY"));
+		assertTrue(r1.hasXPart("X-PART"));
+		assertFalse(r1.hasXPart("X-PARTXY"));
+		assertEquals("FREQ=YEARLY;X-PART=a", r1.toString());
+
+		// add x-part
+
+		r1.setXPart("X-PARTXY", "xy");
+
+		assertEquals("a", r1.getXPart("X-PART"));
+		assertEquals("xy", r1.getXPart("X-PARTXY"));
+		assertTrue(r1.hasXPart("X-PART"));
+		assertTrue(r1.hasXPart("X-PARTXY"));
+		assertTrue(r1.toString().contains(";X-PART=a"));
+		assertTrue(r1.toString().contains(";X-PARTXY=xy"));
+
+		// remove x-part
+		r1.setXPart("X-PART", null);
+
+		assertEquals(null, r1.getXPart("X-PART"));
+		assertEquals("xy", r1.getXPart("X-PARTXY"));
+		assertFalse(r1.hasXPart("X-PART"));
+		assertTrue(r1.hasXPart("X-PARTXY"));
+		assertEquals("FREQ=YEARLY;X-PARTXY=xy", r1.toString());
+
+		// remove x-part
+		r1.setXPart("X-PARTXY", null);
+
+		assertEquals(null, r1.getXPart("X-PART"));
+		assertEquals(null, r1.getXPart("X-PARTXY"));
+		assertFalse(r1.hasXPart("X-PART"));
+		assertFalse(r1.hasXPart("X-PARTXY"));
+		assertEquals("FREQ=YEARLY", r1.toString());
 	}
 
 
@@ -246,7 +298,14 @@ public class RecurrenceParserTest
 		mRules.add(new TestRuleWithException("FREQ=YEARLY;BYDAY=MO;INTERVAL=MO", RfcMode.RFC5545_STRICT).setException(new InvalidRecurrenceRuleException("")));
 
 		/**
-		 * UNTIL value is unvalid, these are examples from the wild
+		 * X-Parts in RFC 5545 modes. Lax mode should drop the part, strict mode must throw.
+		 */
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;X-MILLISECONDS=11,2,3,4", RfcMode.RFC5545_LAX).setInvalidRules("X-MILLISECONDS="));
+		mRules.add(new TestRuleWithException("FREQ=YEARLY;X-MILLISECONDS=11,2,3,4", RfcMode.RFC5545_STRICT)
+			.setException(new InvalidRecurrenceRuleException("")));
+
+		/**
+		 * UNTIL value is invalid, these are examples from the wild
 		 */
 		mRules.add(new TestRuleWithException("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC5545_STRICT)
 			.setException(new InvalidRecurrenceRuleException("")));
@@ -257,7 +316,7 @@ public class RecurrenceParserTest
 		 * Test for other keywords.
 		 */
 		addUniqueKeyWordTests();
-		// addInvalidWhiteSpaceTests();
+		addInvalidWhiteSpaceTests();
 
 		for (TestRuleWithException rule : mRules)
 		{
