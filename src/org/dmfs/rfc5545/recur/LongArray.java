@@ -25,7 +25,7 @@ import java.util.Arrays;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class LongArray
+final class LongArray
 {
 	/**
 	 * The default number of entries. 48 should hold most expansion interval sets.

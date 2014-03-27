@@ -18,7 +18,7 @@
 package org.dmfs.rfc5545.recur;
 
 /**
- * This class provides a set of static methods to manipulate instances stored int a long value.
+ * This class provides a set of static methods to manipulate instances stored in a long value.
  * 
  * Storing the values of an instance in a single long allows to compare them quickly and it doesn't require any object instantiations.
  * 
@@ -28,7 +28,7 @@ package org.dmfs.rfc5545.recur;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class Instance
+final class Instance
 {
 	private final static int YEAR_BITS = 18;
 	private final static int MONTH_BITS = 5;
