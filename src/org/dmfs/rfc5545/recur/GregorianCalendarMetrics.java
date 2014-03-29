@@ -274,4 +274,27 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	{
 		return getYearDayOfFirstWeekStart(year) + (week - 1) * 7;
 	}
+
+
+	@Override
+	public long getUtcTimeStamp(int utcYear, int utcYearDay, int utcHours, int utcMinutes, int utcSeconds, int utcMillis)
+	{
+		long result = (utcYear - 1970) * 365;
+		result = (result + utcYearDay - 1 + numLeapDaysSince1970(utcYear)) * 24;
+		result = (result + utcHours) * 60;
+		result = (result + utcMinutes) * 60;
+		result = (result + utcSeconds) * 1000 + utcMillis;
+
+		return result;
+	}
+
+
+	private static int numLeapDaysSince1970(int year)
+	{
+		int prevYear = year - 1; // don't include year itself
+		int leapYears = prevYear >> 2; // leap years since year 0
+		int nonLeapYears = prevYear / 100; // non leap years that are divisible by 4 since year 0
+		int yetLeapYears = nonLeapYears >> 2; // lear years that are divisible by 400 since year 0
+		return (leapYears - 492) - (nonLeapYears - 19) + (yetLeapYears - 4); // the number of leap days is just the number of leap years
+	}
 }

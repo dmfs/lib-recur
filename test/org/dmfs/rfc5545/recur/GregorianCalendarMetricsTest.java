@@ -564,4 +564,69 @@ public class GregorianCalendarMetricsTest
 		}
 	}
 
+
+	@Test
+	public void testGetUtcTimeStamp()
+	{
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
+		testCal.setTimeInMillis(0);
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					testCal.set(year, 0, 1);
+					for (int yearDay = 1; yearDay <= tools.getDaysPerYear(year); ++yearDay)
+					{
+						testCal.set(java.util.Calendar.DAY_OF_YEAR, yearDay);
+						String errMsg = "";
+						// errMsg = "getUtcTimeStamp failed for year=" + year + " yearDay=" + yearDay + " weekStart=" + " minDays=" + minDaysInFirstWeek;
+
+						assertEquals(errMsg, testCal.getTimeInMillis(), tools.getUtcTimeStamp(year, yearDay, 0, 0, 0, 0));
+					}
+				}
+			}
+
+		}
+	}
+
+
+	@Test
+	public void testGetUtcTimeStamp2()
+	{
+		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
+		testCal.setTimeInMillis(0);
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			testCal.setMinimalDaysInFirstWeek(minDaysInFirstWeek);
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				testCal.setFirstDayOfWeek(weekStart + 1);
+				for (int year = 1700; year < 3000; ++year)
+				{
+					String errMsg = "";
+					testCal.set(year, 0, 1);
+					for (int month = 0; month < tools.getMonthsPerYear(year); ++month)
+					{
+						for (int day = 1; day <= tools.getDaysPerMonth(year, month); ++day)
+						{
+							testCal.set(java.util.Calendar.MONTH, month);
+							testCal.set(java.util.Calendar.DAY_OF_MONTH, day);
+							// errMsg = "getUtcTimeStamp failed for year=" + year + " month=" + month + " day=" + day + " weekStart=" + " minDays="
+							// + minDaysInFirstWeek;
+
+							assertEquals(errMsg, testCal.getTimeInMillis(), tools.getUtcTimeStamp(year, month, day, 0, 0, 0, 0));
+						}
+					}
+				}
+			}
+
+		}
+	}
+
 }

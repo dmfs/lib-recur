@@ -218,4 +218,14 @@ public abstract class CalendarMetrics
 	 * @return The day of year.
 	 */
 	public abstract int getYearDayOfWeekStart(int year, int week);
+
+
+	public long getUtcTimeStamp(int utcYear, int utcMonth, int utcDayOfMonth, int utcHours, int utcMinutes, int utcSeconds, int utcMillis)
+	{
+		int yearDay = getDayOfYear(utcYear, utcMonth, utcDayOfMonth);
+		return getUtcTimeStamp(utcYear, yearDay, utcHours, utcMinutes, utcSeconds, utcMillis);
+	}
+
+
+	public abstract long getUtcTimeStamp(int utcYear, int utcYearDay, int utcHours, int utcMinutes, int utcSeconds, int utcMillis);
 }
