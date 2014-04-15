@@ -108,6 +108,8 @@ public class RecurrenceSetIterator
 	 */
 	private int mLastExceptionIndex;
 
+	private long mIterateEnd = Long.MAX_VALUE;
+
 	/**
 	 * A comparator that is used to sort the {@link AbstractRecurrenceAdapter}s in {@link #mInstances} and {@link #mExceptions}.
 	 */
@@ -157,6 +159,12 @@ public class RecurrenceSetIterator
 		{
 			mExceptions = null;
 		}
+	}
+
+
+	public void setIterateEnd(long end)
+	{
+		mIterateEnd = end;
 	}
 
 
@@ -213,11 +221,12 @@ public class RecurrenceSetIterator
 	{
 		// recycle instance cache
 		long[] instanceCache = mInstanceCache;
-		if (instanceCache==null)
+		if (instanceCache == null)
 		{
 			instanceCache = new long[INSTANCE_CACHE_SIZE];
 			mInstanceCache = instanceCache;
 		}
+		long iterateEnd = mIterateEnd;
 
 		AbstractRecurrenceAdapter[] instances = mInstances;
 		int count = 0;
@@ -232,6 +241,11 @@ public class RecurrenceSetIterator
 				try
 				{
 					long next = ra.next();
+					if (next > iterateEnd)
+					{
+						break;
+					}
+
 					if (!isException(next) && last != next)
 					{
 						instanceCache[count] = next;
@@ -265,6 +279,12 @@ public class RecurrenceSetIterator
 					if (ra.hasNext())
 					{
 						long next = ra.next();
+
+						if (next > iterateEnd)
+						{
+							break;
+						}
+
 						if (!isException(next) && last != next)
 						{
 							instanceCache[count] = next;
@@ -377,6 +397,7 @@ public class RecurrenceSetIterator
 			exceptionCache = new long[EXCEPTION_CACHE_SIZE];
 			mExceptionCache = exceptionCache;
 		}
+		long iterateEnd = mIterateEnd;
 
 		AbstractRecurrenceAdapter[] exceptions = mExceptions;
 		int count = 0;
@@ -397,7 +418,11 @@ public class RecurrenceSetIterator
 			{
 				try
 				{
-					exceptionCache[count] = ra.next();
+					long next = exceptionCache[count] = ra.next();
+					if (next > iterateEnd)
+					{
+						break;
+					}
 					++count;
 				}
 				catch (IllegalArgumentException e)
@@ -415,7 +440,12 @@ public class RecurrenceSetIterator
 				{
 					if (ra.hasNext())
 					{
-						exceptionCache[count] = ra.next();
+						long next = exceptionCache[count] = ra.next();
+						if (next > iterateEnd)
+						{
+							break;
+						}
+
 						++count;
 
 						Arrays.sort(exceptions, mAdapterComparator);
