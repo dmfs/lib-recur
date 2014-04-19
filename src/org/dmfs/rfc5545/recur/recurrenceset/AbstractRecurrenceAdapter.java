@@ -63,6 +63,16 @@ public abstract class AbstractRecurrenceAdapter implements Comparable<Object>
 	public abstract void skip(int count);
 
 
+	/**
+	 * Skip all instance till <code>nextDate</code>. If <code>nextDate</code> is an instance itself it will be the next iterated instance. If the rule doesn't
+	 * recur till that date the next call to {@link #hasNext()} will return <code>false</code>.
+	 * 
+	 * @param nextDate
+	 *            A time stamp of the date to fast forward to.
+	 */
+	public abstract void fastForward(long nextDate);
+
+
 	@Override
 	public int compareTo(Object other)
 	{

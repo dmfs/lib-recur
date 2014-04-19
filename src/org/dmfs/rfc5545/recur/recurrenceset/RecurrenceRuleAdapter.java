@@ -76,4 +76,11 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 	{
 		mIterator.skip(count);
 	}
+
+
+	@Override
+	public void fastForward(long nextDate)
+	{
+		mIterator.skip(nextDate);
+	}
 }

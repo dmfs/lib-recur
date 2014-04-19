@@ -26,6 +26,9 @@ import java.util.TimeZone;
  * <strong>Note:</strong> Some rules may recur forever, so be sure to add some limitation to your code that stops iterating after a certain number of instances
  * or at a certain date.
  * </p>
+ * <p>
+ * TODO: optimize {@link #skip(long)} & {@link #skip(Calendar)}. Often we can skip entire intervals so we don't need to iterate all the instances in between.
+ * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
