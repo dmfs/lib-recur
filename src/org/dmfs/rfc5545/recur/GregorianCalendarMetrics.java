@@ -36,7 +36,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	private final static int[] DAYS_PER_MONTH = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	/**
-	 * The number of days preceding a specific month in a year. This is for non-leap years. For leap years add <code>1</code> to <code>DAYS_PER_MONTH[i]</code>
+	 * The number of days preceding a specific month in a year. This is for non-leap years. For leap years add <code>1</code> to <code>YEARDAYS_PER_MONTH[i]</code>
 	 * for all <code>i > 1<code>.
 	 */
 	private final static int[] YEARDAYS_PER_MONTH = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
