@@ -22,8 +22,7 @@ public class calendarcommonBench extends BenchmarkSuite
 	private BenchmarkParams[] params = new BenchmarkParams[] { new BenchmarkParams(PARSER_BENCHMARK, "20010303", "20010303", "20010303"),
 		new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20010303"), new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20020303"),
 		new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20060303"), new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20110303"),
-		new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20210303"), new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20310303"),
-		new BenchmarkParams(ITERATE_BENCHMARK, "19910303", "20010303", "20310303"), new BenchmarkParams(ITERATE_BENCHMARK, "19810303", "20010303", "20310303"), };
+		new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20210303"), new BenchmarkParams(ITERATE_BENCHMARK, "20010303", "20010303", "20310303"), };
 
 	public static Benchmark PARSER_BENCHMARK = new Benchmark("Parser Benchmark   ")
 	{
