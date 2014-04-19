@@ -79,7 +79,8 @@ final class BySetPosFilter extends RuleIterator
 	@Override
 	LongArray nextSet()
 	{
-		LongArray resultSet = mResultSet;
+		final LongArray resultSet = mResultSet;
+		final int[] setPositions = mSetPositions;
 		resultSet.clear();
 
 		if (mFirst)
@@ -88,6 +89,7 @@ final class BySetPosFilter extends RuleIterator
 			mFirst = false;
 		}
 
+		boolean done = false;
 		int counter = -1;
 		do
 		{
@@ -101,20 +103,20 @@ final class BySetPosFilter extends RuleIterator
 			int limit = nextSet.size() + 1;
 			int pos = 1;
 
-			// iterate over all instances and check if their position is in mSetPositions
+			// iterate over all instances and check if their position is in setPositions
 			while (nextSet.hasNext())
 			{
 				long d = nextSet.next();
 
-				if ((StaticUtils.linearSearch(mSetPositions, pos) >= 0 || pos < limit && StaticUtils.linearSearch(mSetPositions, pos - limit) >= 0)
+				if ((StaticUtils.linearSearch(setPositions, pos) >= 0 || pos < limit && StaticUtils.linearSearch(setPositions, pos - limit) >= 0)
 					&& mStart < Instance.maskWeekday(d))
 				{
 					resultSet.add(d);
+					done = true;
 				}
 				++pos;
-				mFirst = false;
 			}
-		} while (!resultSet.hasNext());
+		} while (!done);
 		return resultSet;
 	}
 }

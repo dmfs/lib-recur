@@ -134,7 +134,12 @@ public class RecurrenceEquivalenceTest
 	{
 		// last work day in month
 		mRules.add(new Unit(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1"), new TestRule(
-			"FREQ=MONTHLY;BYDAY=-1MO,-1TU,-1WE,-1TH,-1FR;BYSETPOS=-1")));
+			"FREQ=MONTHLY;BYDAY=-1MO,-1TU,-1WE,-1TH,-1FR;BYSETPOS=-1"), new TestRule(
+			"FREQ=MONTHLY;BYMONTHDAY=26,27,28,29,30,31;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1")));
+
+		// first work day in month
+		mRules.add(new Unit(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1"), new TestRule("FREQ=MONTHLY;BYDAY=1MO,1TU,1WE,1TH,1FR;BYSETPOS=1"),
+			new TestRule("FREQ=MONTHLY;BYMONTHDAY=1,2,3;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1")));
 
 		// last month in year
 		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12"), new TestRule(
@@ -147,6 +152,12 @@ public class RecurrenceEquivalenceTest
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=3"), new TestRule("FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=3")).setStart("20100505"));
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=5;BYMONTHDAY=15"), new TestRule("FREQ=MONTHLY;BYMONTH=5;BYMONTHDAY=15"), new TestRule(
 			"FREQ=MONTHLY;BYMONTH=5"), new TestRule("FREQ=YEARLY;BYMONTH=5;BYMONTHDAY=15"), new TestRule("FREQ=YEARLY")).setStart("19890515"));
+
+		mRules.add(new Unit(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=1,3,5,7,9"), new TestRule("FREQ=MONTHLY;BYMONTHDAY=1,3,5,7,9"))
+			.setStart("20010101"));
+
+		mRules.add(new Unit(new TestRule("FREQ=MONTHLY;INTERVAL=12;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=1,3,-1,-3,-5"), new TestRule(
+			"FREQ=YEARLY;BYYEARDAY=1,3,31,29,27")).setStart("20010101"));
 
 		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,3,5,7,8,10,12;BYMONTHDAY=25,26,27,28,29,30,31;BYDAY=TH"), new TestRule(
 			"FREQ=MONTHLY;BYMONTH=1,3,5,7,8,10,12;BYDAY=TH;BYSETPOS=-1"), new TestRule(

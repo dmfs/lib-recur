@@ -844,6 +844,8 @@ public class RecurrenceIteratorTest
 		mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYMONTH=5;BYMONTHDAY=-1 ").setMonths(5).setMonthdays(31));
 		mTestRules.add(new TestRule("INTERVAL=1;FREQ=MONTHLY"));
 
+		mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=1,3,5,7,9").setMonthdays(1, 3, 5, 7, 9).setStart("20010101"));
+
 		/*
 		 * Rules with a specific number of instances
 		 */
