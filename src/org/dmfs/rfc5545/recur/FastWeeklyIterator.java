@@ -182,7 +182,9 @@ public final class FastWeeklyIterator extends ByExpander
 
 		int daysPerYear = mCalendarMetrics.getDaysPerYear(mYear);
 
-		while ((mYearDay = (mYearDay + 7 * mInterval)) > daysPerYear)
+		mYearDay += 7 * mInterval;
+
+		while (mYearDay > daysPerYear)
 		{
 			// roll over to next year
 			mYear++;
