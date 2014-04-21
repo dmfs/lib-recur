@@ -65,6 +65,11 @@ final class SanityFilter extends RuleIterator
 	 */
 	private final boolean mFilterStart;
 
+	/**
+	 * The last result iterated by {@link #next()}.
+	 */
+	private long mLastResult;
+
 
 	/**
 	 * Creates a new {@link SanityFilter} that filters the results of the previous instance. This filter should be located between {@link FreqIterator} or any
@@ -81,26 +86,27 @@ final class SanityFilter extends RuleIterator
 		mStart = start;
 		mCalendarMetrics = calendarTools;
 		mFilterStart = !rule.hasPart(Part.BYSETPOS);
+		mLastResult = mFilterStart ? mStart : Long.MIN_VALUE;
 	}
 
 
 	@Override
 	public long next()
 	{
-		long start = mStart;
 		CalendarMetrics calendarMetrics = mCalendarMetrics;
 
 		if (mFirst && mFilterStart)
 		{
 			// mStart is always the first result
 			mFirst = false;
-			return start;
+			return mStart;
 		}
 		else
 		{
 			int counter = -1;
 			long next;
-			long simpleInstance = 0;
+			long simpleInstance;
+			long last = mLastResult;
 			do
 			{
 				if (++counter == MAX_FILTERED_INSTANCES)
@@ -111,7 +117,9 @@ final class SanityFilter extends RuleIterator
 				next = mPrevious.next();
 				simpleInstance = Instance.maskWeekday(next);
 
-			} while (start >= simpleInstance && mFilterStart || !Instance.validate(simpleInstance, calendarMetrics));
+			} while (last >= simpleInstance || !Instance.validate(simpleInstance, calendarMetrics));
+
+			mLastResult = simpleInstance;
 
 			return next;
 		}
@@ -122,7 +130,7 @@ final class SanityFilter extends RuleIterator
 	LongArray nextSet()
 	{
 		LongArray resultSet = mResultSet;
-		long start = mStart;
+		long last = Long.MIN_VALUE;
 		CalendarMetrics calendarMetrics = mCalendarMetrics;
 
 		resultSet.clear();
@@ -130,7 +138,8 @@ final class SanityFilter extends RuleIterator
 		{
 			// mStart is always the first result
 			mFirst = false;
-			resultSet.add(start);
+			last = mStart;
+			resultSet.add(last);
 		}
 
 		int counter = 0;
@@ -150,9 +159,10 @@ final class SanityFilter extends RuleIterator
 
 				simpleInstance = Instance.maskWeekday(next);
 
-				if ((start < simpleInstance || !mFilterStart) && Instance.validate(simpleInstance, calendarMetrics))
+				if ((last < simpleInstance) && Instance.validate(simpleInstance, calendarMetrics))
 				{
 					resultSet.add(next);
+					last = simpleInstance;
 				}
 			}
 		} while (!resultSet.hasNext());
