@@ -79,8 +79,8 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 
 
 	@Override
-	public void fastForward(long nextDate)
+	public void fastForward(long until)
 	{
-		mIterator.skip(nextDate);
+		mIterator.fastForward(until);
 	}
 }

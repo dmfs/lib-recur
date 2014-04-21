@@ -57,4 +57,10 @@ class CountLimiter extends Limiter
 		return ++mCounter > mLimit;
 	}
 
+
+	@Override
+	void fastForward(long untilInstance)
+	{
+		// we can not fast forward, because we have to count the instances
+	}
 }

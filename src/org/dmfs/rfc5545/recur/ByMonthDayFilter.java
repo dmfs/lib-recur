@@ -28,7 +28,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 final class ByMonthDayFilter extends ByFilter
 {
 	/**
-	 * A list of days of month to expand or let pass.
+	 * A list of days of month to let pass.
 	 */
 	private final int[] mMonthDays;
 
@@ -41,7 +41,7 @@ final class ByMonthDayFilter extends ByFilter
 		 */
 		super(calendarMetrics);
 
-		// get a sorted list of th month days
+		// get a list of the month days
 		mMonthDays = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTHDAY));
 
 	}

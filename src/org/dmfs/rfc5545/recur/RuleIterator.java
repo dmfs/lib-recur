@@ -82,4 +82,17 @@ abstract class RuleIterator
 	 */
 	abstract LongArray nextSet();
 
+
+	/**
+	 * Fast forward to the given instance. This does not guarantee that the next iterated instance is at or after the given one. This method is just a hint that
+	 * we might skip a large number of intervals. Be default this method just calls its predecessor.
+	 * 
+	 * @param untilInstance
+	 *            The next date of interest.
+	 */
+	void fastForward(long untilInstance)
+	{
+		// only frequency iterators don't have a prdecesor, so we don't need to check for null
+		mPrevious.fastForward(untilInstance);
+	}
 }

@@ -36,8 +36,8 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	private final static int[] DAYS_PER_MONTH = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	/**
-	 * The number of days preceding a specific month in a year. This is for non-leap years. For leap years add <code>1</code> to <code>YEARDAYS_PER_MONTH[i]</code>
-	 * for all <code>i > 1<code>.
+	 * The number of days preceding a specific month in a year. This is for non-leap years. For leap years add <code>1</code> to
+	 * <code>YEARDAYS_PER_MONTH[i]</code> for all <code>i > 1<code>.
 	 */
 	private final static int[] YEARDAYS_PER_MONTH = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
 
@@ -294,7 +294,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 		int prevYear = year - 1; // don't include year itself
 		int leapYears = prevYear >> 2; // leap years since year 0
 		int nonLeapYears = prevYear / 100; // non leap years that are divisible by 4 since year 0
-		int yetLeapYears = nonLeapYears >> 2; // lear years that are divisible by 400 since year 0
+		int yetLeapYears = nonLeapYears >> 2; // leap years that are divisible by 400 since year 0
 		return (leapYears - 492) - (nonLeapYears - 19) + (yetLeapYears - 4); // the number of leap days is just the number of leap years
 	}
 }

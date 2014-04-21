@@ -35,6 +35,8 @@ public class RecurrenceIteratorTest
 	public final static int MAX_ITERATIONS = 10000;
 	private final static int MAX_BUFFER = 10;
 
+	private final static String[] FF_DATES = { "19850501T133912", "19850502T133912", "19950101", "20050101T210002", "20080229T000000" };
+
 	private final static Calendar FLOATING_TEST_START_DATE = Calendar.parse("19850501T133912");
 	private final static Calendar ABSOLUTE_TEST_START_DATE = Calendar.parse("19850501T133912Z");
 	private final static Calendar ALLDAY_TEST_START_DATE = Calendar.parse("19850501");
@@ -60,18 +62,22 @@ public class RecurrenceIteratorTest
 				if (rule.start != null)
 				{
 					r.setStart(rule.start);
+					rule.setIterationStart(rule.start);
 				}
 				else if (!rule.floating)
 				{
 					r.setStart(ABSOLUTE_TEST_START_DATE);
+					rule.setIterationStart(ABSOLUTE_TEST_START_DATE);
 				}
 				else if (!rule.allday)
 				{
 					r.setStart(FLOATING_TEST_START_DATE);
+					rule.setIterationStart(FLOATING_TEST_START_DATE);
 				}
 				else
 				{
 					r.setStart(ALLDAY_TEST_START_DATE);
+					rule.setIterationStart(ALLDAY_TEST_START_DATE);
 				}
 
 				int count = 0;
@@ -105,6 +111,61 @@ public class RecurrenceIteratorTest
 				else if (rule.until == null && rule.count < 0)
 				{
 					assertEquals(MAX_ITERATIONS, count);
+				}
+			}
+			catch (IllegalArgumentException e)
+			{
+				throw new IllegalArgumentException("error in " + rule.rule, e);
+			}
+		}
+	}
+
+
+	@Test
+	public void testPeekMillisNextCalendar() throws InvalidRecurrenceRuleException
+	{
+		for (TestRule rule : mTestRules)
+		{
+			try
+			{
+				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
+
+				if (rule.start != null)
+				{
+					r.setStart(rule.start);
+					rule.setIterationStart(rule.start);
+				}
+				else if (!rule.floating)
+				{
+					r.setStart(ABSOLUTE_TEST_START_DATE);
+					rule.setIterationStart(ABSOLUTE_TEST_START_DATE);
+				}
+				else if (!rule.allday)
+				{
+					r.setStart(FLOATING_TEST_START_DATE);
+					rule.setIterationStart(FLOATING_TEST_START_DATE);
+				}
+				else
+				{
+					r.setStart(ALLDAY_TEST_START_DATE);
+					rule.setIterationStart(ALLDAY_TEST_START_DATE);
+				}
+
+				int count = 0;
+				RecurrenceIterator it = r.iterator();
+				while (it.hasNext())
+				{
+					long millis = it.peekMillis();
+					Calendar instance = it.nextCalendar();
+					count++;
+
+					assertEquals(millis, instance.getTimeInMillis());
+
+					if (count == MAX_ITERATIONS)
+					{
+						break;
+					}
+
 				}
 			}
 			catch (IllegalArgumentException e)
@@ -161,16 +222,12 @@ public class RecurrenceIteratorTest
 				}
 			}
 		}
-
 	}
 
 
 	/**
 	 * This test ensures that the rule is correctly evaluated when you move the start to a later instance. To do so it iterates over one rule and starts a new
 	 * iteration for every instance (using that instance as the start date). Then it compares the next instances of both iterations.
-	 * <p>
-	 * TODO: do not just check the first and the second instance, check later instances too
-	 * </p>
 	 * 
 	 * @throws InvalidRecurrenceRuleException
 	 */
@@ -245,6 +302,66 @@ public class RecurrenceIteratorTest
 	}
 
 
+	@Test
+	public void testFastForward() throws InvalidRecurrenceRuleException
+	{
+		for (TestRule rule : mTestRules)
+		{
+			RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
+			if (rule.start != null)
+			{
+				r.setStart(rule.start);
+			}
+			else if (!rule.floating)
+			{
+				r.setStart(ABSOLUTE_TEST_START_DATE);
+			}
+			else if (!rule.allday)
+			{
+				r.setStart(FLOATING_TEST_START_DATE);
+			}
+			else
+			{
+				r.setStart(ALLDAY_TEST_START_DATE);
+			}
+
+			for (String ffto : FF_DATES)
+			{
+				RecurrenceIterator original = r.iterator();
+
+				RecurrenceIterator ffIterator = r.iterator();
+
+				long fftodate = Calendar.parse(ffto).getTimeInMillis();
+
+				ffIterator.fastForward(fftodate);
+				int count = 0;
+
+				// fast forward original manually
+				while (original.hasNext() && original.peekMillis() < fftodate)
+				{
+
+					original.nextMillis();
+					if (count++ == MAX_ITERATIONS)
+					{
+						break;
+					}
+				}
+
+				while (original.hasNext() && ffIterator.hasNext() && count < MAX_ITERATIONS)
+				{
+					assertEquals(rule.rule, original.nextMillis(), ffIterator.nextMillis());
+					count++;
+				}
+
+				if (count < MAX_ITERATIONS)
+				{
+					assertEquals(rule.rule, original.hasNext(), ffIterator.hasNext());
+				}
+			}
+		}
+	}
+
+
 	// @Test
 	public void testSpecial() throws InvalidRecurrenceRuleException
 	{
@@ -315,7 +432,6 @@ public class RecurrenceIteratorTest
 
 	static
 	{
-
 		/*
 		 * Add a number of recurrence rules taken from the internet.
 		 */
@@ -887,6 +1003,10 @@ public class RecurrenceIteratorTest
 		mTestRules
 			.add(new TestRule(
 				"FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+				.setStart("20120101").setUntil("20131231").setInstances(731));
+		mTestRules
+			.add(new TestRule(
+				"FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;UNTIL=20131231")
 				.setStart("20120101").setUntil("20131231").setInstances(731));
 		mTestRules
 			.add(new TestRule(

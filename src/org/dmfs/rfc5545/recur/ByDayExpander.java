@@ -109,15 +109,12 @@ final class ByDayExpander extends ByExpander
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
 			// we have to filter by month
-			mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
+			mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
 		}
 		else
 		{
 			mMonths = null;
 		}
-
-		// for now always sort the result
-		setNeedsSorting(true);
 	}
 
 

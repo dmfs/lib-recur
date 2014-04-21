@@ -60,9 +60,6 @@ final class ByMonthDayExpander extends ByExpander
 			: Scope.WEEKLY)
 			: Scope.MONTHLY;
 
-		// We have to sort the expanded set if there are negative month days or we expand multiple month days in a non-monthly scope
-		setNeedsSorting(mMonthDays[0] < 0 || mMonthDays.length > 1 && mScope != Scope.MONTHLY);
-
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
 			// we have to filter by month

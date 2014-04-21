@@ -46,7 +46,7 @@ final class SanityFilter extends RuleIterator
 	private boolean mFirst = true;
 
 	/**
-	 * The {@link Calendar} of the first instance (i.e. DTSTART).
+	 * The first instance (i.e. DTSTART).
 	 */
 	private final long mStart;
 

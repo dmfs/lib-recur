@@ -175,7 +175,7 @@ public final class FastWeeklyIterator extends ByExpander
 
 		if (mInstanceLimit > 0 && mCount > mInstanceLimit)
 		{
-			return Long.MIN_VALUE;
+			return mNextInstance = Long.MIN_VALUE;
 		}
 
 		long result = mNextInstance;
@@ -216,4 +216,21 @@ public final class FastWeeklyIterator extends ByExpander
 		// we don't need that.
 	}
 
+
+	@Override
+	void fastForward(long untilInstance)
+	{
+		int untilYear = Instance.year(untilInstance);
+		int untilMonth = Instance.month(untilInstance);
+		int monthsOfPrevYear = mCalendarMetrics.getMonthsPerYear(untilYear - 1);
+		int nextMonth = Instance.month(mNextInstance);
+
+		/* we have to ensure we iterate the correct week, so we just stop one month before */
+		while ((mYear < untilYear - 1 || mYear == untilYear - 1 && untilMonth == 0 && nextMonth < monthsOfPrevYear - 1 || mYear == untilYear
+			&& nextMonth < untilMonth)
+			&& mNextInstance > Long.MIN_VALUE)
+		{
+			nextMonth = Instance.month(next());
+		}
+	}
 }

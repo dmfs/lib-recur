@@ -140,4 +140,13 @@ public final class FastBirthdayIterator extends ByExpander
 		// we don't need that.
 	}
 
+
+	@Override
+	void fastForward(long untilInstance)
+	{
+		int untilYear = Instance.year(untilInstance);
+		int nextYear = Instance.year(mNextInstance);
+		mNextInstance = Instance.setYear(mNextInstance, nextYear + (Math.max(0, untilYear - nextYear) % mInterval) * mInterval);
+
+	}
 }

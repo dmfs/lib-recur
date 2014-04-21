@@ -209,6 +209,42 @@ public class RecurrenceSetIterator
 	}
 
 
+	public void fastForward(long until)
+	{
+		if (mInstanceCache != null)
+		{
+			long[] instanceCache = mInstanceCache;
+			int next = mNextInstance;
+			int instanceCount = mInstancesInCache;
+
+			while (next < instanceCount && instanceCache[next] < until)
+			{
+				next++;
+			}
+
+			if (next < mInstancesInCache)
+			{
+				mNextInstance = next;
+				return;
+			}
+		}
+
+		// no upcoming instances in cache, fast forward all adapters
+		for (AbstractRecurrenceAdapter instances : mInstances)
+		{
+			instances.fastForward(until);
+		}
+
+		if (mExceptions != null)
+		{
+			for (AbstractRecurrenceAdapter exceptions : mExceptions)
+			{
+				exceptions.fastForward(until);
+			}
+		}
+	}
+
+
 	/**
 	 * Populate the instance cache. It reads up to {@link #INSTANCE_CACHE_SIZE} instances into {@link #mInstanceCache} and sets {@link #mInstancesInCache} to
 	 * the actual number of instances in the cache. If {@link #mInstancesInCache} is less than {@link #INSTANCE_CACHE_SIZE} then you know that there are no more

@@ -332,6 +332,7 @@ public class RecurrenceParserTest
 				rule.assertInvalidRules(r.toString());
 				rule.assertObligatoryRuleParts(r.toString());
 				r.setStart(rule.start);
+				rule.setIterationStart(rule.start);
 				RecurrenceIterator it = r.iterator();
 				Set<Calendar> instances = new HashSet<Calendar>();
 				int count = 0;
@@ -362,6 +363,7 @@ public class RecurrenceParserTest
 				}
 				else
 				{
+					e.printStackTrace();
 					fail("Exception occured.");
 				}
 

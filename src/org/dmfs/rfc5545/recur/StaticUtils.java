@@ -50,8 +50,7 @@ public abstract class StaticUtils
 
 		for (int i = 0; i < count; ++i)
 		{
-			int element = list.get(i);
-			result[i] = element;
+			int element = result[i] = list.get(i);
 			needsSorting |= last > element;
 			last = element;
 		}
@@ -82,8 +81,7 @@ public abstract class StaticUtils
 
 		for (int i = 0; i < count; ++i)
 		{
-			int element = list.get(i);
-			result[i] = element;
+			result[i] = list.get(i);
 		}
 
 		return result;
@@ -92,7 +90,7 @@ public abstract class StaticUtils
 
 	/**
 	 * Perform a linear search for an integer in a given array. For small fields a linear search can be faster than a binary search. So use this if you know
-	 * your field contains a couple of entries only.
+	 * your field contains only few entries.
 	 * 
 	 * @param array
 	 *            The array to search in.

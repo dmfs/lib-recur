@@ -130,12 +130,12 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 
 
 	@Override
-	public void fastForward(long nextDate)
+	public void fastForward(long until)
 	{
 		int count = mCount;
 		int next = mNext;
 		long[] instances = mInstances;
-		while (next < count && instances[next] < nextDate)
+		while (next < count && instances[next] < until)
 		{
 			++next;
 		}

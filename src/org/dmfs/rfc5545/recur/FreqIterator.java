@@ -92,133 +92,19 @@ public final class FreqIterator extends ByExpander
 	@Override
 	public long next()
 	{
-		CalendarMetrics calendarMetrics = mCalendarMetrics;
+		final CalendarMetrics calendarMetrics = mCalendarMetrics;
+
 		long result;
 		int errorCountdown = MAX_EMPTY_SETS;
 		do
 		{
-			result = Instance.make(mNextYear, mNextMonth, mNextDayOfMonth, mNextHour, mNextMinute, mNextSecond, mNextDayOfWeek);
-
 			// ensure we're not trapped in an infinite loop
 			if (--errorCountdown < 0)
 			{
 				throw new IllegalArgumentException("too many empty recurrence sets");
 			}
 
-			switch (mFreq)
-			{
-				case YEARLY:
-				{
-					mNextYear += mInterval;
-					break;
-				}
-				case MONTHLY:
-				{
-					mNextMonth += mInterval;
-					int maxMonths;
-					while (mNextMonth >= (maxMonths = calendarMetrics.getMonthsPerYear(mNextYear)))
-					{
-						mNextMonth -= maxMonths;
-						++mNextYear;
-					}
-					break;
-				}
-				case WEEKLY:
-				{
-					mNextDayOfYear += 7 * mInterval;
-
-					int maxDays;
-					while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
-					{
-						mNextDayOfYear -= maxDays;
-						++mNextYear;
-					}
-					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-					mNextMonth = CalendarMetrics.month(monthAndDay);
-					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-
-					break;
-				}
-				case DAILY:
-				{
-					mNextDayOfYear += mInterval;
-
-					int maxDays;
-					while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
-					{
-						mNextDayOfYear -= maxDays;
-						++mNextYear;
-					}
-					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-					mNextMonth = CalendarMetrics.month(monthAndDay);
-					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					break;
-				}
-				case HOURLY:
-				{
-					mNextHour += mInterval;
-
-					if (mNextHour > 23)
-					{
-						mNextDayOfYear += mNextHour / 24;
-						mNextHour %= 24;
-						int maxDays;
-						while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
-						{
-							mNextDayOfYear -= maxDays;
-							++mNextYear;
-						}
-					}
-					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-					mNextMonth = CalendarMetrics.month(monthAndDay);
-					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					break;
-				}
-				case MINUTELY:
-				{
-					mNextMinute += mInterval;
-
-					if (mNextMinute > 59)
-					{
-						mNextDayOfYear += (mNextHour + mNextMinute / 60) / 24 + mNextMinute / (24 * 60);
-						mNextHour = (mNextHour + mNextMinute / 60) % 24;
-						mNextMinute %= 60;
-						int maxDays;
-						while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
-						{
-							mNextDayOfYear -= maxDays;
-							++mNextYear;
-						}
-					}
-					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-					mNextMonth = CalendarMetrics.month(monthAndDay);
-					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					break;
-				}
-				case SECONDLY:
-				{
-					mNextSecond += mInterval;
-
-					if (mNextSecond > 59)
-					{
-						mNextDayOfYear += (mNextHour + (mNextMinute + mNextSecond / 60) / 60) / 24 + mNextSecond / (24 * 60 * 60);
-						mNextHour = (mNextHour + (mNextMinute + mNextSecond / 60) / 60) % 24;
-						mNextMinute = (mNextMinute + mNextSecond / 60) % 60;
-						mNextSecond %= 60;
-						int maxDays;
-						while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
-						{
-							mNextDayOfYear -= maxDays;
-							++mNextYear;
-						}
-					}
-					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-					mNextMonth = CalendarMetrics.month(monthAndDay);
-					mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
-					break;
-				}
-
-			}
+			result = nextInstance(calendarMetrics);
 		} while (mFilterCount > 0 && filter(result));
 
 		return result;
@@ -234,10 +120,180 @@ public final class FreqIterator extends ByExpander
 	}
 
 
+	private long nextInstance(final CalendarMetrics calendarMetrics)
+	{
+		long result = Instance.make(mNextYear, mNextMonth, mNextDayOfMonth, mNextHour, mNextMinute, mNextSecond, mNextDayOfWeek);
+
+		switch (mFreq)
+		{
+			case YEARLY:
+			{
+				mNextYear += mInterval;
+				break;
+			}
+			case MONTHLY:
+			{
+				mNextMonth += mInterval;
+				int maxMonths;
+				while (mNextMonth >= (maxMonths = calendarMetrics.getMonthsPerYear(mNextYear)))
+				{
+					mNextMonth -= maxMonths;
+					++mNextYear;
+				}
+				break;
+			}
+			case WEEKLY:
+			{
+				mNextDayOfYear += 7 * mInterval;
+
+				int maxDays;
+				while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
+				{
+					mNextDayOfYear -= maxDays;
+					++mNextYear;
+				}
+				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
+				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
+
+				break;
+			}
+			case DAILY:
+			{
+				mNextDayOfYear += mInterval;
+
+				int maxDays;
+				while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
+				{
+					mNextDayOfYear -= maxDays;
+					++mNextYear;
+				}
+				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
+				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
+				break;
+			}
+			case HOURLY:
+			{
+				mNextHour += mInterval;
+
+				if (mNextHour > 23)
+				{
+					mNextDayOfYear += mNextHour / 24;
+					mNextHour %= 24;
+					int maxDays;
+					while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
+					{
+						mNextDayOfYear -= maxDays;
+						++mNextYear;
+					}
+				}
+				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
+				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
+				break;
+			}
+			case MINUTELY:
+			{
+				mNextMinute += mInterval;
+
+				if (mNextMinute > 59)
+				{
+					mNextDayOfYear += (mNextHour + mNextMinute / 60) / 24 + mNextMinute / (24 * 60);
+					mNextHour = (mNextHour + mNextMinute / 60) % 24;
+					mNextMinute %= 60;
+					int maxDays;
+					while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
+					{
+						mNextDayOfYear -= maxDays;
+						++mNextYear;
+					}
+				}
+				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
+				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
+				break;
+			}
+			case SECONDLY:
+			{
+				mNextSecond += mInterval;
+
+				if (mNextSecond > 59)
+				{
+					mNextDayOfYear += (mNextHour + (mNextMinute + mNextSecond / 60) / 60) / 24 + mNextSecond / (24 * 60 * 60);
+					mNextHour = (mNextHour + (mNextMinute + mNextSecond / 60) / 60) % 24;
+					mNextMinute = (mNextMinute + mNextSecond / 60) % 60;
+					mNextSecond %= 60;
+					int maxDays;
+					while (mNextDayOfYear > (maxDays = calendarMetrics.getDaysPerYear(mNextYear)))
+					{
+						mNextDayOfYear -= maxDays;
+						++mNextYear;
+					}
+				}
+				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
+				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
+				break;
+			}
+
+		}
+		return result;
+	}
+
+
 	@Override
 	void expand(long instance, long start)
 	{
 		// we don't need that.
 	}
 
+
+	@Override
+	void fastForward(long untilInstance)
+	{
+		int untilYear = Instance.year(untilInstance);
+		int untilMonth = Instance.month(untilInstance);
+		int untilDayOfMonth = Instance.dayOfMonth(untilInstance);
+		final CalendarMetrics calendarMetrics = mCalendarMetrics;
+
+		switch (mFreq)
+		{
+			case YEARLY:
+			{
+				mNextYear += (Math.max(0, untilYear - mNextYear) % mInterval) * mInterval;
+				break;
+			}
+			case MONTHLY:
+			{
+				while (mNextYear < untilYear || mNextYear == untilYear && mNextMonth < untilMonth)
+				{
+					nextInstance(calendarMetrics);
+				}
+				break;
+			}
+			case WEEKLY:
+			{
+				int monthsOfPrevYear = mCalendarMetrics.getMonthsPerYear(untilYear - 1);
+				/* we have to ensure we iterate the correct week, so we just stop one month before */
+				while (mNextYear < untilYear - 1 || mNextYear == untilYear - 1 && untilMonth == 0 && mNextMonth < monthsOfPrevYear - 1
+					|| mNextYear == untilYear && mNextMonth < untilMonth)
+				{
+					nextInstance(calendarMetrics);
+				}
+				break;
+			}
+			case DAILY:
+			{
+				while (mNextYear < untilYear || mNextYear == untilYear
+					&& (mNextMonth < untilMonth || mNextMonth == untilMonth && mNextDayOfMonth < untilDayOfMonth))
+				{
+					nextInstance(calendarMetrics);
+				}
+				break;
+			}
+			default:
+				/* do nothing */
+		}
+	}
 }

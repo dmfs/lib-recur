@@ -47,6 +47,11 @@ final class LongArray
 	 */
 	private int mPos = 0;
 
+	/**
+	 * Indicates whether this field is sorted or not.
+	 */
+	private boolean mSorted = true;
+
 
 	/**
 	 * Create a new LongArray with the default size of {@value #DEFAULT_SIZE} entries.
@@ -77,12 +82,17 @@ final class LongArray
 	 */
 	public void add(long data)
 	{
-		int len = mLongs.length;
-		if (mCount == len)
+		long[] longs = mLongs;
+		int len = longs.length;
+		int count = mCount;
+		if (count == len)
 		{
 			resizeBuffer(len + (len >> 1));
+			longs = mLongs;
 		}
-		mLongs[mCount++] = data;
+		mSorted &= count == 0 || data >= longs[count - 1];
+		longs[count++] = data;
+		mCount = count;
 	}
 
 
@@ -105,10 +115,9 @@ final class LongArray
 	 */
 	public void sort()
 	{
-		int count = mCount;
-		if (count > 1)
+		if (!mSorted)
 		{
-			Arrays.sort(mLongs, 0, count);
+			Arrays.sort(mLongs, 0, mCount);
 		}
 	}
 
@@ -120,6 +129,7 @@ final class LongArray
 	{
 		mCount = 0;
 		mPos = 0;
+		mSorted = true;
 	}
 
 
@@ -158,4 +168,20 @@ final class LongArray
 		}
 		return mLongs[mPos++];
 	}
+
+
+	/**
+	 * Peek at the next long from the array without actually iterating it.
+	 * 
+	 * @return the next long value.
+	 */
+	public long peek()
+	{
+		if (mPos >= mCount)
+		{
+			throw new ArrayIndexOutOfBoundsException("no more elements");
+		}
+		return mLongs[mPos];
+	}
+
 }

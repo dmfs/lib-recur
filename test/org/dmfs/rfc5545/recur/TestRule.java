@@ -45,6 +45,7 @@ public class TestRule
 	public boolean floating = false;
 	public boolean allday = false;
 	public Calendar start = null;
+	public Calendar iterationStart = null;
 	public int instances = -1;
 	public boolean printInstances = false;
 	public static final RfcMode defaultMode = RfcMode.RFC5545_LAX;
@@ -77,6 +78,13 @@ public class TestRule
 	public TestRule print()
 	{
 		printInstances = true;
+		return this;
+	}
+
+
+	public TestRule setIterationStart(Calendar start)
+	{
+		iterationStart = start;
 		return this;
 	}
 
@@ -277,6 +285,18 @@ public class TestRule
 	}
 
 
+	public void assertAllDay(Calendar instance)
+	{
+		assertEquals(instance.isAllDay(), iterationStart.isAllDay());
+	}
+
+
+	public void assertTimeZone(Calendar instance)
+	{
+		assertEquals(instance.getTimeZone(), iterationStart.getTimeZone());
+	}
+
+
 	public void testInstance(Calendar instance)
 	{
 		if (printInstances)
@@ -291,6 +311,8 @@ public class TestRule
 		assertHours(instance);
 		assertMinutes(instance);
 		assertSeconds(instance);
+		assertAllDay(instance);
+		assertTimeZone(instance);
 	}
 
 
@@ -299,7 +321,7 @@ public class TestRule
 		if (this.instances > 0)
 		{
 			String errMsg = "";
-			 errMsg = "invalid number of instances for " + rule + " with start " + start;
+			errMsg = "invalid number of instances for " + rule + " with start " + start;
 			assertEquals(errMsg, this.instances, instances);
 		}
 	}

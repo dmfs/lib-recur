@@ -69,11 +69,6 @@ abstract class ByExpander extends RuleIterator
 	 */
 	int mFilterCount = 0;
 
-	/**
-	 * Indicates that we have to sort the result.
-	 */
-	private boolean mNeedsSorting = false;
-
 
 	/**
 	 * Create a new expander that expands the instances returned by the previous {@link RuleIterator}.
@@ -93,35 +88,24 @@ abstract class ByExpander extends RuleIterator
 	}
 
 
-	/**
-	 * Set whether the resulting set needs sorting.
-	 * 
-	 * @param needsSorting
-	 *            <code>true</code> if the the set needs to be sorted, <code>false</code>otherwise.
-	 */
-	void setNeedsSorting(boolean needsSorting)
-	{
-		mNeedsSorting = needsSorting;
-	}
-
-
 	@Override
 	public long next()
 	{
-		long next;
-		if (mWorkingSet == null || !mWorkingSet.hasNext())
+		LongArray workingSet = mWorkingSet;
+		if (workingSet == null || !workingSet.hasNext())
 		{
-			mWorkingSet = nextSet();
+			mWorkingSet = workingSet = nextSet();
 		}
-		next = mWorkingSet.next();
-		return next;
+		return workingSet.next();
 	}
 
 
 	@Override
 	LongArray nextSet()
 	{
-		LongArray resultSet = mResultSet;
+		final LongArray resultSet = mResultSet;
+		final RuleIterator previous = mPrevious;
+		final long start = mStart;
 		resultSet.clear();
 
 		int counter = 0;
@@ -133,17 +117,14 @@ abstract class ByExpander extends RuleIterator
 			}
 			counter++;
 
-			LongArray prev = mPrevious.nextSet();
+			LongArray prev = previous.nextSet();
 			while (prev.hasNext())
 			{
-				expand(prev.next(), mStart);
+				expand(prev.next(), start);
 			}
 		} while (!resultSet.hasNext());
 
-		if (mNeedsSorting)
-		{
-			resultSet.sort();
-		}
+		resultSet.sort();
 
 		return resultSet;
 	}
@@ -207,4 +188,26 @@ abstract class ByExpander extends RuleIterator
 	 *            to do so.
 	 */
 	abstract void expand(long instance, long start);
+
+
+	@Override
+	void fastForward(long untilInstance)
+	{
+		untilInstance = Instance.maskWeekday(untilInstance);
+		LongArray workingSet = mWorkingSet;
+		if (workingSet != null)
+		{
+			// we have a working set, fast forward this one first
+			while (workingSet.hasNext() && Instance.maskWeekday(workingSet.peek()) < untilInstance)
+			{
+				workingSet.next();
+			}
+		}
+
+		if (workingSet == null || !workingSet.hasNext())
+		{
+			// no working set or empty working set, fast forward previous instance
+			mPrevious.fastForward(untilInstance);
+		}
+	}
 }

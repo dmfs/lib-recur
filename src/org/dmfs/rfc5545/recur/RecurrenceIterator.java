@@ -27,7 +27,8 @@ import java.util.TimeZone;
  * or at a certain date.
  * </p>
  * <p>
- * TODO: optimize {@link #skip(long)} & {@link #skip(Calendar)}. Often we can skip entire intervals so we don't need to iterate all the instances in between.
+ * TODO: optimize {@link #fastForward(long)} & {@link #fastForward(Calendar)}. Often we can skip entire intervals so we don't need to iterate all the instances
+ * in between.
  * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -46,7 +47,7 @@ public final class RecurrenceIterator
 	/**
 	 * The upcoming instance, if any.
 	 */
-	private long mNextInstance = Long.MIN_VALUE;
+	private long mNextInstance;
 
 	/**
 	 * A helper for date calculations.
@@ -62,11 +63,6 @@ public final class RecurrenceIterator
 	 * The time zone oft the start instance or <code>null</code> if it's a floating time
 	 */
 	private final TimeZone mTimeZone;
-
-	/**
-	 * Caches the upcoming calendar after a call to {@link #peekCalendar()}.
-	 */
-	private Calendar mNextCalendar;
 
 	/**
 	 * Caches the upcoming millis after a call to {@link #peekMillis()}.
@@ -88,6 +84,21 @@ public final class RecurrenceIterator
 		mAllDay = start.isAllDay();
 		mTimeZone = start.isFloating() ? null : start.getTimeZone();
 		mHelper = start.clone();
+		fetchNextInstance();
+	}
+
+
+	private void fetchNextInstance()
+	{
+		long instance = mNextInstance = mRuleIterator.next();
+
+		if (instance != Long.MIN_VALUE)
+		{
+			mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
+				Instance.second(instance));
+
+			mNextMillis = mHelper.getTimeInMillis();
+		}
 	}
 
 
@@ -98,31 +109,13 @@ public final class RecurrenceIterator
 	 */
 	public long nextMillis()
 	{
-		if (mNextMillis != Long.MIN_VALUE)
+		if (mNextInstance == Long.MIN_VALUE)
 		{
-			mNextMillis = Long.MIN_VALUE;
-			mNextCalendar = null;
-			return mNextMillis;
+			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
-
-		long instance = mNextInstance;
-		if (instance == Long.MIN_VALUE)
-		{
-			instance = mRuleIterator.next();
-			if (instance == Long.MIN_VALUE)
-			{
-				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-			}
-		}
-		else
-		{
-			mNextInstance = Long.MIN_VALUE;
-		}
-
-		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
-			Instance.second(instance));
-
-		return mHelper.getTimeInMillis();
+		long result = mNextMillis;
+		fetchNextInstance();
+		return result;
 	}
 
 
@@ -133,32 +126,13 @@ public final class RecurrenceIterator
 	 */
 	public Calendar nextCalendar()
 	{
-		if (mNextCalendar != null)
+		if (mNextInstance == Long.MIN_VALUE)
 		{
-			mNextCalendar = null;
-			mNextMillis = Long.MIN_VALUE;
-			return mNextCalendar;
+			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
-
-		long instance = mNextInstance;
-		if (instance == Long.MIN_VALUE)
-		{
-			instance = mRuleIterator.next();
-			if (instance == Long.MIN_VALUE)
-			{
-				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-			}
-		}
-		else
-		{
-			mNextInstance = Long.MIN_VALUE;
-		}
-
-		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
-			Instance.second(instance));
-
+		// mHelper always holds the last calculated instance
 		Calendar result = mHelper.clone();
-
+		fetchNextInstance();
 		if (mAllDay)
 		{
 			result.toAllDay();
@@ -174,7 +148,7 @@ public final class RecurrenceIterator
 
 	public boolean hasNext()
 	{
-		return (mNextInstance != Long.MIN_VALUE || (mNextInstance = mRuleIterator.next()) != Long.MIN_VALUE);
+		return mNextInstance != Long.MIN_VALUE;
 	}
 
 
@@ -186,26 +160,11 @@ public final class RecurrenceIterator
 	 */
 	public long peekMillis()
 	{
-		if (mNextMillis != Long.MIN_VALUE)
+		if (mNextInstance == Long.MIN_VALUE)
 		{
-			return mNextMillis;
+			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
-
-		long instance = mNextInstance;
-		if (instance == Long.MIN_VALUE)
-		{
-			instance = mRuleIterator.next();
-
-			if (instance == Long.MIN_VALUE)
-			{
-				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-			}
-		}
-
-		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
-			Instance.second(instance));
-
-		return mNextMillis = mHelper.getTimeInMillis();
+		return mNextMillis;
 	}
 
 
@@ -217,36 +176,20 @@ public final class RecurrenceIterator
 	 */
 	public Calendar peekCalendar()
 	{
-		if (mNextCalendar != null)
+		if (mNextInstance == Long.MIN_VALUE)
 		{
-			return mNextCalendar;
+			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
-
-		long instance = mNextInstance;
-		if (instance == Long.MIN_VALUE)
-		{
-			instance = mRuleIterator.next();
-
-			if (instance == Long.MIN_VALUE)
-			{
-				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-			}
-		}
-
-		mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
-			Instance.second(instance));
-
-		Calendar result = mNextCalendar = mHelper.clone();
-
+		// mHelper always holds the last calculated instance
+		Calendar result = mHelper.clone();
 		if (mAllDay)
 		{
-			result.isAllDay();
+			result.toAllDay();
 		}
 		else
 		{
 			result.setTimeZone(mTimeZone);
 		}
-
 		return result;
 	}
 
@@ -263,17 +206,35 @@ public final class RecurrenceIterator
 	 */
 	public void skip(int skip)
 	{
-		if (mNextInstance != Long.MIN_VALUE)
+		if (skip == 0)
 		{
-			--skip;
-			mNextInstance = Long.MIN_VALUE;
+			return;
 		}
-		while (skip > 0 && mRuleIterator.next() != Long.MIN_VALUE)
+
+		long instance;
+		do
 		{
-			--skip;
+			instance = mRuleIterator.next();
+		} while (skip-- > 0);
+
+		mNextInstance = instance;
+
+		if (instance != Long.MIN_VALUE)
+		{
+			mHelper.set(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance), Instance.hour(instance), Instance.minute(instance),
+				Instance.second(instance));
+
+			if (mAllDay)
+			{
+				mHelper.toAllDay();
+			}
+			else
+			{
+				mHelper.setTimeZone(mTimeZone);
+			}
+
+			mNextMillis = mHelper.getTimeInMillis();
 		}
-		mNextCalendar = null;
-		mNextMillis = Long.MIN_VALUE;
 	}
 
 
@@ -287,22 +248,40 @@ public final class RecurrenceIterator
 	 * @param until
 	 *            The time stamp of earliest date to be returned by the next call to {@link #next()}.
 	 */
-	public void skip(long until)
+	public void fastForward(long until)
 	{
 		if (!hasNext())
 		{
 			return;
 		}
 
-		long next = peekMillis();
-		while (hasNext() && next < until)
+		// convert until to an instance
+		Calendar untilCalendar = mHelper.clone();
+		untilCalendar.setTimeInMillis(until);
+		long untilInstance = Instance.make(untilCalendar);
+
+		long next = Instance.maskWeekday(mNextInstance);
+		if (untilInstance <= next)
 		{
-			skip(1);
-			next = peekMillis();
+			// nothing to do
+			return;
 		}
 
-		mNextCalendar = null;
-		mNextMillis = Long.MIN_VALUE;
+		mRuleIterator.fastForward(untilInstance);
+
+		while (next != Long.MIN_VALUE && next < untilInstance)
+		{
+			next = mRuleIterator.next();
+		}
+
+		mNextInstance = next;
+		if (next != Long.MIN_VALUE)
+		{
+			mHelper
+				.set(Instance.year(next), Instance.month(next), Instance.dayOfMonth(next), Instance.hour(next), Instance.minute(next), Instance.second(next));
+
+			mNextMillis = mHelper.getTimeInMillis();
+		}
 	}
 
 
@@ -316,8 +295,45 @@ public final class RecurrenceIterator
 	 * @param until
 	 *            The earliest date to be returned by the next call to {@link #next()}.
 	 */
-	public void skip(Calendar until)
+	public void fastForward(Calendar until)
 	{
-		skip(until.getTimeInMillis());
+		if (!hasNext())
+		{
+			return;
+		}
+
+		Calendar untilCalendar = until;
+		TimeZone untilTz = until.getTimeZone();
+		if (mTimeZone != null && !mTimeZone.equals(untilTz) || mTimeZone == null && untilTz != null)
+		{
+			untilCalendar = until.clone();
+			untilCalendar.setTimeZone(mTimeZone);
+		}
+
+		// convert until to an instance
+		long untilInstance = Instance.make(untilCalendar);
+
+		long next = Instance.maskWeekday(mNextInstance);
+		if (untilInstance <= next)
+		{
+			// nothing to do
+			return;
+		}
+
+		mRuleIterator.fastForward(untilInstance);
+
+		while (next != Long.MIN_VALUE && next < untilInstance)
+		{
+			next = mRuleIterator.next();
+		}
+
+		mNextInstance = next;
+		if (next != Long.MIN_VALUE)
+		{
+			mHelper
+				.set(Instance.year(next), Instance.month(next), Instance.dayOfMonth(next), Instance.hour(next), Instance.minute(next), Instance.second(next));
+
+			mNextMillis = mHelper.getTimeInMillis();
+		}
 	}
 }

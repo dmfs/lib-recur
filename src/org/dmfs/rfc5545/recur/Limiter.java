@@ -59,7 +59,7 @@ abstract class Limiter extends RuleIterator
 	 * Returns true if the last instance has been iterated.
 	 * 
 	 * @param instance
-	 *            The {@link Calendar} instance to check.
+	 *            The instance to check.
 	 * @return <code>true</code> if the limit of the recurrence set has been reached and no more instances should be iterated.
 	 */
 	abstract boolean stop(long instance);
