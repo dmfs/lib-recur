@@ -17,6 +17,9 @@
 
 package org.dmfs.rfc5545.recur;
 
+import java.util.TimeZone;
+
+
 /**
  * Provides a set of methods that return all kinds of information about a calendar and do some calendar calculations.
  * 
@@ -220,12 +223,26 @@ public abstract class CalendarMetrics
 	public abstract int getYearDayOfWeekStart(int year, int week);
 
 
-	public long getUtcTimeStamp(int utcYear, int utcMonth, int utcDayOfMonth, int utcHours, int utcMinutes, int utcSeconds, int utcMillis)
-	{
-		int yearDay = getDayOfYear(utcYear, utcMonth, utcDayOfMonth);
-		return getUtcTimeStamp(utcYear, yearDay, utcHours, utcMinutes, utcSeconds, utcMillis);
-	}
-
-
-	public abstract long getUtcTimeStamp(int utcYear, int utcYearDay, int utcHours, int utcMinutes, int utcSeconds, int utcMillis);
+	/**
+	 * Convert the given (local) date to milliseconds since the epoch using the given {@link TimeZone}.
+	 * 
+	 * @param timeZone
+	 *            The time zone or <code>null</code> for floating dates (and all-day dates).
+	 * @param year
+	 *            The year.
+	 * @param month
+	 *            The month (0-based).
+	 * @param dayOfMonth
+	 *            The day of the month.
+	 * @param hours
+	 *            The hour of the day.
+	 * @param minutes
+	 *            The minutes.
+	 * @param seconds
+	 *            The seconds.
+	 * @param millis
+	 *            The milliseconds.
+	 * @return The milliseconds since the epoch.
+	 */
+	public abstract long toMillis(TimeZone timeZone, int year, int month, int dayOfMonth, int hours, int minutes, int seconds, int millis);
 }

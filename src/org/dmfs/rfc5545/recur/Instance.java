@@ -17,6 +17,9 @@
 
 package org.dmfs.rfc5545.recur;
 
+import java.util.TimeZone;
+
+
 /**
  * This class provides a set of static methods to manipulate instances stored in a long value.
  * 
@@ -30,6 +33,8 @@ package org.dmfs.rfc5545.recur;
  */
 final class Instance
 {
+	private final static TimeZone UTC = TimeZone.getTimeZone("UTC");
+
 	private final static int YEAR_BITS = 18;
 	private final static int MONTH_BITS = 5;
 	private final static int DAY_BITS = 7;
@@ -206,6 +211,24 @@ final class Instance
 	public static int dayOfWeek(long instance)
 	{
 		return (int) ((instance & WEEKDAY_MASK) >> WEEKDAY_POS);
+	}
+
+
+	/**
+	 * Convert an instance to milliseconds since the epoch (i.e. 1970-01-01 0:00:00 UTC).
+	 * 
+	 * @param instance
+	 *            The instance to convert.
+	 * @param timeZone
+	 *            The time zone or <code>null</code> for all day and floating instances
+	 * @param calendarMetrics
+	 *            The calendar metrics to use,
+	 * @return The time in milliseconds since the epoch of this instance.
+	 */
+	public static long toMillis(long instance, TimeZone timeZone, CalendarMetrics calendarMetrics)
+	{
+		return calendarMetrics.toMillis(timeZone == null ? UTC : timeZone, year(instance), month(instance), dayOfMonth(instance), hour(instance),
+			minute(instance), second(instance), 0);
 	}
 
 

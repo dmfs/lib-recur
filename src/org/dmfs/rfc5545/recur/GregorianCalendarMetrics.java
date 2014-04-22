@@ -17,6 +17,8 @@
 
 package org.dmfs.rfc5545.recur;
 
+import java.util.TimeZone;
+
 import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
 
 
@@ -277,13 +279,44 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public long getUtcTimeStamp(int utcYear, int utcYearDay, int utcHours, int utcMinutes, int utcSeconds, int utcMillis)
+	public long toMillis(TimeZone timeZone, int year, int month, int dayOfMonth, int hours, int minutes, int seconds, int millis)
 	{
-		long result = (utcYear - 1970) * 365;
-		result = (result + utcYearDay - 1 + numLeapDaysSince1970(utcYear)) * 24;
-		result = (result + utcHours) * 60;
-		result = (result + utcMinutes) * 60;
-		result = (result + utcSeconds) * 1000 + utcMillis;
+		int timeInMillis = ((hours * 60 + minutes) * 60 + seconds) * 1000 + millis;
+		int dayOfWeek = getDayOfWeek(year, month, dayOfMonth);
+
+		int dstOffset = timeZone.getOffset(Calendar.AD, year, month, dayOfMonth, dayOfWeek + 1/* Calendar uses 1-7 */, timeInMillis) - timeZone.getRawOffset();
+
+		int yearDay = getDayOfYear(year, month, dayOfMonth);
+		long localTime = getTimeStamp(year, yearDay, hours, minutes, seconds, millis);
+
+		timeInMillis -= dstOffset;
+		if (timeInMillis < 0)
+		{
+			timeInMillis += 24 * 60 * 60 * 1000;
+			if (--dayOfMonth == 0)
+			{
+				if (--month < 0)
+				{
+					--year;
+					month = getMonthsPerYear(year) - 1;
+				}
+				dayOfMonth = getDaysPerMonth(year, month);
+				dayOfWeek = (dayOfWeek + 6) % 7;
+			}
+		}
+		int offset2 = timeZone.getOffset(Calendar.AD, year, month, dayOfMonth, dayOfWeek + 1, timeInMillis);
+
+		return localTime - offset2;
+	}
+
+
+	long getTimeStamp(int year, int yearDay, int hours, int minutes, int seconds, int millis)
+	{
+		long result = (year - 1970) * 365;
+		result = (result + yearDay - 1 + numLeapDaysSince1970(year)) * 24;
+		result = (result + hours) * 60;
+		result = (result + minutes) * 60;
+		result = (result + seconds) * 1000 + millis;
 
 		return result;
 	}

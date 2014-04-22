@@ -1643,7 +1643,7 @@ public final class RecurrenceRule
 			}
 		}
 		// add a SanityFilter if not already done.
-		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarMetrics, startInstance), start);
+		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarMetrics, startInstance), start, calendarMetrics);
 	}
 
 

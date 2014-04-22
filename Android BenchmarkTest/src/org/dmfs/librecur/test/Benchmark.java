@@ -40,7 +40,7 @@ public abstract class Benchmark
 		long start = System.nanoTime();
 		for (int i = 0; i < iterations; ++i)
 		{
-			result ^= run(rrule, startCalendar, startTime, rangeStart, rangeEnd);
+			result += run(rrule, startCalendar, startTime, rangeStart, rangeEnd);
 		}
 		this.result = result;
 		return System.nanoTime() - start;

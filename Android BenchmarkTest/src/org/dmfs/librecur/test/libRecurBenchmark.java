@@ -9,6 +9,7 @@ import org.dmfs.rfc5545.recur.recurrenceset.RecurrenceSet;
 import org.dmfs.rfc5545.recur.recurrenceset.RecurrenceSetIterator;
 
 import android.text.format.Time;
+import android.util.Log;
 
 
 public class libRecurBenchmark extends BenchmarkSuite
@@ -66,7 +67,8 @@ public class libRecurBenchmark extends BenchmarkSuite
 			long lastdate = Long.MIN_VALUE;
 			while (lastdate < rangeEnd && iterator.hasNext())
 			{
-				result += lastdate = iterator.next();
+				lastdate = iterator.next();
+				result += lastdate;
 				++instances;
 			}
 			this.instances = instances;
