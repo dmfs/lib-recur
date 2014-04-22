@@ -96,9 +96,11 @@ final class ByDayFilter extends ByFilter
 		super(calendarMetrics);
 		List<WeekdayNum> byDay = rule.getByDayPart();
 
-		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
-			: Scope.WEEKLY)
-			: (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
+		boolean hasByMonth = rule.hasPart(Part.BYMONTH);
+		Freq freq = rule.getFreq();
+
+		mScope = rule.hasPart(Part.BYWEEKNO) || freq == Freq.WEEKLY ? (hasByMonth || freq == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY : Scope.WEEKLY)
+			: (hasByMonth || freq == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
 
 		boolean hasPositions = false;
 

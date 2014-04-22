@@ -102,11 +102,13 @@ final class ByDayExpander extends ByExpander
 			mByDay[i] = packWeekday(weekdayNum.pos, weekdayNum.weekday.ordinal());
 		}
 
-		mScope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY
-			: Scope.WEEKLY)
-			: (rule.hasPart(Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
+		boolean hasByMonth = rule.hasPart(Part.BYMONTH);
+		Freq freq = rule.getFreq();
 
-		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
+		mScope = rule.hasPart(Part.BYWEEKNO) || freq == Freq.WEEKLY ? (hasByMonth || freq == Freq.MONTHLY ? Scope.WEEKLY_AND_MONTHLY : Scope.WEEKLY)
+			: (hasByMonth || freq == Freq.MONTHLY ? Scope.MONTHLY : Scope.YEARLY);
+
+		if (mScope == Scope.WEEKLY_AND_MONTHLY && hasByMonth)
 		{
 			// we have to filter by month
 			mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
