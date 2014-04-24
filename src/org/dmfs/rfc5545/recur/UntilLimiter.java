@@ -50,7 +50,9 @@ final class UntilLimiter extends Limiter
 		if (startTimezone != null)
 		{
 			// switch until to the time zone of start
+			long millis = until.getTimeInMillis();
 			until.setTimeZone(startTimezone);
+			until.setTimeInMillis(millis);
 		}
 		mUntil = Instance.make(until);
 	}
