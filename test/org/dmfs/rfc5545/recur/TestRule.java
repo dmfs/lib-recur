@@ -331,7 +331,7 @@ public class TestRule
 	{
 		if (this.start != null)
 		{
-			final int[] fields = { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH };
+			final int[] fields = { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
 			for (int i = 0; i < fields.length; ++i)
 			{
 				assertEquals(this.start.get(fields[i]), instance.get(fields[i]));
