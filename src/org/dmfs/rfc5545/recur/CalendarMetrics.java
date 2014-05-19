@@ -28,6 +28,14 @@ import java.util.TimeZone;
 public abstract class CalendarMetrics
 {
 
+	public static abstract class CalendarMetricsFactory
+	{
+		public abstract CalendarMetrics getCalendarMetrics(int weekStart);
+
+
+		public abstract String toString();
+	}
+
 	/**
 	 * The first day of the week.
 	 */

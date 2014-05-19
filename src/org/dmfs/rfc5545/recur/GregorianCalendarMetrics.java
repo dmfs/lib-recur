@@ -32,6 +32,25 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
  */
 public final class GregorianCalendarMetrics extends CalendarMetrics
 {
+	public final static CalendarMetricsFactory FACTORY = new CalendarMetricsFactory()
+	{
+
+		@Override
+		public CalendarMetrics getCalendarMetrics(int weekStart)
+		{
+			return new GregorianCalendarMetrics(weekStart, 4);
+		}
+
+
+		public String toString()
+		{
+			return CALENDAR_SCALE_ALIAS;
+		};
+	};
+
+	public final static String CALENDAR_SCALE_ALIAS = "gregorian";
+	public final static String CALENDAR_SCALE_NAME = "gregory";
+
 	/**
 	 * The number of days in a specific month. This is for non-leap years. For leap years add <code>1</code> to <code>DAYS_PER_MONTH[1]</code>.
 	 */

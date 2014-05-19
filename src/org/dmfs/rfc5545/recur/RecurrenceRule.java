@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import org.dmfs.rfc5545.recur.CalendarMetrics.CalendarMetricsFactory;
+
 
 /**
  * Builder and parser for recurrence rule strings that comply with <a href="http://tools.ietf.org/html/rfc2445#section-4.3.10">RFC 2445</a> or <a
@@ -123,6 +125,29 @@ public final class RecurrenceRule
 	}
 
 	/**
+	 * Values of the new SKIP parameter as added in <a href="draft-daboo-icalendar-rscale-03">tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
+	 * 
+	 */
+	public enum Skip
+	{
+		/**
+		 * YES is the default for rules without {@link Part#SCALE} parameter. It means that non-existing dates are just ignored.
+		 */
+		YES,
+
+		/**
+		 * BACKWARD is the default for rules without {@link Part#SCALE} parameter. It means that non-existing instanced get rolled back to the previous day (for
+		 * leap days) or month (for leap months).
+		 */
+		BACKWARD,
+
+		/**
+		 * FORWARD means that non-existing instanced get rolled forward to the next day (for leap days) or month (for leap months).
+		 */
+		FORWARD;
+	}
+
+	/**
 	 * Enumeration of valid recurrence rule parts. Each of these parts may occur once in a rule. {@link #FREQ} is the only mandatory part.
 	 * <p>
 	 * Each part has a {@link ValueConverter} that knows how to parse and serialize the values the part can have. Also each part has a factory method to return
@@ -184,6 +209,34 @@ public final class RecurrenceRule
 		},
 
 		/**
+		 * RSCALE defines the calendar scale to apply. It has been introduced by <a
+		 * href="draft-daboo-icalendar-rscale-03">http://tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
+		 */
+		RSCALE(new RScaleConverter()) {
+
+			@Override
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+				throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("RSCALE doesn't have an expander.");
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("RSCALE doesn't have a filter.");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("RSCALE doesn't support expansion nor filtering");
+			}
+		},
+
+		/**
 		 * The start day of a week. The value must be a {@link Weekday}. This is relevant if any of {@link Part#BYDAY} or {@link Part#BYWEEKNO} are present.
 		 */
 		WKST(new WeekdayConverter()) {
@@ -209,9 +262,12 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of months that specify in which months the instances recur. The value is a list of integers in the range 1 to 12.
+		 * A list of months that specify in which months the instances recur. The value is a list of non-zero integers. The actual values depend on the calendar
+		 * scale and need to be validated after parsing.
+		 * 
+		 * TODO: validate month numbers.
 		 */
-		BYMONTH(new IntListConverter(1, 12)) {
+		BYMONTH(new IntListConverter(-20, 20).noZero()) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -261,9 +317,12 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of year days that specify on which year days the instances recur. The value is a list of integers in the range -366 to -1 or 1 to 366.
+		 * A list of year days that specify on which year days the instances recur. The value is a list of integers in the range -500 to -1 or 1 to 500. The
+		 * actual limits depend on the calendar scale and needs to be validated after parsing. Negative values are supported only if {@link #RSCALE} is present.
+		 * 
+		 * TODO: validate year days
 		 */
-		BYYEARDAY(new IntListConverter(-366, 366).noZero()) {
+		BYYEARDAY(new IntListConverter(-500, 500).noZero()) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -288,9 +347,12 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of month days on which the event recurs. Valid values are in the range of -31 to -1 or 1 to 31.
+		 * A list of month days on which the event recurs. Valid values are non-zero integers. The actual limits depend on the calendar scale and needs to be
+		 * validated after parsing.
+		 * 
+		 * TODO: validate month days
 		 */
-		BYMONTHDAY(new IntListConverter(-31, 31).noZero()) {
+		BYMONTHDAY(new IntListConverter(-50, 50).noZero()) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -368,6 +430,7 @@ public final class RecurrenceRule
 				return freq != Freq.SECONDLY && freq != Freq.MINUTELY && freq != Freq.HOURLY;
 			}
 		},
+
 		/**
 		 * The minutes on which the event recurs. The value must be a list of integers in the range 0 to 59.
 		 */
@@ -394,6 +457,7 @@ public final class RecurrenceRule
 				return freq != Freq.SECONDLY && freq != Freq.MINUTELY;
 			}
 		},
+
 		/**
 		 * The seconds on which the event recurs. The value must be a list of integers in the range 0 to 60.
 		 */
@@ -421,9 +485,9 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of set positions to consider when iterating the instances. The value is a list of integers between -366 and -1 or 1 and 366.
+		 * A list of set positions to consider when iterating the instances. The value is a list of integers. For now we accept any reasonable value.
 		 */
-		BYSETPOS(new IntListConverter(-366, 366).noZero()) {
+		BYSETPOS(new IntListConverter(-500, 500).noZero()) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -442,6 +506,43 @@ public final class RecurrenceRule
 			boolean expands(RecurrenceRule rule)
 			{
 				throw new UnsupportedOperationException("BYSETPOS doesn't support expansion nor filtering");
+			}
+		},
+
+		/**
+		 * SKIP defines how to handle instances that would fall on a leap day or leap month in a non-leap year. Legal values are defined in {@link Skip}. It has
+		 * been introduced by <a href="draft-daboo-icalendar-rscale-03">http://tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
+		 * 
+		 * Skipping is implemented by an expander because it might modify instances which is not supported by filters.
+		 */
+		SKIP(new SkipValueConverter()) {
+
+			@Override
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+			{
+				// don't return a SKIP expander if we skip invalid dates, SanityFilter will take care of that.
+				if (rule.getSkip() != Skip.YES)
+				{
+					return new SkipExpander(rule, previous, calendarMetrics, start);
+				}
+				else
+				{
+					return null;
+				}
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("SKIP doesn't support  filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				return true;
 			}
 		},
 
@@ -1140,6 +1241,32 @@ public final class RecurrenceRule
 
 
 	/**
+	 * Return value of the skip part of this rule.
+	 * 
+	 * @return The {@link Skip} value of this rule.
+	 */
+	public Skip getSkip()
+	{
+		Skip skip = (Skip) mParts.get(Part.SKIP);
+		return skip == null ? (mParts.containsKey(Part.RSCALE) ? Skip.BACKWARD : Skip.YES) : skip;
+	}
+
+
+	/**
+	 * Set the skip part of this recurrence rule.
+	 * 
+	 * TODO: ensure RSCALE is set if required (SKIP is not YES).
+	 * 
+	 * @param skip
+	 *            The new {@link Skip} value of this rule.
+	 */
+	public void setSkip(Skip skip)
+	{
+		mParts.put(Part.SKIP, skip);
+	}
+
+
+	/**
 	 * Get the INTERVAL of this rule.
 	 * 
 	 * @return The INVERAL of this rule or <code>1</code> if no INTERVAL has been specified.
@@ -1583,7 +1710,18 @@ public final class RecurrenceRule
 			}
 		}
 
-		CalendarMetrics calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
+		CalendarMetricsFactory calendarMetricsFactory = (CalendarMetricsFactory) mParts.get(Part.RSCALE);
+		CalendarMetrics calendarMetrics;
+		if (calendarMetricsFactory == null)
+		{
+			// TODO: this is wrong, we can not assume Gregorian Calendar if the factory is null - we need to ensure there is no RSCALE present
+			calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
+		}
+		else
+		{
+			calendarMetrics = calendarMetricsFactory.getCalendarMetrics(getWeekStart().ordinal());
+		}
+
 		boolean sanityFilterAdded = false;
 		long startInstance = Instance.make(start);
 
@@ -1622,7 +1760,7 @@ public final class RecurrenceRule
 			for (Part p : mParts.keySet())
 			{
 				// add a filter for each rule part
-				if (p != Part.INTERVAL && p != Part.WKST)
+				if (p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
 				{
 					if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
 					{
@@ -1637,7 +1775,9 @@ public final class RecurrenceRule
 					}
 					else
 					{
-						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+						// if a part returns null for the expander just skip it
+						RuleIterator newIterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+						iterator = newIterator == null ? iterator : newIterator;
 					}
 				}
 			}
@@ -2000,5 +2140,32 @@ public final class RecurrenceRule
 				throw new InvalidRecurrenceRuleException("Invalid UNTIL date: " + value, e);
 			}
 		}
+	}
+
+	private static class RScaleConverter extends ValueConverter<CalendarMetricsFactory>
+	{
+		@Override
+		public CalendarMetricsFactory parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		{
+			return UnicodeCalendarScales.getCalendarMetricsForName(value);
+		}
+	}
+
+	private static class SkipValueConverter extends ValueConverter<Skip>
+	{
+
+		@Override
+		public Skip parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		{
+			try
+			{
+				return Skip.valueOf(value);
+			}
+			catch (IllegalArgumentException e)
+			{
+				throw new InvalidRecurrenceRuleException("Unknown SKIP value " + value);
+			}
+		}
+
 	}
 }
