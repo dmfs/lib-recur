@@ -1765,6 +1765,7 @@ public final class RecurrenceRule
 					if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
 					{
 						// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
+						// TOOD: that's not working when we have a SKIP part. We need to make sure SKIP is called after BYSETPOS but before SanityFilter.
 						iterator = new SanityFilter(this, iterator, calendarMetrics, startInstance);
 						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
 						sanityFilterAdded = true;
