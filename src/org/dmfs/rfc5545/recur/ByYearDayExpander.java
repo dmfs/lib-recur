@@ -44,29 +44,19 @@ final class ByYearDayExpander extends ByExpander
 	private final Scope mScope;
 
 	/**
-	 * A helper for calendar calculations.
-	 * 
-	 * TODO: get rid of it.
-	 */
-	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
-
-	/**
 	 * The list of months if a BYMONTH part is specified in the rule. We need this to filter by month if the rule has a monthly and weekly scope.
 	 */
 	private final int[] mMonths;
 
 
-	public ByYearDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
+	public ByYearDayExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start)
 	{
-		super(previous, calendarTools, start);
+		super(previous, calendarMetrics, start);
 
 		mYearDays = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYYEARDAY));
 
 		mScope = rule.getFreq() == Freq.WEEKLY || rule.hasPart(Part.BYWEEKNO) ? rule.hasPart(Part.BYMONTH) ? Scope.WEEKLY_AND_MONTHLY : Scope.WEEKLY : rule
 			.getFreq() == Freq.YEARLY && !rule.hasPart(Part.BYMONTH) ? Scope.YEARLY : Scope.MONTHLY;
-
-		mHelper.setMinimalDaysInFirstWeek(4);
-		mHelper.setFirstDayOfWeek(rule.getWeekStart().ordinal());
 
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
@@ -102,6 +92,7 @@ final class ByYearDayExpander extends ByExpander
 			switch (mScope)
 			{
 				case WEEKLY:
+				{
 					int prevYearDays = mCalendarMetrics.getDaysPerYear(year - 1);
 					int nextYearDays = mCalendarMetrics.getDaysPerYear(year + 1);
 
@@ -113,31 +104,85 @@ final class ByYearDayExpander extends ByExpander
 						nextYearDay = day + nextYearDays + 1;
 					}
 
-					mHelper.set(year, month, dayOfMonth, hour, minute, second);
-					int oldWeek = mHelper.get(Calendar.WEEK_OF_YEAR);
-					mHelper.set(Calendar.DAY_OF_YEAR, actualDay);
+					int oldWeek = mCalendarMetrics.getWeekOfYear(year, month, dayOfMonth);
 					/*
 					 * Add instance only if the week didn't change.
 					 */
-					int newWeek = mHelper.get(Calendar.WEEK_OF_YEAR);
+					int newWeek = mCalendarMetrics.getWeekOfYear(year, actualDay);
 					if (0 < actualDay && actualDay <= yearDays && newWeek == oldWeek)
 					{
-						addInstance(Instance.make(mHelper));
+						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
+						addInstance(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+					}
+					else if (0 < nextYearDay && nextYearDay <= nextYearDays && nextYearDay < 7)
+					{
+						/*
+						 * The day might belong to the next year. Add instance only if the week didn't change.
+						 */
+						newWeek = mCalendarMetrics.getWeekOfYear(year + 1, nextYearDay);
+						if (newWeek == oldWeek)
+						{
+							int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year + 1, nextYearDay);
+							addInstance(Instance.make(year + 1, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
+								second));
+						}
+					}
+					else if (0 < prevYearDay && prevYearDay <= prevYearDays && prevYearDay > prevYearDays - 7)
+					{
+						/*
+						 * The day might belong to the previous year. Add instance only if the week didn't change.
+						 */
+						newWeek = mCalendarMetrics.getWeekOfYear(year - 1, prevYearDay);
+						if (newWeek == oldWeek)
+						{
+							int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year - 1, prevYearDay);
+							addInstance(Instance.make(year - 1, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
+								second));
+						}
+					}
+					break;
+				}
+				case WEEKLY_AND_MONTHLY:
+				{
+					/*
+					 * This case is handled almost like WEEKLY scope, just with additional month check
+					 */
+					int prevYearDays = mCalendarMetrics.getDaysPerYear(year - 1);
+					int nextYearDays = mCalendarMetrics.getDaysPerYear(year + 1);
+
+					int prevYearDay = day;
+					int nextYearDay = day;
+					if (day < 0)
+					{
+						prevYearDay = day + prevYearDays + 1;
+						nextYearDay = day + nextYearDays + 1;
+					}
+
+					int oldWeek = mCalendarMetrics.getWeekOfYear(year, month, dayOfMonth);
+					/*
+					 * Add instance only if the week didn't change.
+					 */
+					int newWeek = mCalendarMetrics.getWeekOfYear(year, actualDay);
+					if (0 < actualDay && actualDay <= yearDays && newWeek == oldWeek)
+					{
+						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
+						int newMonth = CalendarMetrics.month(monthAndDay);
+						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
+						{
+							addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+						}
 					}
 					else if (0 < nextYearDay && nextYearDay <= nextYearDays && nextYearDay < 7)
 					{
 						/*
 						 * The day might belong to the next year.
 						 */
-						mHelper.set(year + 1, 0, 1, hour, minute, second);
-						mHelper.set(Calendar.DAY_OF_YEAR, nextYearDay);
-						/*
-						 * Add instance only if the week didn't change.
-						 */
-						newWeek = mHelper.get(Calendar.WEEK_OF_YEAR);
-						if (newWeek == oldWeek)
+						newWeek = mCalendarMetrics.getWeekOfYear(year + 1, nextYearDay);
+						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year + 1, nextYearDay);
+						int newMonth = CalendarMetrics.month(monthAndDay);
+						if (newWeek == oldWeek && mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
-							addInstance(Instance.make(mHelper));
+							addInstance(Instance.make(year + 1, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}
 					}
 					else if (0 < prevYearDay && prevYearDay <= prevYearDays && prevYearDay > prevYearDays - 7)
@@ -145,108 +190,38 @@ final class ByYearDayExpander extends ByExpander
 						/*
 						 * The day might belong to the previous year.
 						 */
-						mHelper.set(year - 1, 0, 1, hour, minute, second);
-						mHelper.set(Calendar.DAY_OF_YEAR, prevYearDay);
-						/*
-						 * Add instance only if the week didn't change.
-						 */
-						newWeek = mHelper.get(Calendar.WEEK_OF_YEAR);
-						if (newWeek == oldWeek)
+						newWeek = mCalendarMetrics.getWeekOfYear(year - 1, prevYearDay);
+						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year - 1, prevYearDay);
+						int newMonth = CalendarMetrics.month(monthAndDay);
+						if (newWeek == oldWeek && mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
-							addInstance(Instance.make(mHelper));
+							addInstance(Instance.make(year - 1, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}
-
 					}
 					break;
-
-				case WEEKLY_AND_MONTHLY:
-					/*
-					 * This case is handled almost like WEEKLY scope, just with additional month check
-					 */
-					int prevYearDays2 = mCalendarMetrics.getDaysPerYear(year - 1);
-					int nextYearDays2 = mCalendarMetrics.getDaysPerYear(year + 1);
-
-					int prevYearDay2 = day;
-					int nextYearDay2 = day;
-					if (day < 0)
-					{
-						prevYearDay2 = day + prevYearDays2 + 1;
-						nextYearDay2 = day + nextYearDays2 + 1;
-					}
-
-					mHelper.set(year, month, dayOfMonth, hour, minute, second);
-					int oldWeek2 = mHelper.get(Calendar.WEEK_OF_YEAR);
-					mHelper.set(Calendar.DAY_OF_YEAR, actualDay);
-					/*
-					 * Add instance only if the week didn't change.
-					 */
-					int newWeek2 = mHelper.get(Calendar.WEEK_OF_YEAR);
-					if (0 < actualDay && actualDay <= yearDays && newWeek2 == oldWeek2)
-					{
-						long newInstance = Instance.make(mHelper);
-						int newMonth = mHelper.get(Calendar.MONTH);
-						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
-						{
-							addInstance(newInstance);
-						}
-					}
-					else if (0 < nextYearDay2 && nextYearDay2 <= nextYearDays2 && nextYearDay2 < 7)
-					{
-						/*
-						 * The day might belong to the next year.
-						 */
-						mHelper.set(year + 1, 0, 1, hour, minute, second);
-						mHelper.set(Calendar.DAY_OF_YEAR, nextYearDay2);
-						/*
-						 * Add instance only if the week didn't change.
-						 */
-						newWeek2 = mHelper.get(Calendar.WEEK_OF_YEAR);
-						int newMonth = mHelper.get(Calendar.MONTH);
-						if (newWeek2 == oldWeek2 && mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
-						{
-							addInstance(Instance.make(mHelper));
-						}
-					}
-					else if (0 < prevYearDay2 && prevYearDay2 <= prevYearDays2 && prevYearDay2 > prevYearDays2 - 7)
-					{
-						/*
-						 * The day might belong to the previous year.
-						 */
-						mHelper.set(year - 1, 0, 1, hour, minute, second);
-						mHelper.set(Calendar.DAY_OF_YEAR, prevYearDay2);
-						/*
-						 * Add instance only if the week didn't change.
-						 */
-						newWeek2 = mHelper.get(Calendar.WEEK_OF_YEAR);
-						int newMonth = mHelper.get(Calendar.MONTH);
-						if (newWeek2 == oldWeek2 && mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
-						{
-							addInstance(Instance.make(mHelper));
-						}
-
-					}
-					break;
-
+				}
 				case MONTHLY:
+				{
 					if (0 < actualDay && actualDay <= yearDays && !(actualDay < startDayOfYear && year == Instance.year(start)))
 					{
-						mHelper.set(year, month, dayOfMonth, hour, minute, second);
-						mHelper.set(Calendar.DAY_OF_YEAR, actualDay);
-						if (mHelper.get(Calendar.MONTH) == month)
+						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
+						int newMonth = CalendarMetrics.month(monthAndDay);
+						if (newMonth == month)
 						{
-							addInstance(Instance.make(mHelper));
+							addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}
 					}
 					break;
-
+				}
 				case YEARLY:
+				{
 					if (0 < actualDay && actualDay <= yearDays && !(actualDay < startDayOfYear && year == Instance.year(start)))
 					{
-						mHelper.set(year, month, dayOfMonth, hour, minute, second);
-						mHelper.set(Calendar.DAY_OF_YEAR, actualDay);
-						addInstance(Instance.make(mHelper));
+						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
+						addInstance(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 					}
 					break;
+				}
 			}
 		}
 	}
