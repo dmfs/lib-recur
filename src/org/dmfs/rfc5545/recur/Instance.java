@@ -60,7 +60,6 @@ final class Instance
 	private final static long YEAR_MASK = ((1L << YEAR_BITS) - 1) << YEAR_POS;
 
 	private final static int YEAR_BIAS = 0;
-	private final static int MONTH_BIAS = 1 << (MONTH_BITS - 1);
 	private final static int DAY_BIAS = 1 << (DAY_BITS - 1);
 
 
@@ -91,7 +90,7 @@ final class Instance
 
 	public static long make(int year, int month, int dayOfMonth, int hour, int minute, int second, int dayOfWeek)
 	{
-		long mValue = (((long) year + YEAR_BIAS) << YEAR_POS) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS)
+		long mValue = (((long) year + YEAR_BIAS) << YEAR_POS) | ((long) month << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS)
 			| (((long) dayOfWeek) << WEEKDAY_POS) | ((long) hour << HOUR_POS) | ((long) minute << MINUTE_POS) | ((long) second << SECOND_POS);
 		return mValue;
 	}
@@ -99,7 +98,7 @@ final class Instance
 
 	public static long make(int year, int month, int dayOfMonth, int hour, int minute, int second)
 	{
-		long mValue = (((long) year + YEAR_BIAS) << YEAR_POS) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS)
+		long mValue = (((long) year + YEAR_BIAS) << YEAR_POS) | ((long) month << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS)
 			| ((long) hour << HOUR_POS) | ((long) minute << MINUTE_POS) | ((long) second << SECOND_POS);
 		return mValue;
 	}
@@ -113,7 +112,7 @@ final class Instance
 
 	public static long setMonth(long instance, int month)
 	{
-		return (instance & ~MONTH_MASK) | (((long) month + MONTH_BIAS) << MONTH_POS);
+		return (instance & ~MONTH_MASK) | ((long) month << MONTH_POS);
 	}
 
 
@@ -131,7 +130,7 @@ final class Instance
 
 	public static long setMonthAndDayOfMonth(long instance, int month, int dayOfMonth)
 	{
-		return (instance & ~(MONTH_MASK | DAY_MASK)) | (((long) month + MONTH_BIAS) << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS);
+		return (instance & ~(MONTH_MASK | DAY_MASK)) | ((long) month << MONTH_POS) | (((long) dayOfMonth + DAY_BIAS) << DAY_POS);
 	}
 
 
@@ -167,7 +166,7 @@ final class Instance
 
 	public static int month(long instance)
 	{
-		return (int) ((instance & MONTH_MASK) >> MONTH_POS) - MONTH_BIAS;
+		return (int) ((instance & MONTH_MASK) >> MONTH_POS);
 	}
 
 
