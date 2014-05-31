@@ -9,7 +9,7 @@ import org.dmfs.rfc5545.recur.CalendarMetrics.CalendarMetricsFactory;
 public final class UnicodeCalendarScales
 {
 
-	private final static Map<String, CalendarMetricsFactory> CALENDAR_SCALES = new HashMap<>(10);
+	private final static Map<String, CalendarMetricsFactory> CALENDAR_SCALES = new HashMap<String, CalendarMetricsFactory>(10);
 
 
 	public static CalendarMetricsFactory getCalendarMetricsForName(String calendarScaleName)

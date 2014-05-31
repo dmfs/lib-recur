@@ -54,6 +54,18 @@ public abstract class CalendarMetrics
 	}
 
 
+	public abstract int getMonthsLimit();
+
+
+	public abstract int getMonthDaysLimit();
+
+
+	public abstract int getYearDaysLimit();
+
+
+	public abstract int getWeeksNoLimit();
+
+
 	/**
 	 * Get the number of days in a specific month.
 	 * 
@@ -253,4 +265,16 @@ public abstract class CalendarMetrics
 	 * @return The milliseconds since the epoch.
 	 */
 	public abstract long toMillis(TimeZone timeZone, int year, int month, int dayOfMonth, int hours, int minutes, int seconds, int millis);
+
+
+	/**
+	 * Converts a timestamp to an instance in the given {@link TimeZone}.
+	 * 
+	 * @param timestamp
+	 *            The time in milliseconds since the epoch.
+	 * @param timeZone
+	 *            The time zone or <code>null</code> for UTC.
+	 * @return
+	 */
+	public abstract long toInstance(long timestamp, TimeZone timeZone);
 }

@@ -224,7 +224,7 @@ public class TestRule
 		if (weekdays != null)
 		{
 			String errMsg = "";
-			// errMsg = "weekday of " + instance + " not in " + weekdays + " rule: " + rule;
+			 errMsg = "weekday of " + instance + " not in " + weekdays + " rule: " + rule;
 			assertTrue(errMsg, weekdays.contains(instance.get(Calendar.DAY_OF_WEEK)));
 		}
 	}

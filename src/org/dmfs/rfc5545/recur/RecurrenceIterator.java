@@ -246,8 +246,7 @@ public final class RecurrenceIterator
 		}
 
 		// convert until to an instance
-		Calendar untilCalendar = new Calendar(mTimeZone, until);
-		long untilInstance = Instance.make(untilCalendar);
+		long untilInstance = mCalendarMetrics.toInstance(until, mTimeZone);
 
 		long next = Instance.maskWeekday(mNextInstance);
 		if (untilInstance <= next)

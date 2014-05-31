@@ -44,6 +44,62 @@ public class GregorianCalendarMetricsTest
 
 
 	@Test
+	public void testGetMaxMonths()
+	{
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				assertEquals(12, tools.getMonthsLimit());
+			}
+		}
+	}
+
+
+	@Test
+	public void testGetMaxMonthDays()
+	{
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				assertEquals(31, tools.getMonthDaysLimit());
+			}
+		}
+	}
+
+
+	@Test
+	public void testGetMaxYearDays()
+	{
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				assertEquals(366, tools.getYearDaysLimit());
+			}
+		}
+	}
+
+
+	@Test
+	public void testGetMaxWeeks()
+	{
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+				assertEquals(53, tools.getWeeksNoLimit());
+			}
+		}
+	}
+
+
+	@Test
 	public void testGetDaysPerMonth()
 	{
 		java.util.Calendar testCal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
@@ -625,6 +681,52 @@ public class GregorianCalendarMetricsTest
 								// + minDaysInFirstWeek;
 
 								assertEquals(errMsg, testCal.getTimeInMillis(), tools.toMillis(zone, year, month, day, hour, minute, 0, 0));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	@Test
+	public void testToInstance()
+	{
+		for (String z : new String[] { "America/Bogota", "America/Los_Angeles", "America/New_York", "UTC", "GMT", "Europe/Berlin", "Asia/Peking", "Asia/Tokyo",
+			"Australia/Sidney" })
+		{
+			TimeZone zone = TimeZone.getTimeZone(z);
+			java.util.Calendar testCal = new GregorianCalendar(zone, Locale.US);
+			testCal.setMinimalDaysInFirstWeek(4);
+			testCal.setFirstDayOfWeek(Calendar.MONDAY);
+			testCal.setTimeInMillis(0);
+
+			CalendarMetrics tools = new GregorianCalendarMetrics(1 /* Monday */, 4);
+
+			for (int year = 1600; year < 3000; ++year)
+			{
+				String errMsg = "";
+				for (int month = 0; month < tools.getMonthsPerYear(year); ++month)
+				{
+					for (int day = 1; day <= tools.getDaysPerMonth(year, month); ++day)
+					{
+						for (int hour = 0; hour < 24; ++hour)
+						{
+							for (int minute = 0; minute < 60; ++minute)
+							{
+								testCal.set(year, month, day, hour, minute, 0);
+					//			errMsg = "toInstance failed for year=" + year + " month=" + month + " day=" + day + " hour=" + hour + " minute=" + minute
+					//				+ "  tz=" + zone.getID();
+
+								long instance = tools.toInstance(testCal.getTimeInMillis(), zone);
+
+								assertEquals(errMsg, testCal.get(Calendar.YEAR), Instance.year(instance));
+								assertEquals(errMsg, testCal.get(Calendar.MONTH), Instance.month(instance));
+								assertEquals(errMsg, testCal.get(Calendar.DAY_OF_MONTH), Instance.dayOfMonth(instance));
+								assertEquals(errMsg, testCal.get(Calendar.HOUR_OF_DAY), Instance.hour(instance));
+								assertEquals(errMsg, testCal.get(Calendar.MINUTE), Instance.minute(instance));
+								assertEquals(errMsg, testCal.get(Calendar.SECOND), Instance.second(instance));
 							}
 						}
 					}

@@ -109,14 +109,14 @@ public final class RecurrenceRule
 	 */
 	public enum Freq
 	{
-		SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY;
+		YEARLY, MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY;
 	}
 
 	/**
 	 * Enumeration of valid week days. The weekdays are ordered, so you can use the ordinal value to get the week day number (i.e.
 	 * <code>Weekday.SU.ordinal() == 0</code>, <code>Weekday.MO.ordinal() == 1 </code>...).
 	 * <p>
-	 * Please not that the ordinal value is not compatible with the day values of {@link java.util.Calendar}.
+	 * Please note that the ordinal value is not compatible with the day values of {@link java.util.Calendar}.
 	 * </p>
 	 */
 	public enum Weekday
@@ -126,7 +126,6 @@ public final class RecurrenceRule
 
 	/**
 	 * Values of the new SKIP parameter as added in <a href="draft-daboo-icalendar-rscale-03">tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
-	 * 
 	 */
 	public enum Skip
 	{
@@ -136,7 +135,7 @@ public final class RecurrenceRule
 		YES,
 
 		/**
-		 * BACKWARD is the default for rules without {@link Part#SCALE} parameter. It means that non-existing instanced get rolled back to the previous day (for
+		 * BACKWARD is the default for rules with {@link Part#SCALE} parameter. It means that non-existing instanced get rolled back to the previous day (for
 		 * leap days) or month (for leap months).
 		 */
 		BACKWARD,
@@ -151,8 +150,8 @@ public final class RecurrenceRule
 	 * Enumeration of valid recurrence rule parts. Each of these parts may occur once in a rule. {@link #FREQ} is the only mandatory part.
 	 * <p>
 	 * Each part has a {@link ValueConverter} that knows how to parse and serialize the values the part can have. Also each part has a factory method to return
-	 * a {@link RuleIterator} for this part. {@link #FREQ}, {@link #INTERVAL} and {@link #WKST} don't support the iterator and will throw an
-	 * {@link UnsupportedOperationException} when calling {@link Part#getRuleIterator(RecurrenceRule, RuleIterator)}.
+	 * a {@link RuleIterator} for this part. {@link #FREQ}, {@link #INTERVAL}, {@link #WKST} and {@link #RSCALE} don't support iteration nor expansion and will
+	 * throw an {@link UnsupportedOperationException} when calling {@link Part#getRuleIterator(RecurrenceRule, RuleIterator)}.
 	 * </p>
 	 */
 	public enum Part
@@ -209,7 +208,7 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * RSCALE defines the calendar scale to apply. It has been introduced by <a
+		 * RSCALE defines the calendar scale to apply. It has been introduced in <a
 		 * href="draft-daboo-icalendar-rscale-03">http://tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
 		 */
 		RSCALE(new RScaleConverter()) {
@@ -267,7 +266,7 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate month numbers.
 		 */
-		BYMONTH(new IntListConverter(-20, 20).noZero()) {
+		BYMONTH(new IntListConverter(1, 12).noZero()) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -290,7 +289,9 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of week numbers that specify in which weeks the instances recur. The value is a list of integers in the range -53 to -1 or 1 to 53.
+		 * A list of week numbers that specify in which weeks the instances recur.
+		 * 
+		 * TODO: validate week numbers
 		 */
 		BYWEEKNO(new IntListConverter(-53, 53).noZero()) {
 			@Override
@@ -317,12 +318,12 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of year days that specify on which year days the instances recur. The value is a list of integers in the range -500 to -1 or 1 to 500. The
-		 * actual limits depend on the calendar scale and needs to be validated after parsing. Negative values are supported only if {@link #RSCALE} is present.
+		 * A list of year days that specify on which year days the instances recur. The actual limits depend on the calendar scale and needs to be validated
+		 * after parsing. Negative values are supported only if {@link #RSCALE} is present.
 		 * 
 		 * TODO: validate year days
 		 */
-		BYYEARDAY(new IntListConverter(-500, 500).noZero()) {
+		BYYEARDAY(new IntListConverter(-366, 366).noZero()) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -352,11 +353,11 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate month days
 		 */
-		BYMONTHDAY(new IntListConverter(-50, 50).noZero()) {
+		BYMONTHDAY(new IntListConverter(-31, 31).noZero()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
-				return new ByMonthDayExpander(rule, previous, calendarTools, start);
+				return new ByMonthDayExpander(rule, previous, calendarMetrics, start);
 			}
 
 
@@ -381,9 +382,9 @@ public final class RecurrenceRule
 		 */
 		BYDAY(new WeekdayListConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
-				return new ByDayExpander(rule, previous, calendarTools, start);
+				return new ByDayExpander(rule, previous, calendarMetrics, start);
 			}
 
 
@@ -486,6 +487,8 @@ public final class RecurrenceRule
 
 		/**
 		 * A list of set positions to consider when iterating the instances. The value is a list of integers. For now we accept any reasonable value.
+		 * 
+		 * TODO: validate the values. They should be within the limits of byyearday.
 		 */
 		BYSETPOS(new IntListConverter(-500, 500).noZero()) {
 			@Override
@@ -520,8 +523,10 @@ public final class RecurrenceRule
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
-				// don't return a SKIP expander if we skip invalid dates, SanityFilter will take care of that.
-				if (rule.getSkip() != Skip.YES)
+				// don't return a SKIP expander if we skip non-existing dates, SanityFilter will take care of that. Also, this is irrelevant for other
+				// frequencies than YEARLY and MONTHLY.
+				Freq freq = rule.getFreq();
+				if ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && rule.getSkip() != Skip.YES)
 				{
 					return new SkipExpander(rule, previous, calendarMetrics, start);
 				}
@@ -552,16 +557,16 @@ public final class RecurrenceRule
 		 */
 		UNTIL(new DateTimeConverter()) {
 			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
-				return new UntilLimiter(rule, previous, startTimeZone);
+				return new UntilLimiter(rule, previous, calendarMetrics, startTimeZone);
 			}
 
 
 			@Override
 			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
 			{
-				throw new UnsupportedOperationException("UNTIL doesn't support  filtering");
+				throw new UnsupportedOperationException("UNTIL doesn't support filtering");
 			}
 
 
@@ -610,7 +615,7 @@ public final class RecurrenceRule
 		 * Private constructor.
 		 * 
 		 * @param converter
-		 *            The {@link ValueConverter} for that knows how to parse and serialize this part.
+		 *            The {@link ValueConverter} that knows how to parse and serialize this part.
 		 */
 		private Part(ValueConverter<?> converter)
 		{
@@ -621,7 +626,7 @@ public final class RecurrenceRule
 		/**
 		 * Return a {@link RuleIterator} that is suitable to build a recurrence rule filter chain in order to iterate all instances.
 		 * <p>
-		 * <strong>Note:</strong> {@link #FREQ}, {@link #INTERVAL} and {@link #WKST} don't support this method and throw an
+		 * <strong>Note:</strong> {@link #FREQ}, {@link #INTERVAL}, {@link #RSCALE} and {@link #WKST} don't support this method and throw an
 		 * {@link UnsupportedOperationException}.
 		 * </p>
 		 * 
@@ -629,6 +634,12 @@ public final class RecurrenceRule
 		 *            The rule to iterate.
 		 * @param previous
 		 *            The previous element in the filter chain.
+		 * @param calendarMetrics
+		 *            The {@link CalendarMetrics} to use.
+		 * @param start
+		 *            The first instance of the event.
+		 * @param startTimeZone
+		 *            The {@link TimeZone} this event is in.
 		 * @return The {@link RuleIterator} for this part.
 		 * 
 		 * @throws UnsupportedOperationException
@@ -641,13 +652,15 @@ public final class RecurrenceRule
 		/**
 		 * Return a {@link ByFilter}.
 		 * <p>
-		 * <strong>Note:</strong> {@link #FREQ}, {@link #INTERVAL} and {@link #WKST} don't support this method and throw an
+		 * <strong>Note:</strong> {@link #FREQ}, {@link #INTERVAL}, {@link #RSCALE} and {@link #WKST} don't support this method and throw an
 		 * {@link UnsupportedOperationException}.
 		 * </p>
 		 * 
 		 * @param rule
 		 *            The rule to iterate.
-		 * @return The {@link RuleIterator} for this part.
+		 * @param calendarMetrics
+		 *            The {@link CalendarMetrics} to use.
+		 * @return The {@link RuleIterator} for this part or <code>null</code> if the give rule doesn't need this part.
 		 * 
 		 * @throws UnsupportedOperationException
 		 *             If this part does not have a {@link ByFilter}.
@@ -656,11 +669,11 @@ public final class RecurrenceRule
 
 
 		/**
-		 * Returns whether this part expands intsances or not.
+		 * Returns whether this part expands instances or not.
 		 * 
 		 * @param rule
 		 *            The rule this part belongs to.
-		 * @return <code>true</code> if this rule expans instances, <code>false</code> if it filters instances for the givem rule.
+		 * @return <code>true</code> if this rule expands instances, <code>false</code> if it filters instances for the given rule.
 		 */
 		abstract boolean expands(RecurrenceRule rule);
 	}
@@ -703,6 +716,8 @@ public final class RecurrenceRule
 
 		/**
 		 * Create a new WeekdayNum instance.
+		 * 
+		 * TODO: update range check
 		 * 
 		 * @param pos
 		 *            The position of the weekday in the Interval or <code>0</code> for every occurrence of the weekday.
@@ -906,9 +921,12 @@ public final class RecurrenceRule
 			throw new IllegalArgumentException("recur must not be null");
 		}
 
-		mParts.clear();
+		boolean relaxed = mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX;
 
-		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
+		// we do not need this since only the constructor calls this
+		// mParts.clear();
+
+		if (relaxed)
 		{
 			// remove any spaces in LAX modes
 			recur = recur.trim().toUpperCase(Locale.ENGLISH);
@@ -921,8 +939,6 @@ public final class RecurrenceRule
 			// in RFC2445 rules must start with "FREQ=" !
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
 		}
-
-		boolean tolerant = mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX;
 
 		// now parse each part and add it to mParts.
 		for (String keyvalue : parts)
@@ -959,7 +975,7 @@ public final class RecurrenceRule
 								throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
 						}
 					}
-					else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+					else if (!relaxed)
 					{
 						throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
 					}
@@ -968,7 +984,7 @@ public final class RecurrenceRule
 					continue;
 				}
 
-				if ((mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT) && mParts.containsKey(part))
+				if (!relaxed && mParts.containsKey(part))
 				{
 					// strict modes don't allow duplicate parts
 					throw new InvalidRecurrenceRuleException("duplicate part " + part + "  in " + recur);
@@ -976,15 +992,15 @@ public final class RecurrenceRule
 
 				try
 				{
-					Object partValue = part.converter.parse(value, tolerant);
-					if (partValue != null && (part != Part.INTERVAL || !ONE.equals(partValue)))
+					Object partValue = part.converter.parse(value, relaxed);
+					if (partValue != null && (part != Part.INTERVAL || !ONE.equals(partValue) /* do not store intervals with value 1 */))
 					{
 						this.mParts.put(part, partValue);
 					}
 				}
 				catch (InvalidRecurrenceRuleException e)
 				{
-					if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+					if (!relaxed)
 					{
 						throw e;
 					}
@@ -995,7 +1011,7 @@ public final class RecurrenceRule
 				}
 
 			}
-			else if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+			else if (!relaxed)
 			{
 				// strict modes throw on empty parts
 				throw new InvalidRecurrenceRuleException("Found empty part in " + recur);
@@ -1078,10 +1094,12 @@ public final class RecurrenceRule
 		Freq freq = (Freq) mParts.get(Part.FREQ);
 
 		// FREQ is mandatory part of each rule
-		if (!mParts.containsKey(Part.FREQ))
+		if (freq == null)
 		{
 			throw new InvalidRecurrenceRuleException("FREQ part is missing");
 		}
+
+		final boolean strict = mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT;
 
 		// UNTIL and COUNT are mutually exclusive
 		if (mParts.containsKey(Part.UNTIL) && mParts.containsKey(Part.COUNT))
@@ -1092,7 +1110,7 @@ public final class RecurrenceRule
 		// interval must not be 0 or less
 		if (getInterval() <= 0)
 		{
-			if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
+			if (strict)
 			{
 				throw new InvalidRecurrenceRuleException("INTERVAL must not be <= 0");
 			}
@@ -1103,11 +1121,15 @@ public final class RecurrenceRule
 			}
 		}
 
-		if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC2445_STRICT)
+		if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
 		{
-			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
+			if (strict)
 			{
 				throw new InvalidRecurrenceRuleException("BYWEEKNO is allowed in YEARLY rules only");
+			}
+			else
+			{
+				mParts.put(Part.FREQ, Freq.YEARLY);
 			}
 		}
 
@@ -1127,29 +1149,17 @@ public final class RecurrenceRule
 
 		}
 
-		if (mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX)
-		{
-			// BYWEEKNO can be used with YEARLY rules only
-			if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
-			{
-				mParts.put(Part.FREQ, Freq.YEARLY);
-			}
-		}
 		/**
 		 * BYSETPOS is only valid in combination with another BYxxx rule. We therefore check the number of elements. If this number is larger than cnt the rule
 		 * contains another BYxxx rule and is therefore valid.
 		 */
 		if (mParts.containsKey(Part.BYSETPOS))
 		{
-
-			int cnt = 2; // FREQ and BYSETPOS
-			if (mParts.containsKey(Part.UNTIL) || mParts.containsKey(Part.COUNT))
+			if (!mParts.containsKey(Part.BYDAY) && !mParts.containsKey(Part.BYMONTHDAY) && !mParts.containsKey(Part.BYMONTH)
+				&& !mParts.containsKey(Part.BYHOUR) && !mParts.containsKey(Part.BYMINUTE) && !mParts.containsKey(Part.BYSECOND)
+				&& !mParts.containsKey(Part.BYWEEKNO) && !mParts.containsKey(Part.BYYEARDAY))
 			{
-				cnt++;
-			}
-			if (mParts.size() - cnt <= 0)
-			{
-				if (mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT)
+				if (strict)
 				{
 					// we're in strict mode => throw exception
 					throw new InvalidRecurrenceRuleException("BYSETPOS must only be used in conjunction with another BYxxx rule.");
@@ -1269,7 +1279,7 @@ public final class RecurrenceRule
 	/**
 	 * Get the INTERVAL of this rule.
 	 * 
-	 * @return The INVERAL of this rule or <code>1</code> if no INTERVAL has been specified.
+	 * @return The INTERVAL of this rule or <code>1</code> if no INTERVAL has been specified.
 	 */
 	public int getInterval()
 	{
@@ -1486,8 +1496,10 @@ public final class RecurrenceRule
 		{
 			mParts.remove(part);
 		}
-
-		setByPart(part, Arrays.asList(values));
+		else
+		{
+			setByPart(part, Arrays.asList(values));
+		}
 	}
 
 
@@ -1751,7 +1763,7 @@ public final class RecurrenceRule
 			}
 			// COUNT is already taken care of by FastWeeklyIterator
 
-			// we don't need a sanitiy filter in this case
+			// we don't need a sanity filter in this case
 			sanityFilterAdded = true;
 		}
 		else
@@ -1921,7 +1933,7 @@ public final class RecurrenceRule
 		@Override
 		public Collection<T> parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
-			List<T> result = new ArrayList<T>();
+			List<T> result = new ArrayList<T>(32);
 			String[] values = value.split(",");
 			for (String val : values)
 			{

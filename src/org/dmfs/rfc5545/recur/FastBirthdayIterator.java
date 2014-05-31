@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
+import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
 
 
 /**
@@ -84,7 +85,7 @@ public final class FastBirthdayIterator extends ByExpander
 	public static FastBirthdayIterator getInstance(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
 	{
 		if (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYWEEKNO) || rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE)
-			|| rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS))
+			|| rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS) || rule.getSkip() != Skip.YES)
 		{
 			return null;
 		}
@@ -147,6 +148,5 @@ public final class FastBirthdayIterator extends ByExpander
 		int untilYear = Instance.year(untilInstance);
 		int nextYear = Instance.year(mNextInstance);
 		mNextInstance = Instance.setYear(mNextInstance, nextYear + (Math.max(0, untilYear - nextYear) % mInterval) * mInterval);
-
 	}
 }

@@ -42,13 +42,6 @@ final class ByWeekNoExpander extends ByExpander
 	private final Scope mScope;
 
 	/**
-	 * A helper for calendar calculations.
-	 * 
-	 * TODO: get rid of it.
-	 */
-	private final Calendar mHelper = new Calendar(Calendar.UTC, 2000, 0, 1, 0, 0, 0);
-
-	/**
 	 * A flag that indicates that we have to expand weeks that overlap a month.
 	 */
 	private final boolean mAllowOverlappingWeeks;
@@ -64,10 +57,6 @@ final class ByWeekNoExpander extends ByExpander
 
 		// allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
 		mAllowOverlappingWeeks = mScope == Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
-
-		// initialize helper
-		mHelper.setFirstDayOfWeek(rule.getWeekStart().ordinal() + 1);
-		mHelper.setMinimalDaysInFirstWeek(4);
 	}
 
 
@@ -80,7 +69,7 @@ final class ByWeekNoExpander extends ByExpander
 		int hour = Instance.hour(instance);
 		int minute = Instance.minute(instance);
 		int second = Instance.second(instance);
-		int dayOfWeek = Instance.dayOfWeek(instance) + 1 /* adjust to calendar day numbers */;
+		int dayOfWeek = Instance.dayOfWeek(instance);
 
 		// get the number of weeks in that year
 		int yearWeeks = mCalendarMetrics.getWeeksPerYear(year);
@@ -103,37 +92,49 @@ final class ByWeekNoExpander extends ByExpander
 				/*
 				 * Expand instances if the week intersects instance.month. The by-day expansion will filter any instances not in that month.
 				 */
-				mHelper.set(year, month, dayOfMonth, hour, minute, second);
-				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
-				// maintain original day of week
-				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-				if (mHelper.get(Calendar.MONTH) == month)
+				int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
+				int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
+				int newMonth = CalendarMetrics.month(monthAndDay);
+				if (newMonth == month)
 				{
-					addInstance(Instance.make(mHelper));
+					addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 				}
 				else
 				{
-					int firstDayOfWeek = mHelper.getFirstDayOfWeek();
+					int firstDayOfWeek = mCalendarMetrics.weekStart;
 
 					// check if the first day of this week is still in this month
-					mHelper.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-					if (mHelper.get(Calendar.MONTH) == month)
+					int yearDay2 = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, firstDayOfWeek);
+					if (yearDay2 < 1 || yearDay2 > mCalendarMetrics.getDaysPerYear(year))
+					{
+						// definitely a different month
+						continue;
+					}
+
+					int monthAndDay2 = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay2);
+					int newMonth2 = CalendarMetrics.month(monthAndDay2);
+					if (newMonth2 == month)
 					{
 						// create a new instance and adjust day values
 						int offset = (dayOfWeek - firstDayOfWeek + 7) % 7;
-						addInstance(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset, hour,
-							minute, second));
+						addInstance(Instance.make(year, month, CalendarMetrics.dayOfMonth(monthAndDay2) + offset, hour, minute, second));
 					}
 					else
 					{
 						// check if the last day of this week is still in this month
-						mHelper.add(Calendar.DAY_OF_YEAR, 6);
-						if (mHelper.get(Calendar.MONTH) == month)
+						int yearDay3 = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, (firstDayOfWeek + 6) % 7);
+						if (yearDay3 < 1 || yearDay3 > mCalendarMetrics.getDaysPerYear(year))
+						{
+							// definitely a different month
+							continue;
+						}
+						int monthAndDay3 = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay3);
+						int newMonth3 = CalendarMetrics.month(monthAndDay3);
+						if (newMonth3 == month)
 						{
 							// create a new instance and adjust day values
 							int offset = (dayOfWeek - firstDayOfWeek - 6) % 7;
-							addInstance(Instance.make(mHelper.get(Calendar.YEAR), mHelper.get(Calendar.MONTH), mHelper.get(Calendar.DAY_OF_MONTH) + offset,
-								hour, minute, second));
+							addInstance(Instance.make(year, month, CalendarMetrics.dayOfMonth(monthAndDay3) + offset, hour, minute, second));
 						}
 					}
 				}
@@ -143,21 +144,38 @@ final class ByWeekNoExpander extends ByExpander
 				/*
 				 * Expand instances that are in instance.month.
 				 */
-				mHelper.set(year, month, dayOfMonth, hour, minute, second);
-				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
-				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-				if (mHelper.get(Calendar.MONTH) == month)
+				int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
+
+				if (yearDay < 1 || yearDay > mCalendarMetrics.getDaysPerYear(year))
 				{
-					addInstance(Instance.make(mHelper));
+					// definitely a different month
+					continue;
+				}
+
+				final int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
+				final int newMonth = CalendarMetrics.month(monthAndDay);
+				if (newMonth == month)
+				{
+					addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 				}
 			}
 			else
 			{
-				// mScope == Scope.YEARLY
-				mHelper.set(year, month, dayOfMonth, hour, minute, second);
-				mHelper.set(Calendar.WEEK_OF_YEAR, actualWeek);
-				mHelper.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-				addInstance(Instance.make(mHelper));
+				int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
+
+				if (yearDay < 1)
+				{
+					year--;
+					yearDay += mCalendarMetrics.getDaysPerYear(year);
+				}
+				else if (yearDay > mCalendarMetrics.getDaysPerYear(year))
+				{
+					yearDay -= mCalendarMetrics.getDaysPerYear(year);
+					year++;
+				}
+
+				final int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
+				addInstance(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 			}
 		}
 	}

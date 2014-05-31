@@ -83,6 +83,34 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
+	public int getMonthsLimit()
+	{
+		return 12;
+	}
+
+
+	@Override
+	public int getMonthDaysLimit()
+	{
+		return 31;
+	}
+
+
+	@Override
+	public int getYearDaysLimit()
+	{
+		return 366;
+	}
+
+
+	@Override
+	public int getWeeksNoLimit()
+	{
+		return 53;
+	}
+
+
+	@Override
 	public int getDaysPerMonth(int year, int month)
 	{
 		if (month == 1 && isLeapYear(year))
@@ -348,5 +376,56 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 		int nonLeapYears = prevYear / 100; // non leap years that are divisible by 4 since year 0
 		int yetLeapYears = nonLeapYears >> 2; // leap years that are divisible by 400 since year 0
 		return (leapYears - 492) - (nonLeapYears - 19) + (yetLeapYears - 4); // the number of leap days is just the number of leap years
+	}
+
+
+	@Override
+	public long toInstance(long timestamp, TimeZone timeZone)
+	{
+		long localTime = timestamp;
+		if (timeZone != null)
+		{
+			localTime += timeZone.getOffset(timestamp);
+		}
+
+		// get the time of the day in milliseconds
+		int time = (int) (localTime % (24L * 3600L * 1000L));
+
+		// remove the time from the date
+		localTime -= time;
+
+		// adjust negative dates
+		if (time < 0)
+		{
+			time += 24 * 3600 * 1000;
+			localTime -= 24 * 3600 * 1000;
+		}
+
+		// the number of days that have passed since 0001-01-01
+		final int daysSince1 = (int) (localTime / (24 * 3600 * 1000L) + 365 * 1969 + 477);
+
+		// the number of full 400 year cycles and the remaining days
+		final int c400 = daysSince1 / (400 * 365 + 97);
+		final int c400Remainder = daysSince1 % (400 * 365 + 97);
+
+		// the number of full 100 year cycles and the remainder
+		final int c100 = Math.min((c400Remainder / (100 * 365 + 24)), 3 /* there are at most 3 full 100 year cycles in <400 years */);
+		final int c100Remainder = c400Remainder - c100 * (100 * 365 + 24);
+
+		// the number of 4 year cycles and the remaining days
+		final int c4 = Math.min((int) (c100Remainder / (4 * 365 + 1)), 24 /* there are at most 24 full 4 year cycles in <100 years */);
+		final int c4Remainder = (int) (c100Remainder - c4 * (4 * 365 + 1));
+
+		// the number of full years and the remaining days of the last year
+		final int c1 = Math.min(c4Remainder / 365, 3 /* there are at most 3 full year cycles in <4 years */);
+		final int c1Remainder = c4Remainder - 365 * c1 + 1 /* the first yearday is 1 not 0 */;
+
+		int year = ((c400 << 2) + c100) * 100 + (c4 << 2) + c1 + 1;
+
+		final int monthAndDay = getMonthAndDayOfYearDay(year, c1Remainder);
+
+		final int minutes = time / 60000;
+
+		return Instance.make(year, month(monthAndDay), dayOfMonth(monthAndDay), minutes / 60, minutes % 60, time / 1000 % 60);
 	}
 }

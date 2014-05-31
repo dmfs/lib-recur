@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
+import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
 import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
 
 
@@ -121,7 +122,8 @@ public final class FastWeeklyIterator extends ByExpander
 	{
 		Freq freq = rule.getFreq();
 		if (freq != Freq.WEEKLY || rule.hasPart(Part.BYMONTH) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYWEEKNO)
-			|| rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE) || rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS))
+			|| rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE) || rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS)
+			|| rule.getSkip() != Skip.YES)
 		{
 			return null;
 		}

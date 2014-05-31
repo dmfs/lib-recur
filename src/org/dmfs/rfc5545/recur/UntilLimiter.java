@@ -43,18 +43,11 @@ final class UntilLimiter extends Limiter
 	 * @param start
 	 *            The first instance. This is used to determine if the iterated instances are floating or not.
 	 */
-	public UntilLimiter(RecurrenceRule rule, RuleIterator previous, TimeZone startTimezone)
+	public UntilLimiter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, TimeZone startTimezone)
 	{
 		super(previous);
-		Calendar until = rule.getUntil().clone();
-		if (startTimezone != null)
-		{
-			// switch until to the time zone of start
-			long millis = until.getTimeInMillis();
-			until.setTimeZone(startTimezone);
-			until.setTimeInMillis(millis);
-		}
-		mUntil = Instance.make(until);
+		Calendar until = rule.getUntil();
+		mUntil = calendarMetrics.toInstance(until.getTimeInMillis(), startTimezone);
 	}
 
 
