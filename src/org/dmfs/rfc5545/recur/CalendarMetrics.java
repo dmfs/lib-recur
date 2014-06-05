@@ -67,6 +67,28 @@ public abstract class CalendarMetrics
 
 
 	/**
+	 * Returns whether a certain date is a leap day, i.e. a day that exists in certain years only.
+	 * 
+	 * @param month
+	 *            The month of the date to test.
+	 * @param day
+	 *            The month day of the date to test.
+	 * @return <code>true</code> if the date is a leap day and not existent in all years, <code>false</code> otherwise.
+	 */
+	public abstract boolean isLeapDay(int month, int day);
+
+
+	/**
+	 * Returns whether a certain month is a leap month, i.e. a month that exists in certain years only.
+	 * 
+	 * @param month
+	 *            The month to test.
+	 * @return <code>true</code> if the month is a leap month and not existent in all years, <code>false</code> otherwise.
+	 */
+	public abstract boolean isLeapMonth(int month);
+
+
+	/**
 	 * Get the number of days in a specific month.
 	 * 
 	 * @param year

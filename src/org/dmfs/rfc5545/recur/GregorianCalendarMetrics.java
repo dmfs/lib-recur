@@ -428,4 +428,19 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 		return Instance.make(year, month(monthAndDay), dayOfMonth(monthAndDay), minutes / 60, minutes % 60, time / 1000 % 60);
 	}
+
+
+	@Override
+	public boolean isLeapDay(int month, int day)
+	{
+		return day == 29 && month == 1;
+	}
+
+
+	@Override
+	public boolean isLeapMonth(int month)
+	{
+		// Gregorian calendar has no leap months
+		return false;
+	}
 }
