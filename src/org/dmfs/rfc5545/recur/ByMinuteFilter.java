@@ -36,7 +36,7 @@ final class ByMinuteFilter extends ByFilter
 	public ByMinuteFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
 	{
 		super(calendarTools);
-		mMinutes = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMINUTE));
+		mMinutes = StaticUtils.ListToArray(rule.getByPart(Part.BYMINUTE));
 	}
 
 

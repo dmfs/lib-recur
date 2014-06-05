@@ -42,7 +42,7 @@ final class ByYearDayFilter extends ByFilter
 	{
 		super(calendarMetrics);
 
-		mYearDays = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYYEARDAY));
+		mYearDays = StaticUtils.ListToArray(rule.getByPart(Part.BYYEARDAY));
 	}
 
 

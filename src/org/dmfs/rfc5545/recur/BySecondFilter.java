@@ -36,7 +36,7 @@ class BySecondFilter extends ByFilter
 	public BySecondFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
 	{
 		super(calendarTools);
-		mSeconds = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSECOND));
+		mSeconds = StaticUtils.ListToArray(rule.getByPart(Part.BYSECOND));
 	}
 
 
