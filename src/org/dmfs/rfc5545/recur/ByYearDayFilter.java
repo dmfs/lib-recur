@@ -49,8 +49,9 @@ final class ByYearDayFilter extends ByFilter
 	@Override
 	boolean filter(long instance)
 	{
-		int yearDays = mCalendarMetrics.getDaysPerYear(Instance.year(instance));
-		int dayOfYear = mCalendarMetrics.getDayOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
+		int year = Instance.year(instance);
+		int yearDays = mCalendarMetrics.getDaysPerYear(year);
+		int dayOfYear = mCalendarMetrics.getDayOfYear(year, Instance.month(instance), Instance.dayOfMonth(instance));
 		return StaticUtils.linearSearch(mYearDays, dayOfYear) < 0 && StaticUtils.linearSearch(mYearDays, dayOfYear - yearDays) < 0 || dayOfYear > yearDays;
 	}
 }

@@ -528,7 +528,7 @@ public final class RecurrenceRule
 				Freq freq = rule.getFreq();
 				if ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && rule.getSkip() != Skip.YES)
 				{
-					return new SkipExpander(rule, previous, calendarMetrics, start);
+					return new SkipFilter(rule, previous, calendarMetrics, start);
 				}
 				else
 				{
@@ -1777,8 +1777,7 @@ public final class RecurrenceRule
 					if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
 					{
 						// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
-						// TOOD: that's not working when we have a SKIP part. We need to make sure SKIP is called after BYSETPOS but before SanityFilter.
-						iterator = new SanityFilter(this, iterator, calendarMetrics, startInstance);
+						iterator = getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone);
 						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
 						sanityFilterAdded = true;
 					}
@@ -1791,12 +1790,29 @@ public final class RecurrenceRule
 						// if a part returns null for the expander just skip it
 						RuleIterator newIterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
 						iterator = newIterator == null ? iterator : newIterator;
+
+						// the skip filter also performs sanity checking
+						sanityFilterAdded |= p == Part.SKIP;
 					}
 				}
 			}
 		}
 		// add a SanityFilter if not already done.
-		return new RecurrenceIterator(sanityFilterAdded ? iterator : new SanityFilter(this, iterator, calendarMetrics, startInstance), start, calendarMetrics);
+		return new RecurrenceIterator(sanityFilterAdded ? iterator : getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone), start,
+			calendarMetrics);
+	}
+
+
+	private RuleIterator getSanityFilter(RuleIterator previous, CalendarMetrics calendarMetrics, long startInstance, TimeZone startTimeZone)
+	{
+		if (getSkip() != Skip.YES)
+		{
+			return Part.SKIP.getExpander(this, previous, calendarMetrics, startInstance, startTimeZone);
+		}
+		else
+		{
+			return new SanityFilter(this, previous, calendarMetrics, startInstance);
+		}
 	}
 
 

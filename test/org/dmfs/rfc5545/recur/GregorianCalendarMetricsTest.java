@@ -51,7 +51,7 @@ public class GregorianCalendarMetricsTest
 			for (int weekStart = 0; weekStart < 7; ++weekStart)
 			{
 				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
-				assertEquals(12, tools.getMonthsLimit());
+				assertEquals(12, tools.getMaxMonthNum());
 			}
 		}
 	}
@@ -65,7 +65,7 @@ public class GregorianCalendarMetricsTest
 			for (int weekStart = 0; weekStart < 7; ++weekStart)
 			{
 				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
-				assertEquals(31, tools.getMonthDaysLimit());
+				assertEquals(31, tools.getMaxMonthDayNum());
 			}
 		}
 	}
@@ -79,7 +79,7 @@ public class GregorianCalendarMetricsTest
 			for (int weekStart = 0; weekStart < 7; ++weekStart)
 			{
 				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
-				assertEquals(366, tools.getYearDaysLimit());
+				assertEquals(366, tools.getMaxYearDayNum());
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class GregorianCalendarMetricsTest
 			for (int weekStart = 0; weekStart < 7; ++weekStart)
 			{
 				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
-				assertEquals(53, tools.getWeeksNoLimit());
+				assertEquals(53, tools.getMaxWeeksNoNum());
 			}
 		}
 	}

@@ -72,17 +72,18 @@ final class ByMonthFilter extends ByFilter
 			{
 				return false;
 			}
+
 			int year = Instance.year(instance);
 			int dayOfMonth = Instance.dayOfMonth(instance);
 			int weekOfYear = mCalendarMetrics.getWeekOfYear(year, month, dayOfMonth);
 
 			// TODO: find a better way to determine the actual ISO year
-			if (weekOfYear > 10 && month < 1)
+			if (weekOfYear > 48 && month < 1)
 			{
 				// week is in previous ISO year
 				--year;
 			}
-			else if (weekOfYear < 10 && month > 4)
+			else if (weekOfYear < 2 && month > 6)
 			{
 				// week is in next ISO year
 				++year;

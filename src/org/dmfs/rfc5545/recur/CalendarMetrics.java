@@ -22,6 +22,15 @@ import java.util.TimeZone;
 
 /**
  * Provides a set of methods that return all kinds of information about a calendar and do some calendar calculations.
+ * <p>
+ * Please note that most methods use a <em>packed month</em> instead of just a month number. That's due to the need to specify leap months in certain
+ * calendaring systems. Do <em>not</em> make any assumptions about the format of the packed month since this is an internal implementation detail. To get the
+ * actual month number and the leap month flag use {@link #monthNum(int)} and {@link #isLeapMonth(int)}.
+ * </p>
+ * <p>
+ * However, packed months are integers that are guaranteed to be comparable with respect to their natural order. So if <code>a</code> and <code>b</code> are two
+ * packed months, it's guaranteed that <code>a&lt;b</code> if <code>a</code> comes before <code>b</code> in the year.
+ * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -54,16 +63,145 @@ public abstract class CalendarMetrics
 	}
 
 
-	public abstract int getMonthsLimit();
+	/**
+	 * Returns a packed month from a string representation. The packed months are arithmetically comparable with respect to their natural order.
+	 * <p>
+	 * The string representation is the 1-based month number followed by an optional <code>L</code> literal to indicate a leap month.
+	 * </p>
+	 * 
+	 * @param month
+	 *            The string representation of the month.
+	 * @return A packed representation of the month.
+	 */
+	public int packedMonth(String month)
+	{
+		if (month == null)
+		{
+			throw new IllegalArgumentException("month strings must not be null");
+		}
+
+		final int len = month.length();
+		if (len == 0 || len > 3)
+		{
+			throw new IllegalArgumentException("illegal month string " + month);
+		}
+		final char lastChar = month.charAt(len - 1);
+		int leapBit = lastChar == 'L' || lastChar == 'l' ? 1 : 0;
+
+		try
+		{
+			return Integer.parseInt(month.substring(0, len - leapBit)) << 1 + leapBit;
+		}
+		catch (NumberFormatException e)
+		{
+			throw new IllegalArgumentException("illegal month string " + month, e);
+		}
+	}
 
 
-	public abstract int getMonthDaysLimit();
+	/**
+	 * Returns a packed month, which is a combination of the month number and a leap month flag. The packed months are arithmetically comparable with respect to
+	 * their natural order.
+	 * 
+	 * @param monthNum
+	 *            The 0-based month number.
+	 * @param leapMonth
+	 *            <code>true</code> if this is a leap month, false otherwise.
+	 * @return A packed representation of the month.
+	 */
+	public int packedMonth(int monthNum, boolean leapMonth)
+	{
+		return leapMonth ? monthNum << 1 + 1 : monthNum << 1;
+	}
 
 
-	public abstract int getYearDaysLimit();
+	/**
+	 * Returns whether a certain packed month is a leap month, i.e. a month that exists in certain years only.
+	 * 
+	 * @param packedMonth
+	 *            The month to test.
+	 * @return <code>true</code> if the month is a leap month and not existent in all years, <code>false</code> otherwise.
+	 */
+	public boolean isLeapMonth(int packedMonth)
+	{
+		return (packedMonth & 1) == 1;
+	}
 
 
-	public abstract int getWeeksNoLimit();
+	/**
+	 * Returns whether a certain packed month is a leap month, i.e. a month that exists in certain years only.
+	 * 
+	 * @param packedMonth
+	 *            The month to test.
+	 * @return <code>true</code> if the month is a leap month and not existent in all years, <code>false</code> otherwise.
+	 */
+	public int monthNum(int packedMonth)
+	{
+		return packedMonth >> 1;
+	}
+
+
+	/**
+	 * Returns a packed value that contains a packed month and a month day.
+	 * 
+	 * @param month
+	 * @param day
+	 * @return
+	 */
+	public static int monthAndDay(int month, int day)
+	{
+		return (month << 8) + day;
+	}
+
+
+	/**
+	 * Get the month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
+	 * 
+	 * @param monthAndDay
+	 *            An integer that contains a month and a day.
+	 * @return The month.
+	 */
+	public static int month(int monthAndDay)
+	{
+		return monthAndDay >> 8;
+	}
+
+
+	/**
+	 * Get the day of month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
+	 * 
+	 * @param monthAndDay
+	 *            An integer that contains a month and a day.
+	 * @return The day of month.
+	 */
+	public static int dayOfMonth(int monthAndDay)
+	{
+		return monthAndDay & 0xff;
+	}
+
+
+	/**
+	 * Returns the largest month day number that the current calendar knows.
+	 * 
+	 * @return
+	 */
+	public abstract int getMaxMonthDayNum();
+
+
+	/**
+	 * Returns the largest year day number that the current calendar knows.
+	 * 
+	 * @return
+	 */
+	public abstract int getMaxYearDayNum();
+
+
+	/**
+	 * Returns the largest week number that the current calendar knows.
+	 * 
+	 * @return
+	 */
+	public abstract int getMaxWeeksNoNum();
 
 
 	/**
@@ -76,16 +214,6 @@ public abstract class CalendarMetrics
 	 * @return <code>true</code> if the date is a leap day and not existent in all years, <code>false</code> otherwise.
 	 */
 	public abstract boolean isLeapDay(int month, int day);
-
-
-	/**
-	 * Returns whether a certain month is a leap month, i.e. a month that exists in certain years only.
-	 * 
-	 * @param month
-	 *            The month to test.
-	 * @return <code>true</code> if the month is a leap month and not existent in all years, <code>false</code> otherwise.
-	 */
-	public abstract boolean isLeapMonth(int month);
 
 
 	/**
@@ -141,38 +269,6 @@ public abstract class CalendarMetrics
 	 * @return an integer with the day of month in the lowest significant byte and the month in the second lowest significant byte.
 	 */
 	public abstract int getMonthAndDayOfYearDay(int year, int yearDay);
-
-
-	public static int monthAndDay(int month, int day)
-	{
-		return (month << 8) + day;
-	}
-
-
-	/**
-	 * Get the month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
-	 * 
-	 * @param monthAndDay
-	 *            An integer that contains a month and a day.
-	 * @return The month.
-	 */
-	public static int month(int monthAndDay)
-	{
-		return monthAndDay >> 8;
-	}
-
-
-	/**
-	 * Get the day of month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
-	 * 
-	 * @param monthAndDay
-	 *            An integer that contains a month and a day.
-	 * @return The day of month.
-	 */
-	public static int dayOfMonth(int monthAndDay)
-	{
-		return monthAndDay & 0xff;
-	}
 
 
 	public abstract int getYearDaysForMonth(int year, int month);

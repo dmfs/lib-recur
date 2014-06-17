@@ -93,9 +93,9 @@ public abstract class StaticUtils
 	 * your field contains only few entries.
 	 * 
 	 * @param array
-	 *            The array to search in.
+	 *            The array to search (the hay stack). Must not be <code>null</code>!
 	 * @param i
-	 *            The value to search for.
+	 *            The value to search for (the needle).
 	 * @return the position of the value in the array or <code>-1</code> if the value has not been found.
 	 */
 	public static int linearSearch(int[] array, int i)

@@ -24,9 +24,6 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
 
 /**
  * Provides a set of methods that provide information about the Gregorian Calendar.
- * <p>
- * TODO: Some of these methods can use some optimizations.
- * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -83,43 +80,84 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getMonthsLimit()
-	{
-		return 12;
-	}
-
-
-	@Override
-	public int getMonthDaysLimit()
+	public int getMaxMonthDayNum()
 	{
 		return 31;
 	}
 
 
 	@Override
-	public int getYearDaysLimit()
+	public int getMaxYearDayNum()
 	{
 		return 366;
 	}
 
 
 	@Override
-	public int getWeeksNoLimit()
+	public int getMaxWeeksNoNum()
 	{
 		return 53;
 	}
 
 
 	@Override
-	public int getDaysPerMonth(int year, int month)
+	public int packedMonth(String month)
 	{
-		if (month == 1 && isLeapYear(year))
+		/*
+		 * Since the Gregorian calendar doesn't have leap months, we can return the 0-based month number as packed month
+		 */
+		try
 		{
-			return DAYS_PER_MONTH[month] + 1;
+			int monthNum = Integer.parseInt(month) - 1;
+			if (monthNum < 0 || monthNum > 11)
+			{
+				throw new IllegalArgumentException("month " + month + " is out of range 0..11");
+			}
+			return monthNum;
+		}
+		catch (NumberFormatException e)
+		{
+			throw new IllegalArgumentException("illegal month string " + month, e);
+		}
+	}
+
+
+	@Override
+	public int packedMonth(int monthNum, boolean leapMonth)
+	{
+		/*
+		 * Since the Gregorian calendar doesn't have leap months, we can just return the 0-based month number as packed month
+		 */
+		return monthNum;
+	}
+
+
+	@Override
+	public boolean isLeapMonth(int packedMonth)
+	{
+		// Gregorian calendar doesn't have leap months
+		return false;
+	}
+
+
+	@Override
+	public int monthNum(int packedMonth)
+	{
+		// Gregorian calendar doesn't have leap months, so packed months are just the month numbers.
+		return packedMonth;
+	}
+
+
+	@Override
+	public int getDaysPerMonth(int year, int packedMonth)
+	{
+		if (packedMonth == 1 && isLeapYear(year))
+		{
+			return DAYS_PER_MONTH[packedMonth] + 1;
 		}
 		else
 		{
-			return DAYS_PER_MONTH[month];
+			return DAYS_PER_MONTH[packedMonth];
 		}
 	}
 
@@ -431,16 +469,8 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public boolean isLeapDay(int month, int day)
+	public boolean isLeapDay(int packedMonth, int day)
 	{
-		return day == 29 && month == 1;
-	}
-
-
-	@Override
-	public boolean isLeapMonth(int month)
-	{
-		// Gregorian calendar has no leap months
-		return false;
+		return day == 29 && packedMonth == 2;
 	}
 }

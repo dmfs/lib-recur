@@ -22,6 +22,10 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 /**
  * A filter that limits recurrence rules by day of month.
+ * <p>
+ * Even though RFC 5545 doesn't explicitly say it, we filter YEARLY, MONTHLY or WEEKLY rules if BYYEARDAY has been specified. BYYEARDAY is evaluated prior to
+ * BYMONTHDAY and there is no point in expanding these days since they already are expanded.
+ * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -35,10 +39,6 @@ final class ByMonthDayFilter extends ByFilter
 
 	public ByMonthDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
 	{
-		/*
-		 * Even though RFC 5545 doesn't explicitly say it, we filter YEARLY, MONTHLY or WEEKLY rules if BYYEARDAY has been specified. BYYEARDAY is evaluated
-		 * prior to BYMONTHDAY and there is no point in expanding these days since they already are expanded.
-		 */
 		super(calendarMetrics);
 
 		// get a list of the month days
