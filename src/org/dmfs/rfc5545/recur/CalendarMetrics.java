@@ -225,7 +225,7 @@ public abstract class CalendarMetrics
 	 *            The month (0-based).
 	 * @return The number of days in that month.
 	 */
-	public abstract int getDaysPerMonth(int year, int month);
+	public abstract int getDaysPerPackedMonth(int year, int month);
 
 
 	/**
@@ -237,7 +237,7 @@ public abstract class CalendarMetrics
 	 *            The year day.
 	 * @return the month (0-based).
 	 */
-	public abstract int getMonthOfYearDay(int year, int yearDay);
+	public abstract int getPackedMonthOfYearDay(int year, int yearDay);
 
 
 	/**
@@ -271,7 +271,7 @@ public abstract class CalendarMetrics
 	public abstract int getMonthAndDayOfYearDay(int year, int yearDay);
 
 
-	public abstract int getYearDaysForMonth(int year, int month);
+	public abstract int getYearDaysForPackedMonth(int year, int month);
 
 
 	public abstract int getMonthsPerYear(int year);

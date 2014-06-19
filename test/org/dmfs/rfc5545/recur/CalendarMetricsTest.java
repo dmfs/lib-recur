@@ -13,7 +13,7 @@ public class CalendarMetricsTest
 		CalendarMetrics tools = new GregorianCalendarMetrics(1, 4);
 		for (int month = 0; month < 12; ++month)
 		{
-			for (int monthday = 1; monthday <= tools.getDaysPerMonth(2000, month); ++monthday)
+			for (int monthday = 1; monthday <= tools.getDaysPerPackedMonth(2000, month); ++monthday)
 			{
 				int mad = CalendarMetrics.monthAndDay(month, monthday);
 

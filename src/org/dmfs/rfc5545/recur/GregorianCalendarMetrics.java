@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Marten Gajda <marten@dmfs.org>
+ * Copyright (C) 2013, 2014 Marten Gajda <marten@dmfs.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class GregorianCalendarMetrics extends CalendarMetrics
+public class GregorianCalendarMetrics extends CalendarMetrics
 {
 	public final static CalendarMetricsFactory FACTORY = new CalendarMetricsFactory()
 	{
@@ -149,7 +149,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getDaysPerMonth(int year, int packedMonth)
+	public int getDaysPerPackedMonth(int year, int packedMonth)
 	{
 		if (packedMonth == 1 && isLeapYear(year))
 		{
@@ -163,15 +163,15 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getYearDaysForMonth(int year, int month)
+	public int getYearDaysForPackedMonth(int year, int packedMonth)
 	{
-		if (month > 1 && isLeapYear(year))
+		if (packedMonth > 1 && isLeapYear(year))
 		{
-			return YEARDAYS_PER_MONTH[month] + 1;
+			return YEARDAYS_PER_MONTH[packedMonth] + 1;
 		}
 		else
 		{
-			return YEARDAYS_PER_MONTH[month];
+			return YEARDAYS_PER_MONTH[packedMonth];
 		}
 	}
 
@@ -203,9 +203,9 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getWeekOfYear(int year, int month, int dayOfMonth)
+	public int getWeekOfYear(int year, int packedMonth, int dayOfMonth)
 	{
-		return getWeekOfYear(year, getYearDaysForMonth(year, month) + dayOfMonth);
+		return getWeekOfYear(year, getYearDaysForPackedMonth(year, packedMonth) + dayOfMonth);
 	}
 
 
@@ -240,16 +240,16 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getDayOfWeek(int year, int month, int dayOfMonth)
+	public int getDayOfWeek(int year, int packedMonth, int dayOfMonth)
 	{
-		return getDayOfWeek(year, getDayOfYear(year, month, dayOfMonth));
+		return getDayOfWeek(year, getDayOfYear(year, packedMonth, dayOfMonth));
 	}
 
 
 	@Override
-	public int getDayOfYear(int year, int month, int dayOfMonth)
+	public int getDayOfYear(int year, int packedMonth, int dayOfMonth)
 	{
-		return getYearDaysForMonth(year, month) + dayOfMonth;
+		return getYearDaysForPackedMonth(year, packedMonth) + dayOfMonth;
 	}
 
 
@@ -260,7 +260,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	 *            The year.
 	 * @return <code>true</code> if the year is a leap year, <code>false</code> otherwise.
 	 */
-	private boolean isLeapYear(int year)
+	boolean isLeapYear(int year)
 	{
 		return (year & 0x3) == 0 && year % 100 != 0 || year % 400 == 0;
 	}
@@ -289,7 +289,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getMonthOfYearDay(int year, int yearDay)
+	public int getPackedMonthOfYearDay(int year, int yearDay)
 	{
 		int yearDays;
 
@@ -306,7 +306,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 		}
 
 		int month = (yearDay >> 5) + 1; // get a good estimation for the first month to check
-		if (month < 12 && getYearDaysForMonth(year, month) < yearDay)
+		if (month < 12 && getYearDaysForPackedMonth(year, month) < yearDay)
 		{
 			month++;
 		}
@@ -317,7 +317,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	@Override
 	public int getDayOfMonthOfYearDay(int year, int yearDay)
 	{
-		return yearDay - getYearDaysForMonth(year, getMonthOfYearDay(year, yearDay));
+		return yearDay - getYearDaysForPackedMonth(year, getPackedMonthOfYearDay(year, yearDay));
 	}
 
 
@@ -339,13 +339,13 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 		}
 
 		int month = (yearDay >> 5) + 1; // get a good estimation for the first month to check
-		if (month < 12 && getYearDaysForMonth(year, month) < yearDay)
+		if (month < 12 && getYearDaysForPackedMonth(year, month) < yearDay)
 		{
 			++month;
 
 		}
 		--month;
-		return monthAndDay(month, yearDay - getYearDaysForMonth(year, month));
+		return monthAndDay(month, yearDay - getYearDaysForPackedMonth(year, month));
 	}
 
 
@@ -364,14 +364,15 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public long toMillis(TimeZone timeZone, int year, int month, int dayOfMonth, int hours, int minutes, int seconds, int millis)
+	public long toMillis(TimeZone timeZone, int year, int packedMonth, int dayOfMonth, int hours, int minutes, int seconds, int millis)
 	{
 		int timeInMillis = ((hours * 60 + minutes) * 60 + seconds) * 1000 + millis;
-		int dayOfWeek = getDayOfWeek(year, month, dayOfMonth);
+		int dayOfWeek = getDayOfWeek(year, packedMonth, dayOfMonth);
 
-		int dstOffset = timeZone.getOffset(Calendar.AD, year, month, dayOfMonth, dayOfWeek + 1/* Calendar uses 1-7 */, timeInMillis) - timeZone.getRawOffset();
+		int dstOffset = timeZone.getOffset(Calendar.AD, year, packedMonth, dayOfMonth, dayOfWeek + 1/* Calendar uses 1-7 */, timeInMillis)
+			- timeZone.getRawOffset();
 
-		int yearDay = getDayOfYear(year, month, dayOfMonth);
+		int yearDay = getDayOfYear(year, packedMonth, dayOfMonth);
 		long localTime = getTimeStamp(year, yearDay, hours, minutes, seconds, millis);
 
 		timeInMillis -= dstOffset;
@@ -380,16 +381,16 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 			timeInMillis += 24 * 60 * 60 * 1000;
 			if (--dayOfMonth == 0)
 			{
-				if (--month < 0)
+				if (--packedMonth < 0)
 				{
 					--year;
-					month = getMonthsPerYear(year) - 1;
+					packedMonth = getMonthsPerYear(year) - 1;
 				}
-				dayOfMonth = getDaysPerMonth(year, month);
+				dayOfMonth = getDaysPerPackedMonth(year, packedMonth);
 				dayOfWeek = (dayOfWeek + 6) % 7;
 			}
 		}
-		int offset2 = timeZone.getOffset(Calendar.AD, year, month, dayOfMonth, dayOfWeek + 1, timeInMillis);
+		int offset2 = timeZone.getOffset(Calendar.AD, year, packedMonth, dayOfMonth, dayOfWeek + 1, timeInMillis);
 
 		return localTime - offset2;
 	}
@@ -407,7 +408,7 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	}
 
 
-	private static int numLeapDaysSince1970(int year)
+	int numLeapDaysSince1970(int year)
 	{
 		int prevYear = year - 1; // don't include year itself
 		int leapYears = prevYear >> 2; // leap years since year 0
@@ -471,6 +472,6 @@ public final class GregorianCalendarMetrics extends CalendarMetrics
 	@Override
 	public boolean isLeapDay(int packedMonth, int day)
 	{
-		return day == 29 && packedMonth == 2;
+		return day == 29 && packedMonth == 1;
 	}
 }
