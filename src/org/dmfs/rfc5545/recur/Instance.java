@@ -256,7 +256,7 @@ final class Instance
 		}
 
 		int day = dayOfMonth(instance);
-		if (day < 1 || day > calendarMetrics.getDaysPerMonth(year, month))
+		if (day < 1 || day > calendarMetrics.getDaysPerPackedMonth(year, month))
 		{
 			return false;
 		}

@@ -147,7 +147,7 @@ final class ByDayFilter extends ByFilter
 				case MONTHLY:
 				{
 					int nthDay = (dayOfMonth - 1) / 7 + 1;
-					int lastNthDay = (dayOfMonth - mCalendarMetrics.getDaysPerMonth(year, month)) / 7 - 1;
+					int lastNthDay = (dayOfMonth - mCalendarMetrics.getDaysPerPackedMonth(year, month)) / 7 - 1;
 					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay, dayOfWeek)) < 0)
 						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
 				}

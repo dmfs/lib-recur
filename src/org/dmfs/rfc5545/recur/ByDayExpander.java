@@ -213,7 +213,7 @@ final class ByDayExpander extends ByExpander
 
 					// get the first week day and the number of days of this month
 					int weekDayOfFirstInMonth = calendarMetrics.getDayOfWeek(year, month, 1);
-					int monthDays = calendarMetrics.getDaysPerMonth(year, month);
+					int monthDays = calendarMetrics.getDaysPerPackedMonth(year, month);
 
 					// get the first instance of the weekday in this month
 					int firstDay = (day - weekDayOfFirstInMonth + 7) % 7 + 1;

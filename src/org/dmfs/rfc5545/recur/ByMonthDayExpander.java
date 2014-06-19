@@ -107,24 +107,24 @@ final class ByMonthDayExpander extends ByExpander
 		{
 			if (month == 0)
 			{
-				prevMonthDays = calendarMetrics.getDaysPerMonth(year - 1, calendarMetrics.getMonthsPerYear(year - 1) - 1);
+				prevMonthDays = calendarMetrics.getDaysPerPackedMonth(year - 1, calendarMetrics.getMonthsPerYear(year - 1) - 1);
 			}
 			else
 			{
-				prevMonthDays = calendarMetrics.getDaysPerMonth(year, month - 1);
+				prevMonthDays = calendarMetrics.getDaysPerPackedMonth(year, month - 1);
 			}
 
 			if (month == calendarMetrics.getMonthsPerYear(year) - 1)
 			{
-				nextMonthDays = calendarMetrics.getDaysPerMonth(year + 1, 0);
+				nextMonthDays = calendarMetrics.getDaysPerPackedMonth(year + 1, 0);
 			}
 			else
 			{
-				nextMonthDays = calendarMetrics.getDaysPerMonth(year, month + 1);
+				nextMonthDays = calendarMetrics.getDaysPerPackedMonth(year, month + 1);
 			}
 		}
 
-		int monthDays = calendarMetrics.getDaysPerMonth(year, month);
+		int monthDays = calendarMetrics.getDaysPerPackedMonth(year, month);
 		for (int day : mMonthDays)
 		{
 			int actualDay = day;

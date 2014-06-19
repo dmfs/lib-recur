@@ -50,7 +50,7 @@ final class ByMonthDayFilter extends ByFilter
 	@Override
 	boolean filter(long instance)
 	{
-		int monthDays = mCalendarMetrics.getDaysPerMonth(Instance.year(instance), Instance.month(instance));
+		int monthDays = mCalendarMetrics.getDaysPerPackedMonth(Instance.year(instance), Instance.month(instance));
 		int dayOfMonth = Instance.dayOfMonth(instance);
 		return (StaticUtils.linearSearch(mMonthDays, dayOfMonth) < 0 && StaticUtils.linearSearch(mMonthDays, dayOfMonth - 1 - monthDays) < 0)
 			|| dayOfMonth > monthDays;

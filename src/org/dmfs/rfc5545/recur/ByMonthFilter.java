@@ -92,13 +92,13 @@ final class ByMonthFilter extends ByFilter
 			int yearDayOfWeekStart = mCalendarMetrics.getYearDayOfWeekStart(year, weekOfYear);
 
 			// check if the month of the week start is in mMonths
-			if (StaticUtils.linearSearch(mMonths, mCalendarMetrics.getMonthOfYearDay(year, yearDayOfWeekStart) + 1) >= 0)
+			if (StaticUtils.linearSearch(mMonths, mCalendarMetrics.getPackedMonthOfYearDay(year, yearDayOfWeekStart) + 1) >= 0)
 			{
 				return false;
 			}
 
 			// check if the month of the week end is in mMonths
-			return StaticUtils.linearSearch(mMonths, mCalendarMetrics.getMonthOfYearDay(year, yearDayOfWeekStart + 6) + 1) < 0;
+			return StaticUtils.linearSearch(mMonths, mCalendarMetrics.getPackedMonthOfYearDay(year, yearDayOfWeekStart + 6) + 1) < 0;
 		}
 	}
 }

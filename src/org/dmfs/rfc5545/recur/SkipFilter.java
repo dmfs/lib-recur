@@ -146,7 +146,7 @@ final class SkipFilter extends RuleIterator
 							next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.month(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
 						}
 					}
-					else if (CalendarMetrics.isLeapMonth(month))
+					else if (calendarMetrics.isLeapMonth(month))
 					{
 						int yearDay = calendarMetrics.getDayOfYear(year, mSkip == Skip.BACKWARD ? month - 1 : month + 1, monthDay);
 						if (yearDay > calendarMetrics.getDaysPerYear(year))
