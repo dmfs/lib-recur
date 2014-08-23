@@ -2,6 +2,8 @@ package org.dmfs.rfc5545.recur;
 
 import static org.junit.Assert.assertEquals;
 
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
 import org.junit.Test;
 
 
@@ -9,29 +11,16 @@ public class InstanceTest
 {
 
 	@Test
-	public void testMakeCalendar()
-	{
-		long i = Instance.make(new Calendar(2000, 2, 20, 3, 45, 36));
-		assertEquals(2000, Instance.year(i));
-		assertEquals(2, Instance.month(i));
-		assertEquals(20, Instance.dayOfMonth(i));
-		assertEquals(3, Instance.hour(i));
-		assertEquals(45, Instance.minute(i));
-		assertEquals(36, Instance.second(i));
-	}
-
-
-	@Test
 	public void testMakeIntIntIntIntIntIntInt()
 	{
-		long i = Instance.make(2000, 2, 20, 3, 45, 36, Calendar.MONDAY);
+		long i = Instance.make(2000, 2, 20, 3, 45, 36, Weekday.MO.ordinal());
 		assertEquals(2000, Instance.year(i));
 		assertEquals(2, Instance.month(i));
 		assertEquals(20, Instance.dayOfMonth(i));
 		assertEquals(3, Instance.hour(i));
 		assertEquals(45, Instance.minute(i));
 		assertEquals(36, Instance.second(i));
-		assertEquals(Calendar.MONDAY, Instance.dayOfWeek(i));
+		assertEquals(Weekday.MO.ordinal(), Instance.dayOfWeek(i));
 	}
 
 
@@ -52,7 +41,7 @@ public class InstanceTest
 	@Test
 	public void testSetYear()
 	{
-		for (int year = 1700; year < 4000; ++year)
+		for (int year = 0; year < 4000; ++year)
 		{
 			long i = Instance.setYear(Instance.make(0, 2, 20, 3, 45, 36), year);
 			assertEquals(year, Instance.year(i));
@@ -69,7 +58,7 @@ public class InstanceTest
 	@Test
 	public void testSetMonth()
 	{
-		for (int month = 0; month < 12; ++month)
+		for (int month = 0; month < 14; ++month)
 		{
 			long i = Instance.setMonth(Instance.make(2000, 0, 20, 3, 45, 36), month);
 			assertEquals(2000, Instance.year(i));
@@ -157,7 +146,7 @@ public class InstanceTest
 	@Test
 	public void testSetMinute()
 	{
-		for (int minute = 0; minute < 24; ++minute)
+		for (int minute = 0; minute < 60; ++minute)
 		{
 			long i = Instance.setMinute(Instance.make(2000, 2, 20, 3, 45, 36), minute);
 			assertEquals(2000, Instance.year(i));
@@ -174,7 +163,7 @@ public class InstanceTest
 	@Test
 	public void testSetSecond()
 	{
-		for (int second = 0; second < 24; ++second)
+		for (int second = 0; second < 60; ++second)
 		{
 			long i = Instance.setSecond(Instance.make(2000, 2, 20, 3, 45, 36), second);
 			assertEquals(2000, Instance.year(i));

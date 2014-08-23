@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 import org.junit.Test;
 
@@ -331,14 +332,13 @@ public class RecurrenceParserTest
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 				rule.assertInvalidRules(r.toString());
 				rule.assertObligatoryRuleParts(r.toString());
-				r.setStart(rule.start);
 				rule.setIterationStart(rule.start);
-				RecurrenceIterator it = r.iterator();
-				Set<Calendar> instances = new HashSet<Calendar>();
+				RecurrenceRuleIterator it = r.iterator(rule.start);
+				Set<DateTime> instances = new HashSet<DateTime>();
 				int count = 0;
 				while (it.hasNext())
 				{
-					Calendar instance = it.nextCalendar();
+					DateTime instance = it.nextDateTime();
 					rule.testInstance(instance);
 					rule.assertInstances(count);
 					instances.add(instance);

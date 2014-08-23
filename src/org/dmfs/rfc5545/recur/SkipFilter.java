@@ -17,6 +17,8 @@
 
 package org.dmfs.rfc5545.recur;
 
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
 
@@ -125,7 +127,7 @@ final class SkipFilter extends RuleIterator
 				int month = Instance.month(next);
 				int monthDay = Instance.dayOfMonth(next);
 
-				if (!Instance.validate(next, calendarMetrics))
+				if (!calendarMetrics.validate(next))
 				{
 					if (calendarMetrics.isLeapDay(month, monthDay))
 					{
@@ -136,7 +138,7 @@ final class SkipFilter extends RuleIterator
 						else
 						// mSkip == Skip.FORWARD
 						{
-							int yearDay = calendarMetrics.getDayOfYear(year, month, monthDay) + 1;
+							int yearDay = calendarMetrics.getDayOfYear(year, month, monthDay);
 							if (yearDay > calendarMetrics.getDaysPerYear(year))
 							{
 								yearDay -= calendarMetrics.getDaysPerYear(year);

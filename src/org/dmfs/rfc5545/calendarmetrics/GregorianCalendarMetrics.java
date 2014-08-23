@@ -15,10 +15,11 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur;
+package org.dmfs.rfc5545.calendarmetrics;
 
 import java.util.TimeZone;
 
+import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
 
 
@@ -369,7 +370,7 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 		int timeInMillis = ((hours * 60 + minutes) * 60 + seconds) * 1000 + millis;
 		int dayOfWeek = getDayOfWeek(year, packedMonth, dayOfMonth);
 
-		int dstOffset = timeZone.getOffset(Calendar.AD, year, packedMonth, dayOfMonth, dayOfWeek + 1/* Calendar uses 1-7 */, timeInMillis)
+		int dstOffset = timeZone.getOffset(1 /* GregorianCalendar.AD */, year, packedMonth, dayOfMonth, dayOfWeek + 1/* Calendar uses 1-7 */, timeInMillis)
 			- timeZone.getRawOffset();
 
 		int yearDay = getDayOfYear(year, packedMonth, dayOfMonth);
@@ -390,7 +391,22 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 				dayOfWeek = (dayOfWeek + 6) % 7;
 			}
 		}
-		int offset2 = timeZone.getOffset(Calendar.AD, year, packedMonth, dayOfMonth, dayOfWeek + 1, timeInMillis);
+		else if (timeInMillis >= 24 * 60 * 60 * 1000)
+		{
+			timeInMillis -= 24 * 60 * 60 * 1000;
+			if (++dayOfMonth > getDaysPerPackedMonth(year, packedMonth))
+			{
+				if (++packedMonth >= getMonthsPerYear(year))
+				{
+					++year;
+					packedMonth = 0;
+				}
+				dayOfMonth = 1;
+				dayOfWeek = (dayOfWeek + 1) % 7;
+			}
+		}
+
+		int offset2 = timeZone.getOffset(1 /* GregorianCalendar.AD */, year, packedMonth, dayOfMonth, dayOfWeek + 1, timeInMillis);
 
 		return localTime - offset2;
 	}

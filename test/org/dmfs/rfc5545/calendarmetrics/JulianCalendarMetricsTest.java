@@ -15,15 +15,17 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur;
+package org.dmfs.rfc5545.calendarmetrics;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.dmfs.rfc5545.Instance;
 import org.junit.Before;
 import org.junit.Test;
 

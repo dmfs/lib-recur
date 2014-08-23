@@ -1,6 +1,6 @@
 package org.dmfs.librecur.test;
 
-import org.dmfs.rfc5545.recur.Calendar;
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
 
 import android.text.format.Time;
@@ -35,7 +35,7 @@ public class calendarcommonBench extends BenchmarkSuite
 	{
 
 		@Override
-		public long run(String rrule, Calendar startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException
+		public long run(String rrule, DateTime startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException
 		{
 			RecurrenceSet rset = new RecurrenceSet(rrule, null, null, null);
 			return rset.hashCode();
@@ -47,7 +47,7 @@ public class calendarcommonBench extends BenchmarkSuite
 	{
 
 		@Override
-		public long run(String rrule, Calendar startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException,
+		public long run(String rrule, DateTime startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException,
 			DateException
 		{
 			RecurrenceSet rset = new RecurrenceSet(rrule, null, null, null);

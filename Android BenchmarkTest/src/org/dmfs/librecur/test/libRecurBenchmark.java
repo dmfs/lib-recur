@@ -1,12 +1,12 @@
 package org.dmfs.librecur.test;
 
-import org.dmfs.rfc5545.recur.Calendar;
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
-import org.dmfs.rfc5545.recur.recurrenceset.RecurrenceRuleAdapter;
-import org.dmfs.rfc5545.recur.recurrenceset.RecurrenceSet;
-import org.dmfs.rfc5545.recur.recurrenceset.RecurrenceSetIterator;
+import org.dmfs.rfc5545.recurrenceset.RecurrenceRuleAdapter;
+import org.dmfs.rfc5545.recurrenceset.RecurrenceSet;
+import org.dmfs.rfc5545.recurrenceset.RecurrenceSetIterator;
 
 import android.text.format.Time;
 
@@ -36,7 +36,7 @@ public class libRecurBenchmark extends BenchmarkSuite
 	{
 
 		@Override
-		public long run(String rrule, Calendar startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException
+		public long run(String rrule, DateTime startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException
 		{
 			RecurrenceRule rule = new RecurrenceRule(rrule, RfcMode.RFC2445_LAX);
 			return rule.getInterval();
@@ -48,19 +48,17 @@ public class libRecurBenchmark extends BenchmarkSuite
 	{
 
 		@Override
-		public long run(String rrule, Calendar startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException
+		public long run(String rrule, DateTime startCalendar, Time startTime, long rangeStart, long rangeEnd) throws InvalidRecurrenceRuleException
 		{
 			RecurrenceRule rule = new RecurrenceRule(rrule, RfcMode.RFC2445_LAX);
 			RecurrenceSet rset = new RecurrenceSet();
-			rset.setStart(startCalendar);
-			rset.addInstances(new RecurrenceRuleAdapter(rule, startCalendar));
+			rset.addInstances(new RecurrenceRuleAdapter(rule));
 
 			long result = 0;
 			int instances = 0;
 
-			RecurrenceSetIterator iterator = rset.iterator();
-			iterator.setIterateEnd(rangeEnd);
-			if (startCalendar.getTimeInMillis() != rangeStart)
+			RecurrenceSetIterator iterator = rset.iterator(startCalendar.getTimestamp(), rangeEnd);
+			if (startCalendar.getTimestamp() != rangeStart)
 			{
 				iterator.fastForward(rangeStart);
 			}

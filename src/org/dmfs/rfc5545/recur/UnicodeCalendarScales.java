@@ -3,7 +3,8 @@ package org.dmfs.rfc5545.recur;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dmfs.rfc5545.recur.CalendarMetrics.CalendarMetricsFactory;
+import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics.CalendarMetricsFactory;
 
 
 public final class UnicodeCalendarScales

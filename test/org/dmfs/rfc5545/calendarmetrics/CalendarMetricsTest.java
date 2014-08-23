@@ -1,7 +1,9 @@
-package org.dmfs.rfc5545.recur;
+package org.dmfs.rfc5545.calendarmetrics;
 
 import static org.junit.Assert.assertEquals;
 
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
+import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
 import org.junit.Test;
 
 

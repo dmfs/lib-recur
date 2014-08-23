@@ -3,14 +3,17 @@ package org.dmfs.rfc5545.recur;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.TimeZone;
+
+import org.dmfs.rfc5545.DateTime;
 
 
 public class TestDate
 {
 
 	public final String dateTime;
-	public Calendar cal;
+	public DateTime cal;
 	public int day, month, year;
 	public int hour = -1, minute = -1, second = -1;
 	public String timeZone;
@@ -55,7 +58,7 @@ public class TestDate
 
 	public void testEvent()
 	{
-		cal = Calendar.parse(dateTime);
+		cal = DateTime.parse(dateTime);
 		testClone();
 		testFlags();
 		testDate();
@@ -70,9 +73,9 @@ public class TestDate
 
 	public void testDate()
 	{
-		assertEquals(day, cal.get(Calendar.DAY_OF_MONTH));
-		assertEquals(month, cal.get(Calendar.MONTH));
-		assertEquals(year, cal.get(Calendar.YEAR));
+		assertEquals(day, cal.getDayOfMonth());
+		assertEquals(month, cal.getMonth());
+		assertEquals(year, cal.getYear());
 	}
 
 
@@ -80,9 +83,13 @@ public class TestDate
 	{
 		if (!isAllDay)
 		{
-			assertEquals(hour, cal.get(Calendar.HOUR_OF_DAY));
-			assertEquals(minute, cal.get(Calendar.MINUTE));
-			assertEquals(second, cal.get(Calendar.SECOND));
+			assertEquals(hour, cal.getHours());
+			assertEquals(minute, cal.getMinutes());
+			assertEquals(second, cal.getSeconds());
+		}
+		else
+		{
+			assertTrue(cal.isAllDay());
 		}
 	}
 
@@ -93,15 +100,15 @@ public class TestDate
 	}
 
 
-	private void compareTwoCalendars(Calendar c1, Calendar c2)
+	private void compareTwoCalendars(DateTime c1, DateTime c2)
 	{
 
-		assertEquals(c1.get(Calendar.YEAR), c2.get(Calendar.YEAR));
-		assertEquals(c1.get(Calendar.MONTH), c2.get(Calendar.MONTH));
-		assertEquals(c1.get(Calendar.DAY_OF_MONTH), c2.get(Calendar.DAY_OF_MONTH));
-		assertEquals(c1.get(Calendar.HOUR_OF_DAY), c2.get(Calendar.HOUR_OF_DAY));
-		assertEquals(c1.get(Calendar.MINUTE), c2.get(Calendar.MINUTE));
-		assertEquals(c1.get(Calendar.SECOND), c2.get(Calendar.SECOND));
+		assertEquals(c1.getYear(), c2.getYear());
+		assertEquals(c1.getMonth(), c2.getMonth());
+		assertEquals(c1.getDayOfMonth(), c2.getDayOfMonth());
+		assertEquals(c1.getHours(), c2.getHours());
+		assertEquals(c1.getMinutes(), c2.getMinutes());
+		assertEquals(c1.getSeconds(), c2.getSeconds());
 		assertEquals(c1.isAllDay(), c2.isAllDay());
 		assertEquals(c1.isFloating(), c2.isFloating());
 

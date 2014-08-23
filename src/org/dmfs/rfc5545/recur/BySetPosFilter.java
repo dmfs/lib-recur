@@ -19,6 +19,7 @@ package org.dmfs.rfc5545.recur;
 
 import java.util.Iterator;
 
+import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 

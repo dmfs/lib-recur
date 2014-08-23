@@ -17,12 +17,14 @@
 
 package org.dmfs.rfc5545.recur;
 
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 
 
 /**
- * This iterator buffers instances that belong to then next interval. An instance might be iterated to soon when it's rolled forward from a leap month or leap
- * day.
+ * This iterator buffers instances that belong to the next interval. When the rule contains SKIP=FORWARD, instances may be rolled forward to the next interval.
+ * To ensure we iterate them in the correct order we buffer such instances.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -69,20 +71,24 @@ final class SkipBuffer extends RuleIterator
 	LongArray nextSet()
 	{
 		LongArray resultSet = mResultSet;
-		resultSet.clear();
 		LongArray tempSet = mTempSet;
+		int minYear = Integer.MAX_VALUE;
+		int minMonth = Integer.MAX_VALUE;
 		boolean first = true;
-		int currentYear = Integer.MAX_VALUE;
-		int currentMonth = Integer.MAX_VALUE;
+
+		resultSet.clear();
+
 		if (tempSet.size() > 0)
 		{
+			// we do have instances in the temporary buffer, add them to the result set
 			while (tempSet.hasNext())
 			{
 				long next = tempSet.next();
 				if (first)
 				{
-					currentMonth = Instance.year(next);
-					currentYear = Instance.month(next);
+					// since the buffer was sorted we know the first instance is the earliest one.
+					minMonth = Instance.year(next);
+					minYear = Instance.month(next);
 					first = false;
 				}
 
@@ -94,44 +100,48 @@ final class SkipBuffer extends RuleIterator
 		LongArray prev = mPrevious.nextSet();
 		while (prev.hasNext())
 		{
-			long next = Instance.maskWeekday(prev.next());
+			long next = prev.next();
 
 			int year = Instance.year(next);
 			int month = Instance.month(next);
 
 			if (first)
 			{
-				currentMonth = month;
-				currentYear = year;
+				minMonth = month;
+				minYear = year;
 				first = false;
+				resultSet.add(next);
 			}
 			else
 			{
 				if (mIsYearly)
 				{
-					if (year == currentYear)
+					if (year == minYear)
 					{
-						mResultSet.add(next);
+						// same year as the earliest instance
+						resultSet.add(next);
 					}
 					else
 					{
-						mTempSet.add(next);
+						// one year later
+						tempSet.add(next);
 					}
 				}
 				else
 				{
-					if (year == currentYear && month == currentMonth)
+					if (year == minYear && month == minMonth)
 					{
-						mResultSet.add(next);
+						// same month as the earliest instance
+						resultSet.add(next);
 					}
 					else
 					{
-						mTempSet.add(next);
+						// this one is in the next month
+						tempSet.add(next);
 					}
 
 				}
 			}
-			resultSet.add(next);
 		}
 
 		// we need to sort, because the element order might have changed

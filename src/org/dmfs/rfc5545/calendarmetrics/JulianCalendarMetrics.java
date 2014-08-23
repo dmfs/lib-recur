@@ -15,9 +15,11 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur;
+package org.dmfs.rfc5545.calendarmetrics;
 
 import java.util.TimeZone;
+
+import org.dmfs.rfc5545.Instance;
 
 
 /**

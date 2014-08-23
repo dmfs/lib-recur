@@ -22,9 +22,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,9 +39,9 @@ public class RecurrenceIteratorTest
 
 	private final static String[] FF_DATES = { "19850501T133912", "19850502T133912", "19950101", "20050101T210002", "20080229T000000" };
 
-	private final static Calendar FLOATING_TEST_START_DATE = Calendar.parse("19850501T133912");
-	private final static Calendar ABSOLUTE_TEST_START_DATE = Calendar.parse("19850501T133912Z");
-	private final static Calendar ALLDAY_TEST_START_DATE = Calendar.parse("19850501");
+	private final static DateTime FLOATING_TEST_START_DATE = DateTime.parse("19850501T133912");
+	private final static DateTime ABSOLUTE_TEST_START_DATE = DateTime.parse("19850501T133912Z");
+	private final static DateTime ALLDAY_TEST_START_DATE = DateTime.parse("19850501");
 
 	private final static List<TestRule> mTestRules = new ArrayList<TestRule>();
 
@@ -59,32 +61,31 @@ public class RecurrenceIteratorTest
 			{
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 
+				DateTime start = null;
 				if (rule.start != null)
 				{
-					r.setStart(rule.start);
-					rule.setIterationStart(rule.start);
+					start = rule.start;
 				}
 				else if (!rule.floating)
 				{
-					r.setStart(ABSOLUTE_TEST_START_DATE);
-					rule.setIterationStart(ABSOLUTE_TEST_START_DATE);
+					start = ABSOLUTE_TEST_START_DATE;
 				}
 				else if (!rule.allday)
 				{
-					r.setStart(FLOATING_TEST_START_DATE);
-					rule.setIterationStart(FLOATING_TEST_START_DATE);
+					start = FLOATING_TEST_START_DATE;
 				}
 				else
 				{
-					r.setStart(ALLDAY_TEST_START_DATE);
-					rule.setIterationStart(ALLDAY_TEST_START_DATE);
+					start = ALLDAY_TEST_START_DATE;
 				}
 
+				rule.setIterationStart(start);
+
 				int count = 0;
-				RecurrenceIterator it = r.iterator();
+				RecurrenceRuleIterator it = r.iterator(start);
 				while (it.hasNext())
 				{
-					Calendar instance = it.nextCalendar();
+					DateTime instance = it.nextDateTime();
 					count++;
 					if (count == 1)
 					{
@@ -130,36 +131,35 @@ public class RecurrenceIteratorTest
 			{
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 
+				DateTime start = null;
 				if (rule.start != null)
 				{
-					r.setStart(rule.start);
-					rule.setIterationStart(rule.start);
+					start = rule.start;
 				}
 				else if (!rule.floating)
 				{
-					r.setStart(ABSOLUTE_TEST_START_DATE);
-					rule.setIterationStart(ABSOLUTE_TEST_START_DATE);
+					start = ABSOLUTE_TEST_START_DATE;
 				}
 				else if (!rule.allday)
 				{
-					r.setStart(FLOATING_TEST_START_DATE);
-					rule.setIterationStart(FLOATING_TEST_START_DATE);
+					start = FLOATING_TEST_START_DATE;
 				}
 				else
 				{
-					r.setStart(ALLDAY_TEST_START_DATE);
-					rule.setIterationStart(ALLDAY_TEST_START_DATE);
+					start = ALLDAY_TEST_START_DATE;
 				}
 
+				rule.setIterationStart(start);
+
 				int count = 0;
-				RecurrenceIterator it = r.iterator();
+				RecurrenceRuleIterator it = r.iterator(start);
 				while (it.hasNext())
 				{
 					long millis = it.peekMillis();
-					Calendar instance = it.nextCalendar();
+					DateTime instance = it.nextDateTime();
 					count++;
 
-					assertEquals(millis, instance.getTimeInMillis());
+					assertEquals(millis, instance.getTimestamp());
 
 					if (count == MAX_ITERATIONS)
 					{
@@ -182,31 +182,32 @@ public class RecurrenceIteratorTest
 		for (TestRule rule : mTestRules)
 		{
 			RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
+			DateTime start = null;
 			if (rule.start != null)
 			{
-				r.setStart(rule.start);
+				start = rule.start;
 			}
 			else if (!rule.floating)
 			{
-				r.setStart(ABSOLUTE_TEST_START_DATE);
+				start = ABSOLUTE_TEST_START_DATE;
 			}
 			else if (!rule.allday)
 			{
-				r.setStart(FLOATING_TEST_START_DATE);
+				start = FLOATING_TEST_START_DATE;
 			}
 			else
 			{
-				r.setStart(ALLDAY_TEST_START_DATE);
+				start = ALLDAY_TEST_START_DATE;
 			}
 
 			// no instance should be before this day
-			Calendar lastInstance = new Calendar(Calendar.UTC, 1900, 0, 1, 0, 0, 0);
+			DateTime lastInstance = new DateTime(DateTime.UTC, 1900, 0, 1, 0, 0, 0);
 
 			int count = 0;
-			RecurrenceIterator it = r.iterator();
+			RecurrenceRuleIterator it = r.iterator(start);
 			while (it.hasNext())
 			{
-				Calendar instance = it.nextCalendar();
+				DateTime instance = it.nextDateTime();
 				// check that the previous instance is always before the next instance
 				String errMsg = "";
 				// errMsg = "instance no " + count + " " + lastInstance + " not before " + instance + " in rule " + new RecurrenceRule(rule.rule,
@@ -237,30 +238,31 @@ public class RecurrenceIteratorTest
 
 		for (TestRule rule : mTestRules)
 		{
-			Calendar lastInstance = null;
-			List<RecurrenceIterator> instanceIterators = new LinkedList<RecurrenceIterator>();
+			DateTime lastInstance = null;
+			List<RecurrenceRuleIterator> instanceIterators = new LinkedList<RecurrenceRuleIterator>();
 
 			try
 			{
 				RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
+				DateTime start = null;
 				if (rule.start != null)
 				{
-					r1.setStart(rule.start);
+					start = rule.start;
 				}
 				else if (!rule.floating)
 				{
-					r1.setStart(ABSOLUTE_TEST_START_DATE);
+					start = ABSOLUTE_TEST_START_DATE;
 				}
 				else if (!rule.allday)
 				{
-					r1.setStart(FLOATING_TEST_START_DATE);
+					start = FLOATING_TEST_START_DATE;
 				}
 				else
 				{
-					r1.setStart(ALLDAY_TEST_START_DATE);
+					start = ALLDAY_TEST_START_DATE;
 				}
 
-				RecurrenceIterator mainIterator = r1.iterator();
+				RecurrenceRuleIterator mainIterator = r1.iterator(start);
 
 				if (!mainIterator.hasNext())
 				{
@@ -272,22 +274,22 @@ public class RecurrenceIteratorTest
 				int count = 1;
 				while (mainIterator.hasNext() && count < MAX_ITERATIONS)
 				{
-					lastInstance = mainIterator.nextCalendar();
+					lastInstance = mainIterator.nextDateTime();
 					count++;
-					RecurrenceIterator i2 = r2.iterator(lastInstance);
+					RecurrenceRuleIterator i2 = r2.iterator(lastInstance);
 					instanceIterators.add(i2);
 					if (instanceIterators.size() > MAX_BUFFER)
 					{
 						instanceIterators.remove(0);
 					}
 
-					for (RecurrenceIterator iter : instanceIterators)
+					for (RecurrenceRuleIterator iter : instanceIterators)
 					{
 						if (!iter.hasNext())
 						{
 							fail("Expected another instance! rule=" + rule.rule + " lastInstance=" + lastInstance);
 						}
-						Calendar upcoming = iter.nextCalendar();
+						DateTime upcoming = iter.nextDateTime();
 						assertEquals(lastInstance, upcoming);
 					}
 
@@ -308,30 +310,31 @@ public class RecurrenceIteratorTest
 		for (TestRule rule : mTestRules)
 		{
 			RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
+			DateTime start = null;
 			if (rule.start != null)
 			{
-				r.setStart(rule.start);
+				start = rule.start;
 			}
 			else if (!rule.floating)
 			{
-				r.setStart(ABSOLUTE_TEST_START_DATE);
+				start = ABSOLUTE_TEST_START_DATE;
 			}
 			else if (!rule.allday)
 			{
-				r.setStart(FLOATING_TEST_START_DATE);
+				start = FLOATING_TEST_START_DATE;
 			}
 			else
 			{
-				r.setStart(ALLDAY_TEST_START_DATE);
+				start = ALLDAY_TEST_START_DATE;
 			}
 
 			for (String ffto : FF_DATES)
 			{
-				RecurrenceIterator original = r.iterator();
+				RecurrenceRuleIterator original = r.iterator(start);
 
-				RecurrenceIterator ffIterator = r.iterator();
+				RecurrenceRuleIterator ffIterator = r.iterator(start);
 
-				long fftodate = Calendar.parse(ffto).getTimeInMillis();
+				long fftodate = DateTime.parse(ffto).getTimestamp();
 
 				ffIterator.fastForward(fftodate);
 				int count = 0;
@@ -367,34 +370,35 @@ public class RecurrenceIteratorTest
 	{
 		TestRule rule = new TestRule("FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3").setCount(3);
 
-		Calendar lastInstance = null;
+		DateTime lastInstance = null;
 		try
 		{
 			RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
+			DateTime start = null;
 			if (rule.start != null)
 			{
-				r1.setStart(rule.start);
+				start = rule.start;
 			}
 			else if (!rule.floating)
 			{
-				r1.setStart(ABSOLUTE_TEST_START_DATE);
+				start = ABSOLUTE_TEST_START_DATE;
 			}
 			else if (!rule.allday)
 			{
-				r1.setStart(FLOATING_TEST_START_DATE);
+				start = FLOATING_TEST_START_DATE;
 			}
 			else
 			{
-				r1.setStart(ALLDAY_TEST_START_DATE);
+				start = ALLDAY_TEST_START_DATE;
 			}
 
-			RecurrenceIterator it = r1.iterator();
+			RecurrenceRuleIterator it = r1.iterator(start);
 
 			if (!it.hasNext())
 			{
 				return;
 			}
-			lastInstance = it.nextCalendar();
+			lastInstance = it.nextDateTime();
 
 			RecurrenceRule r2 = new RecurrenceRule(rule.rule, rule.mode);
 
@@ -403,18 +407,18 @@ public class RecurrenceIteratorTest
 			{
 				count++;
 
-				RecurrenceIterator i2 = r2.iterator(lastInstance);
+				RecurrenceRuleIterator i2 = r2.iterator(lastInstance);
 				System.out.println("z " + lastInstance);
 
 				// first instance of r2 should be lastInstance
 				String error1 = "";
 				// error1 = "error on first instance of rule " + rule.rule + " after " + count + " iterations ";
-				assertEquals(error1, lastInstance, i2.nextCalendar());
+				assertEquals(error1, lastInstance, i2.nextDateTime());
 
-				lastInstance = it.nextCalendar();
+				lastInstance = it.nextDateTime();
 				System.out.println("x " + lastInstance);
 
-				Calendar upcoming2 = i2.nextCalendar();
+				DateTime upcoming2 = i2.nextDateTime();
 
 				System.out.println("n " + lastInstance + "   " + upcoming2);
 
@@ -1202,6 +1206,11 @@ public class RecurrenceIteratorTest
 
 		mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120731T000000;BYHOUR=12").setStart("20120707T000000").setInstances(1 + 1).setMonths(7).setMonthdays(7)
 			.setHours(12));
+
+		/* Tests for RSCALE */
+
+	//	mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;UNTIL=20171231", RfcMode.RFC2445_LAX)
+	//		.setStart("20130101").setUntil("20171231").setMonths(2, 3).setMonthdays(29, 1).setInstances(6));
 
 	}
 }

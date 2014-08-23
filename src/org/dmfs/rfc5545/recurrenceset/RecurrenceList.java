@@ -15,12 +15,12 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur.recurrenceset;
+package org.dmfs.rfc5545.recurrenceset;
 
 import java.util.Arrays;
 import java.util.TimeZone;
 
-import org.dmfs.rfc5545.recur.Calendar;
+import org.dmfs.rfc5545.DateTime;
 
 
 /**
@@ -30,6 +30,66 @@ import org.dmfs.rfc5545.recur.Calendar;
  */
 public final class RecurrenceList extends AbstractRecurrenceAdapter
 {
+	class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
+	{
+		private int mNext;
+
+
+		public InstanceIterator(long start)
+		{
+			fastForward(start);
+		}
+
+
+		@Override
+		public boolean hasNext()
+		{
+			return mNext < mCount;
+		}
+
+
+		@Override
+		public long next()
+		{
+			if (mNext >= mCount)
+			{
+				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+			}
+			return mInstances[mNext++];
+		}
+
+
+		@Override
+		public long peek()
+		{
+			if (mNext >= mCount)
+			{
+				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+			}
+			return mInstances[mNext];
+		}
+
+
+		@Override
+		public void skip(int count)
+		{
+			mNext += count;
+		}
+
+
+		@Override
+		public void fastForward(long until)
+		{
+			int count = mCount;
+			int next = mNext;
+			long[] instances = mInstances;
+			while (next < count && instances[next] < until)
+			{
+				++next;
+			}
+			mNext = next;
+		}
+	}
 
 	/**
 	 * The instances to iterate.
@@ -41,17 +101,12 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 	 */
 	private final int mCount;
 
-	/**
-	 * The next instance to iterate.
-	 */
-	private int mNext = 0;
-
 
 	/**
 	 * Create an adapter for the instances in <code>list</code>.
 	 * 
 	 * @param list
-	 *            A comma separated list if instances using the date-time format is defined in RFC 5545.
+	 *            A comma separated list if instances using the date-time format as defined in RFC 5545.
 	 * @param timeZone
 	 *            The time zone to apply to the instances.
 	 */
@@ -70,8 +125,8 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 
 		for (String instanceString : instances)
 		{
-			Calendar instance = Calendar.parse(timeZone, instanceString);
-			mInstances[count] = instance.getTimeInMillis();
+			DateTime instance = DateTime.parse(timeZone, instanceString);
+			mInstances[count] = instance.getTimestamp();
 			++count;
 		}
 		mCount = count;
@@ -87,59 +142,17 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 	 */
 	public RecurrenceList(long[] instances)
 	{
-		mInstances = Arrays.copyOf(instances, instances.length);
+		mInstances = new long[instances.length];
+		System.arraycopy(instances, 0, mInstances, 0, instances.length);
 		mCount = instances.length;
 		Arrays.sort(mInstances);
 	}
 
 
 	@Override
-	public boolean hasNext()
+	InstanceIterator getIterator(long start)
 	{
-		return mNext < mCount;
-	}
-
-
-	@Override
-	public long next()
-	{
-		if (mNext >= mCount)
-		{
-			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-		}
-		return mInstances[mNext++];
-	}
-
-
-	@Override
-	public long peek()
-	{
-		if (mNext >= mCount)
-		{
-			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-		}
-		return mInstances[mNext];
-	}
-
-
-	@Override
-	public void skip(int count)
-	{
-		mNext += count;
-	}
-
-
-	@Override
-	public void fastForward(long until)
-	{
-		int count = mCount;
-		int next = mNext;
-		long[] instances = mInstances;
-		while (next < count && instances[next] < until)
-		{
-			++next;
-		}
-		mNext = next;
+		return new InstanceIterator(start);
 	}
 
 }

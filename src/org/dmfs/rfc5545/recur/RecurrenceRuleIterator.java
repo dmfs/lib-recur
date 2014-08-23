@@ -17,7 +17,12 @@
 
 package org.dmfs.rfc5545.recur;
 
+import java.util.Calendar;
 import java.util.TimeZone;
+
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 
 
 /**
@@ -33,7 +38,7 @@ import java.util.TimeZone;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public final class RecurrenceIterator
+public final class RecurrenceRuleIterator
 {
 	/**
 	 * The previous iterator instance. This is <code>null</code> for the {@link FreqIterator}.
@@ -71,14 +76,14 @@ public final class RecurrenceIterator
 
 
 	/**
-	 * Creates a new {@link RecurrenceIterator} that gets its input from <code>ruleIterator</code>.
+	 * Creates a new {@link RecurrenceRuleIterator} that gets its input from <code>ruleIterator</code>.
 	 * 
 	 * @param ruleIterator
 	 *            The last {@link RuleIterator} in the chain of iterators.
 	 * @param start
 	 *            The first instance to iterate.
 	 */
-	RecurrenceIterator(RuleIterator ruleIterator, Calendar start, CalendarMetrics calendarMetrics)
+	RecurrenceRuleIterator(RuleIterator ruleIterator, DateTime start, CalendarMetrics calendarMetrics)
 	{
 		mRuleIterator = ruleIterator;
 		mAllDay = start.isAllDay();
@@ -94,7 +99,7 @@ public final class RecurrenceIterator
 
 		if (instance != Long.MIN_VALUE)
 		{
-			mNextMillis = Instance.toMillis(instance, mTimeZone, mCalendarMetrics);
+			mNextMillis = mCalendarMetrics.toMillis(instance, mTimeZone);
 		}
 	}
 
@@ -119,16 +124,16 @@ public final class RecurrenceIterator
 	/**
 	 * Get the next instance. The instances are guaranteed to be strictly increasing in time.
 	 * 
-	 * @return A {@link Calendar} object for the next instance.
+	 * @return A {@link DateTime} object for the next instance.
 	 */
-	public Calendar nextCalendar()
+	public DateTime nextDateTime()
 	{
 		if (mNextInstance == Long.MIN_VALUE)
 		{
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
-		Calendar result = new Calendar(mTimeZone, mNextMillis);
+		DateTime result = new DateTime(mTimeZone, mNextMillis);
 		fetchNextInstance();
 		if (mAllDay)
 		{
@@ -136,7 +141,7 @@ public final class RecurrenceIterator
 		}
 		else
 		{
-			result.setTimeZone(mTimeZone);
+			result.shiftToTimeZone(mTimeZone);
 		}
 
 		return result;
@@ -171,21 +176,21 @@ public final class RecurrenceIterator
 	 * 
 	 * @return the upcoming instance or <code>null</code> if there are no more instances.
 	 */
-	public Calendar peekCalendar()
+	public DateTime peekDateTime()
 	{
 		if (mNextInstance == Long.MIN_VALUE)
 		{
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
-		Calendar result = new Calendar(mTimeZone, mNextMillis);
+		DateTime result = new DateTime(mTimeZone, mNextMillis);
 		if (mAllDay)
 		{
 			result.toAllDay();
 		}
 		else
 		{
-			result.setTimeZone(mTimeZone);
+			result.shiftToTimeZone(mTimeZone);
 		}
 		return result;
 	}
@@ -223,7 +228,7 @@ public final class RecurrenceIterator
 
 		if (instance != Long.MIN_VALUE)
 		{
-			mNextMillis = Instance.toMillis(instance, mTimeZone, mCalendarMetrics);
+			mNextMillis = mCalendarMetrics.toMillis(instance, mTimeZone);
 		}
 	}
 
@@ -265,7 +270,7 @@ public final class RecurrenceIterator
 		mNextInstance = next;
 		if (next != Long.MIN_VALUE)
 		{
-			mNextMillis = Instance.toMillis(next, mTimeZone, mCalendarMetrics);
+			mNextMillis = mCalendarMetrics.toMillis(next, mTimeZone);
 		}
 	}
 
@@ -280,23 +285,18 @@ public final class RecurrenceIterator
 	 * @param until
 	 *            The earliest date to be returned by the next call to {@link #next()}.
 	 */
-	public void fastForward(Calendar until)
+	public void fastForward(DateTime until)
 	{
 		if (!hasNext())
 		{
 			return;
 		}
 
-		Calendar untilCalendar = until;
-		TimeZone untilTz = until.getTimeZone();
-		if (mTimeZone != null && !mTimeZone.equals(untilTz) || mTimeZone == null && untilTz != null)
-		{
-			untilCalendar = until.clone();
-			untilCalendar.setTimeZone(mTimeZone);
-		}
+		DateTime untilDate = new DateTime(until);
+		untilDate.shiftToTimeZone(mTimeZone);
 
 		// convert until to an instance
-		long untilInstance = Instance.make(untilCalendar);
+		long untilInstance = untilDate.getInstance();
 
 		long next = Instance.maskWeekday(mNextInstance);
 		if (untilInstance <= next)
@@ -315,7 +315,7 @@ public final class RecurrenceIterator
 		mNextInstance = next;
 		if (next != Long.MIN_VALUE)
 		{
-			mNextMillis = Instance.toMillis(next, mTimeZone, mCalendarMetrics);
+			mNextMillis = mCalendarMetrics.toMillis(next, mTimeZone);
 		}
 	}
 }

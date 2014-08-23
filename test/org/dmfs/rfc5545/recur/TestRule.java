@@ -23,10 +23,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 
 
@@ -34,7 +34,7 @@ public class TestRule
 {
 	public final String rule;
 	public int count = -1;
-	public Calendar until = null;
+	public DateTime until = null;
 	public Set<Integer> months = null;
 	public Set<Integer> weekdays = null;
 	public Set<Integer> monthdays = null;
@@ -44,8 +44,8 @@ public class TestRule
 	public Set<Integer> seconds = null;
 	public boolean floating = false;
 	public boolean allday = false;
-	public Calendar start = null;
-	public Calendar iterationStart = null;
+	public DateTime start = null;
+	public DateTime iterationStart = null;
 	public int instances = -1;
 	public boolean printInstances = false;
 	public static final RfcMode defaultMode = RfcMode.RFC5545_LAX;
@@ -82,7 +82,7 @@ public class TestRule
 	}
 
 
-	public TestRule setIterationStart(Calendar start)
+	public TestRule setIterationStart(DateTime start)
 	{
 		iterationStart = start;
 		return this;
@@ -91,14 +91,14 @@ public class TestRule
 
 	public TestRule setStart(String start)
 	{
-		this.start = Calendar.parse(start);
+		this.start = DateTime.parse(start);
 		return this;
 	}
 
 
 	public TestRule setStart(String start, String tzId)
 	{
-		this.start = Calendar.parse(TimeZone.getTimeZone(tzId), start);
+		this.start = DateTime.parse(tzId, start);
 		return this;
 	}
 
@@ -125,7 +125,7 @@ public class TestRule
 
 	private TestRule _setUntil(String lastInstance)
 	{
-		until = Calendar.parse(lastInstance);
+		until = DateTime.parse(lastInstance);
 		floating = !lastInstance.endsWith("Z");
 		allday = !lastInstance.contains("T");
 		return this;
@@ -197,7 +197,7 @@ public class TestRule
 	}
 
 
-	public void assertUntil(Calendar instance)
+	public void assertUntil(DateTime instance)
 	{
 		if (count == -1 && until != null)
 		{
@@ -208,96 +208,96 @@ public class TestRule
 	}
 
 
-	public void assertMonth(Calendar instance)
+	public void assertMonth(DateTime instance)
 	{
 		if (months != null)
 		{
 			String errMsg = "";
 			// errMsg = "month of " + instance + " not in " + months + " rule: " + rule;
-			assertTrue(errMsg, months.contains(instance.get(Calendar.MONTH) + 1));
+			assertTrue(errMsg, months.contains(instance.getMonth() + 1));
 		}
 	}
 
 
-	public void assertWeekday(Calendar instance)
+	public void assertWeekday(DateTime instance)
 	{
 		if (weekdays != null)
 		{
 			String errMsg = "";
-			 errMsg = "weekday of " + instance + " not in " + weekdays + " rule: " + rule;
-			assertTrue(errMsg, weekdays.contains(instance.get(Calendar.DAY_OF_WEEK)));
+			// errMsg = "weekday of " + instance + " not in " + weekdays + " rule: " + rule;
+			assertTrue(errMsg, weekdays.contains(instance.getDayOfWeek() + 1));
 		}
 	}
 
 
-	public void assertMonthday(Calendar instance)
+	public void assertMonthday(DateTime instance)
 	{
 		if (monthdays != null)
 		{
 			String errMsg = "";
 			// errMsg = "monthday of " + instance + " not in " + monthdays + " rule: " + rule;
-			assertTrue(errMsg, monthdays.contains(instance.get(Calendar.DAY_OF_MONTH)));
+			assertTrue(errMsg, monthdays.contains(instance.getDayOfMonth()));
 		}
 	}
 
 
-	public void assertWeek(Calendar instance)
+	public void assertWeek(DateTime instance)
 	{
 		if (weeks != null)
 		{
 			String errMsg = "";
 			// errMsg = "week of " + instance + " not in " + weeks + " rule: " + rule;
-			assertTrue(errMsg, weeks.contains(instance.get(Calendar.WEEK_OF_YEAR)));
+			assertTrue(errMsg, weeks.contains(instance.getWeekOfYear()));
 		}
 	}
 
 
-	public void assertHours(Calendar instance)
+	public void assertHours(DateTime instance)
 	{
 		if (hours != null)
 		{
 			String errMsg = "";
 			// errMsg = "hour of " + instance + " not in " + hours + " rule: " + rule;
-			assertTrue(errMsg, hours.contains(instance.get(Calendar.HOUR_OF_DAY)));
+			assertTrue(errMsg, hours.contains(instance.getHours()));
 		}
 	}
 
 
-	public void assertMinutes(Calendar instance)
+	public void assertMinutes(DateTime instance)
 	{
 		if (minutes != null)
 		{
 			String errMsg = "";
 			// errMsg = "minute of " + instance + " not in " + minutes + " rule: " + rule;
-			assertTrue(errMsg, minutes.contains(instance.get(Calendar.MINUTE)));
+			assertTrue(errMsg, minutes.contains(instance.getMinutes()));
 		}
 	}
 
 
-	public void assertSeconds(Calendar instance)
+	public void assertSeconds(DateTime instance)
 	{
 		if (seconds != null)
 		{
 			String errMsg = "";
 			// errMsg = "hour of " + instance + " not in " + seconds + " rule: " + rule;
-			assertTrue(errMsg, seconds.contains(instance.get(Calendar.SECOND)));
+			assertTrue(errMsg, seconds.contains(instance.getSeconds()));
 		}
 	}
 
 
-	public void assertAllDay(Calendar instance)
+	public void assertAllDay(DateTime instance)
 	{
 		assertEquals(instance.isAllDay(), iterationStart.isAllDay());
 	}
 
 
-	public void assertTimeZone(Calendar instance)
+	public void assertTimeZone(DateTime instance)
 	{
 		assertEquals(instance.getTimeZone(), iterationStart.getTimeZone());
 	}
 
 
-	public void testInstance(Calendar instance)
+	public void testInstance(DateTime instance)
 	{
 		if (printInstances)
 		{
@@ -327,15 +327,16 @@ public class TestRule
 	}
 
 
-	public void testStart(Calendar instance)
+	public void testStart(DateTime instance)
 	{
 		if (this.start != null)
 		{
-			final int[] fields = { Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH, Calendar.HOUR_OF_DAY, Calendar.MINUTE, Calendar.SECOND };
-			for (int i = 0; i < fields.length; ++i)
-			{
-				assertEquals(this.start.get(fields[i]), instance.get(fields[i]));
-			}
+			assertEquals(this.start.getYear(), instance.getYear());
+			assertEquals(this.start.getMonth(), instance.getMonth());
+			assertEquals(this.start.getDayOfMonth(), instance.getDayOfMonth());
+			assertEquals(this.start.getHours(), instance.getHours());
+			assertEquals(this.start.getMinutes(), instance.getMinutes());
+			assertEquals(this.start.getSeconds(), instance.getSeconds());
 		}
 
 	}

@@ -17,6 +17,8 @@
 
 package org.dmfs.rfc5545.recur;
 
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
@@ -310,7 +312,7 @@ final class ByMonthDayExpander extends ByExpander
 					/*
 					 * Expand all days in the current month. The SanityFilter will remove all instances before start.
 					 */
-					if (0 < actualDay && actualDay <= monthDays)
+					if (0 < actualDay)
 					{
 						addInstance(Instance.setDayOfMonth(instance, actualDay));
 					}

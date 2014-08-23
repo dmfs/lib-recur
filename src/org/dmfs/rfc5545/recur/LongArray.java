@@ -87,8 +87,7 @@ final class LongArray
 		int count = mCount;
 		if (count == len)
 		{
-			resizeBuffer(len + (len >> 1));
-			longs = mLongs;
+			longs = resizeBuffer(len + (len >> 1));
 		}
 		mSorted &= count == 0 || data >= longs[count - 1];
 		longs[count++] = data;
@@ -101,12 +100,15 @@ final class LongArray
 	 * 
 	 * @param newSize
 	 *            The new buffer size.
+	 * 
+	 * @return the new buffer.
 	 */
-	private void resizeBuffer(int newSize)
+	private long[] resizeBuffer(int newSize)
 	{
 		long[] newBuffer = new long[newSize];
-		System.arraycopy(mLongs, 0, newBuffer, 0, Math.min(mLongs.length, newSize));
-		mLongs = newBuffer;
+		long[] oldBuffer = mLongs;
+		System.arraycopy(oldBuffer, 0, newBuffer, 0, Math.min(oldBuffer.length, newSize));
+		return mLongs = newBuffer;
 	}
 
 
@@ -118,6 +120,7 @@ final class LongArray
 		if (!mSorted)
 		{
 			Arrays.sort(mLongs, 0, mCount);
+			mSorted = true;
 		}
 	}
 
@@ -184,4 +187,30 @@ final class LongArray
 		return mLongs[mPos];
 	}
 
+
+	/**
+	 * Sort the list and remove duplicate entries.
+	 */
+	public void deduplicate()
+	{
+		sort();
+		long[] longs = mLongs;
+		int count = mCount;
+		if (count < 2)
+		{
+			return;
+		}
+
+		int next = 1;
+		long last = longs[0];
+		for (int i = 1; i < count; ++i)
+		{
+			long current = longs[i];
+			if (current > last)
+			{
+				longs[next++] = last = current;
+			}
+		}
+		mCount = next;
+	}
 }

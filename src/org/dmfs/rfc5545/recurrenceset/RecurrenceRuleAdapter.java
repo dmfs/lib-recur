@@ -15,11 +15,11 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur.recurrenceset;
+package org.dmfs.rfc5545.recurrenceset;
 
-import org.dmfs.rfc5545.recur.Calendar;
-import org.dmfs.rfc5545.recur.RecurrenceIterator;
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
+import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
 
 
 /**
@@ -30,10 +30,62 @@ import org.dmfs.rfc5545.recur.RecurrenceRule;
 public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 {
 
+	class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
+	{
+		private final RecurrenceRuleIterator mIterator;
+
+
+		public InstanceIterator(RecurrenceRuleIterator iterator)
+		{
+			mIterator = iterator;
+		}
+
+
+		@Override
+		public boolean hasNext()
+		{
+			return mIterator.hasNext();
+		}
+
+
+		@Override
+		public long next()
+		{
+			return mIterator.nextMillis();
+		}
+
+
+		@Override
+		public long peek()
+		{
+			return mIterator.peekMillis();
+		}
+
+
+		@Override
+		public void skip(int count)
+		{
+			mIterator.skip(count);
+		}
+
+
+		@Override
+		public void fastForward(long until)
+		{
+			mIterator.fastForward(until);
+		}
+
+	}
+
 	/**
-	 * The {@link RecurrenceIterator}.
+	 * The {@link RecurrenceRuleIterator}.
 	 */
-	private RecurrenceIterator mIterator;
+	private RecurrenceRuleIterator mIterator;
+
+	/**
+	 * The recurrence rule.
+	 */
+	private final RecurrenceRule mRrule;
 
 
 	/**
@@ -44,43 +96,15 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 	 * @param start
 	 *            The first instance to iterate.
 	 */
-	public RecurrenceRuleAdapter(RecurrenceRule rule, Calendar start)
+	public RecurrenceRuleAdapter(RecurrenceRule rule)
 	{
-		mIterator = rule.iterator(start);
+		mRrule = rule;
 	}
 
 
 	@Override
-	public boolean hasNext()
+	AbstractRecurrenceAdapter.InstanceIterator getIterator(long start)
 	{
-		return mIterator.hasNext();
-	}
-
-
-	@Override
-	public long next()
-	{
-		return mIterator.nextMillis();
-	}
-
-
-	@Override
-	public long peek()
-	{
-		return mIterator.peekMillis();
-	}
-
-
-	@Override
-	public void skip(int count)
-	{
-		mIterator.skip(count);
-	}
-
-
-	@Override
-	public void fastForward(long until)
-	{
-		mIterator.fastForward(until);
+		return new InstanceIterator(mRrule.iterator(start));
 	}
 }

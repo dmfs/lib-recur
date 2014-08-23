@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 import org.junit.Test;
 
@@ -53,13 +54,12 @@ public class RecurrenceEquivalenceTest
 		 */
 		public boolean compareRules()
 		{
-			for (Set<Calendar> instancesA : expandAll())
+			for (Set<DateTime> instancesA : expandAll())
 			{
-				for (Set<Calendar> instancesB : expandAll())
+				for (Set<DateTime> instancesB : expandAll())
 				{
 					if (!instancesA.equals(instancesB))
 					{
-
 						return false;
 					}
 				}
@@ -68,9 +68,9 @@ public class RecurrenceEquivalenceTest
 		}
 
 
-		private List<Set<Calendar>> expandAll()
+		private List<Set<DateTime>> expandAll()
 		{
-			List<Set<Calendar>> instanceCollection = new ArrayList<Set<Calendar>>();
+			List<Set<DateTime>> instanceCollection = new ArrayList<Set<DateTime>>();
 			for (TestRule recRule : rules)
 			{
 				instanceCollection.add(expandRule(recRule));
@@ -79,18 +79,17 @@ public class RecurrenceEquivalenceTest
 		}
 
 
-		private Set<Calendar> expandRule(TestRule rule)
+		private Set<DateTime> expandRule(TestRule rule)
 		{
 			try
 			{
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
-				r.setStart(rule.start);
-				RecurrenceIterator it = r.iterator();
-				Set<Calendar> instances = new HashSet<Calendar>();
+				RecurrenceRuleIterator it = r.iterator(rule.start);
+				Set<DateTime> instances = new HashSet<DateTime>();
 				int count = 0;
 				while (it.hasNext())
 				{
-					Calendar instance = it.nextCalendar();
+					DateTime instance = it.nextDateTime();
 					instances.add(instance);
 					count++;
 					if (count == RecurrenceIteratorTest.MAX_ITERATIONS)

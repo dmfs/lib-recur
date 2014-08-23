@@ -109,4 +109,47 @@ public abstract class StaticUtils
 		}
 		return -1;
 	}
+
+
+	/**
+	 * Perform a linear search for a long in a given array. For small fields a linear search can be faster than a binary search. So use this if you know your
+	 * field contains only few entries.
+	 * 
+	 * @param array
+	 *            The array to search (the hay stack). Must not be <code>null</code>!
+	 * @param l
+	 *            The value to search for (the needle).
+	 * @return the position of the value in the array or <code>-1</code> if the value has not been found.
+	 */
+	public static int linearSearch(long[] array, long l)
+	{
+		return linearSearch(array, 0, array.length, l);
+	}
+
+
+	/**
+	 * Perform a linear search for a long in a given array. For small fields a linear search can be faster than a binary search. So use this if you know your
+	 * field contains only few entries.
+	 * 
+	 * @param array
+	 *            The array to search (the hay stack). Must not be <code>null</code>!
+	 * @param start
+	 *            the inclusive start position of the range to search
+	 * @param end
+	 *            the exclusive end position of the range to search
+	 * @param l
+	 *            The value to search for (the needle).
+	 * @return the position of the value in the array or <code>-1</code> if the value has not been found.
+	 */
+	public static int linearSearch(long[] array, int start, int end, long l)
+	{
+		for (int c = start; c < end; ++c)
+		{
+			if (array[c] == l)
+			{
+				return c;
+			}
+		}
+		return -1;
+	}
 }

@@ -15,9 +15,12 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur;
+package org.dmfs.rfc5545.calendarmetrics;
 
 import java.util.TimeZone;
+
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.Instance;
 
 
 /**
@@ -362,6 +365,22 @@ public abstract class CalendarMetrics
 
 
 	/**
+	 * Convert an instance to milliseconds since the epoch (i.e. since 1970-01-01 0:00:00 UTC).
+	 * 
+	 * @param instance
+	 *            The instance to convert.
+	 * @param timeZone
+	 *            The time zone or <code>null</code> for all day and floating instances.
+	 * @return The time in milliseconds since the epoch of this instance.
+	 */
+	public long toMillis(long instance, TimeZone timeZone)
+	{
+		return toMillis(timeZone == null ? DateTime.UTC : timeZone, Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance),
+			Instance.hour(instance), Instance.minute(instance), Instance.second(instance), 0);
+	}
+
+
+	/**
 	 * Convert the given (local) date to milliseconds since the epoch using the given {@link TimeZone}.
 	 * 
 	 * @param timeZone
@@ -395,4 +414,87 @@ public abstract class CalendarMetrics
 	 * @return
 	 */
 	public abstract long toInstance(long timestamp, TimeZone timeZone);
+
+
+	/**
+	 * Validates the given instance using the provided {@link CalendarMetrics}.
+	 * <p>
+	 * At present this method doesn't check for leap seconds and it doesn't honor daylight saving switches. So it validates times between 2:00h and 3:00 to
+	 * <code>true</code> even if the local time can't have these values due to daylight savings.
+	 * </p>
+	 * TODO: add check for daylight saving changes.
+	 * 
+	 * @param instance
+	 *            The instance to validate.
+	 * @param calendarMetrics
+	 *            The {@link CalendarMetrics} to use.
+	 * @return <code>true</code> if the date is valid, <code>false</code> otherwise.
+	 */
+	public boolean validate(long instance)
+	{
+		int year = Instance.year(instance);
+		int month = Instance.month(instance);
+
+		if (month < 0 || month >= getMonthsPerYear(year))
+		{
+			return false;
+		}
+
+		int day = Instance.dayOfMonth(instance);
+		if (day < 1 || day > getDaysPerPackedMonth(year, month))
+		{
+			return false;
+		}
+
+		int hour = Instance.hour(instance);
+		if (hour < 0 || hour > 23)
+		{
+			return false;
+		}
+
+		int minute = Instance.minute(instance);
+		if (minute < 0 || minute > 59)
+		{
+			return false;
+		}
+
+		int second = Instance.second(instance);
+		if (second < 0 || second > 59) // we don't support leap seconds yet
+		{
+			return false;
+		}
+		return true;
+	}
+
+
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode();
+	}
+
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof CalendarMetrics))
+		{
+			return false;
+		}
+
+		// two CalendarMetrics equal when their classes and the week definition are the same
+		return getClass() == obj.getClass();
+	}
+
+
+	public boolean scaleEquals(Object obj)
+	{
+		if (!(obj instanceof CalendarMetrics))
+		{
+			return false;
+		}
+
+		// two CalendarMetrics are of the same Scale classes are the same
+		return getClass() == obj.getClass();
+	}
 }

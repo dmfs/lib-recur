@@ -15,13 +15,13 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur.recurrenceset;
+package org.dmfs.rfc5545.recurrenceset;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.dmfs.rfc5545.recur.Calendar;
+import org.dmfs.rfc5545.recurrenceset.AbstractRecurrenceAdapter.InstanceIterator;
 
 
 /**
@@ -46,11 +46,6 @@ public class RecurrenceSet
 	 * All exceptions in the set.
 	 */
 	private List<AbstractRecurrenceAdapter> mExceptions = null;
-
-	/**
-	 * The first instance.
-	 */
-	private Calendar mStart;
 
 
 	/**
@@ -81,24 +76,36 @@ public class RecurrenceSet
 	}
 
 
-	/**
-	 * Set a start date for the iteration.
-	 * 
-	 * @param start
-	 *            The first instance to iterate.
-	 */
-	public void setStart(Calendar start)
+	public RecurrenceSetIterator iterator(long start)
 	{
-		mStart = start;
+		return iterator(start, Long.MAX_VALUE);
 	}
 
 
-	public RecurrenceSetIterator iterator()
+	/**
+	 * Return a new {@link RecurrenceSetIterator} for this recurrence set.
+	 * 
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public RecurrenceSetIterator iterator(long start, long end)
 	{
-		if (mStart == null)
+		List<InstanceIterator> instances = new ArrayList<InstanceIterator>(mInstances.size());
+		for (AbstractRecurrenceAdapter adapter : mInstances)
 		{
-			throw new IllegalStateException("Start date not set! Use setStart(Calendar) to set a start before iterating instances.");
+			instances.add(adapter.getIterator(start));
 		}
-		return new RecurrenceSetIterator(mInstances, mExceptions, mStart);
+
+		List<InstanceIterator> exceptions = null;
+		if (mExceptions != null)
+		{
+			exceptions = new ArrayList<InstanceIterator>(mExceptions.size());
+			for (AbstractRecurrenceAdapter adapter : mExceptions)
+			{
+				exceptions.add(adapter.getIterator(start));
+			}
+		}
+		return new RecurrenceSetIterator(instances, exceptions).setEnd(end);
 	}
 }

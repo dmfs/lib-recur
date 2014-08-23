@@ -17,7 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +28,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import org.dmfs.rfc5545.recur.CalendarMetrics.CalendarMetricsFactory;
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics.CalendarMetricsFactory;
+import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
 
 
 /**
@@ -486,33 +488,6 @@ public final class RecurrenceRule
 		},
 
 		/**
-		 * A list of set positions to consider when iterating the instances. The value is a list of integers. For now we accept any reasonable value.
-		 * 
-		 * TODO: validate the values. They should be within the limits of byyearday.
-		 */
-		BYSETPOS(new IntListConverter(-500, 500).noZero()) {
-			@Override
-			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-			{
-				return new BySetPosFilter(rule, previous, start);
-			}
-
-
-			@Override
-			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-			{
-				throw new UnsupportedOperationException("BYSETPOS doesn't support  filtering");
-			}
-
-
-			@Override
-			boolean expands(RecurrenceRule rule)
-			{
-				throw new UnsupportedOperationException("BYSETPOS doesn't support expansion nor filtering");
-			}
-		},
-
-		/**
 		 * SKIP defines how to handle instances that would fall on a leap day or leap month in a non-leap year. Legal values are defined in {@link Skip}. It has
 		 * been introduced by <a href="draft-daboo-icalendar-rscale-03">http://tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
 		 * 
@@ -548,6 +523,33 @@ public final class RecurrenceRule
 			boolean expands(RecurrenceRule rule)
 			{
 				return true;
+			}
+		},
+
+		/**
+		 * A list of set positions to consider when iterating the instances. The value is a list of integers. For now we accept any reasonable value.
+		 * 
+		 * TODO: validate the values. They should be within the limits of byyearday.
+		 */
+		BYSETPOS(new IntListConverter(-500, 500).noZero()) {
+			@Override
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
+			{
+				return new BySetPosFilter(rule, previous, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("BYSETPOS doesn't support  filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				throw new UnsupportedOperationException("BYSETPOS doesn't support expansion nor filtering");
 			}
 		},
 
@@ -815,6 +817,16 @@ public final class RecurrenceRule
 	private final static Integer ONE = 1;
 
 	/**
+	 * Pre-built "FREQ=" string, used for validation in RFC2445_STRICT mode.
+	 */
+	private final static String FREQ_PREFIX = Part.FREQ.name() + "=";
+
+	/**
+	 * The default calendar scale - Gregorian Calendar.
+	 */
+	private final static CalendarMetrics DEFAULT_CALENDAR_SCALE = new GregorianCalendarMetrics(Weekday.MO.ordinal(), 4);
+
+	/**
 	 * The parser mode. This can not be changed once the rule has been created.
 	 */
 	public final RfcMode mode;
@@ -830,14 +842,9 @@ public final class RecurrenceRule
 	private Map<String, String> mXParts = null;
 
 	/**
-	 * The first instance to iterate, if any.
+	 * The current calendar scale.
 	 */
-	private Calendar mStart;
-
-	/**
-	 * Pre-built "FREQ=" string, used for validation in RFC2445_STRICT mode.
-	 */
-	private final static String FREQ_PREFIX = Part.FREQ.name() + "=";
+	private CalendarMetrics mCalendarMetrics = DEFAULT_CALENDAR_SCALE;
 
 
 	/**
@@ -1318,14 +1325,14 @@ public final class RecurrenceRule
 
 
 	/**
-	 * Get the last date an instance my have. If the rule has an UNTIL part the result is a {@link java.util.Calendar} set to the correct time. The time zone is
-	 * either UTC or floating.
+	 * Get the last date an instance my have. If the rule has an UNTIL part the result is a {@link DateTime} set to the correct time. The time zone is either
+	 * UTC or floating.
 	 * 
-	 * @return A {@link java.util.Calendar} set to the UNTIL value if an UNTIL part is present, <code>null</code> otherwise.
+	 * @return A {@link DateTime} set to the UNTIL value if an UNTIL part is present, <code>null</code> otherwise.
 	 */
-	public Calendar getUntil()
+	public DateTime getUntil()
 	{
-		return (Calendar) mParts.get(Part.UNTIL);
+		return (DateTime) mParts.get(Part.UNTIL);
 	}
 
 
@@ -1336,7 +1343,7 @@ public final class RecurrenceRule
 	 * @param until
 	 *            The UNTIL part of this rule or <code>null</code> to let the instances recur forever.
 	 */
-	public void setUntil(Calendar until)
+	public void setUntil(DateTime until)
 	{
 		if (until == null)
 		{
@@ -1345,11 +1352,14 @@ public final class RecurrenceRule
 		}
 		else
 		{
-			if (!until.isFloating() && !Calendar.UTC.equals(until.getTimeZone()))
+			if ((!until.isFloating() && !DateTime.UTC.equals(until.getTimeZone())) || !mCalendarMetrics.equals(until.getCalendarMetrics()))
 			{
-				until.setTimeZone(Calendar.UTC);
+				mParts.put(Part.UNTIL, new DateTime(mCalendarMetrics, DateTime.UTC, until.getTimestamp()));
 			}
-			mParts.put(Part.UNTIL, until);
+			else
+			{
+				mParts.put(Part.UNTIL, until);
+			}
 			mParts.remove(Part.COUNT);
 		}
 	}
@@ -1582,30 +1592,6 @@ public final class RecurrenceRule
 
 
 	/**
-	 * Set a start date for the iterator.
-	 * 
-	 * @param start
-	 *            The first instance to iterate.
-	 */
-	public void setStart(Calendar start)
-	{
-		Calendar until = getUntil();
-		if (until != null)
-		{
-			if (until.isFloating() != start.isFloating())
-			{
-				throw new IllegalArgumentException("using floating start times with absolute until values (and vice versa) is not allowed");
-			}
-			if (until.isAllDay() != start.isAllDay())
-			{
-				throw new IllegalArgumentException("using allday start times with non-allday until values (and vice versa) is not allowed");
-			}
-		}
-		mStart = start;
-	}
-
-
-	/**
 	 * Sets an x-part. x-parts are supported by RFC 2445 only. If {@link #mode} is set to {@link RfcMode#RFC5545_LAX} a call to this method will do nothing. If
 	 * {@link #mode} is set to {@link RfcMode#RFC5545_STRICT} this method will throw an {@link UnsupportedOperationException}.
 	 * <p>
@@ -1696,6 +1682,12 @@ public final class RecurrenceRule
 	}
 
 
+	public RecurrenceRuleIterator iterator(long start)
+	{
+		return iterator(new DateTime(mCalendarMetrics, DateTime.UTC, start));
+	}
+
+
 	/**
 	 * Get a new {@link RuleIterator} that iterates all instances of this rule.
 	 * <p>
@@ -1707,9 +1699,9 @@ public final class RecurrenceRule
 	 *            The first instance.
 	 * @return A {@link RuleIterator}.
 	 */
-	public RecurrenceIterator iterator(Calendar start)
+	public RecurrenceRuleIterator iterator(DateTime start)
 	{
-		Calendar until = getUntil();
+		DateTime until = getUntil();
 		if (until != null)
 		{
 			if (until.isFloating() != start.isFloating())
@@ -1735,10 +1727,12 @@ public final class RecurrenceRule
 		}
 
 		boolean sanityFilterAdded = false;
-		long startInstance = Instance.make(start);
+		long startInstance = start.getInstance();
 
 		RuleIterator iterator = FastBirthdayIterator.getInstance(this, calendarMetrics, startInstance);
 		TimeZone startTimeZone = start.isFloating() ? null : start.getTimeZone();
+
+		boolean needSkipBuffer = getSkip() == Skip.FORWARD;
 
 		if (iterator != null)
 		{
@@ -1776,9 +1770,20 @@ public final class RecurrenceRule
 				{
 					if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
 					{
-						// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
-						iterator = getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone);
+						if (!sanityFilterAdded)
+						{
+							// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
+							iterator = getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone);
+						}
+
+						if (needSkipBuffer && (p == Part.UNTIL || p == Part.COUNT))
+						{
+							iterator = new SkipBuffer(this, iterator, calendarMetrics, startInstance);
+							needSkipBuffer = false;
+						}
+
 						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+
 						sanityFilterAdded = true;
 					}
 					else if (!p.expands(this))
@@ -1798,8 +1803,8 @@ public final class RecurrenceRule
 			}
 		}
 		// add a SanityFilter if not already done.
-		return new RecurrenceIterator(sanityFilterAdded ? iterator : getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone), start,
-			calendarMetrics);
+		return new RecurrenceRuleIterator(sanityFilterAdded ? (needSkipBuffer ? new SkipBuffer(this, iterator, calendarMetrics, startInstance) : iterator)
+			: getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone), start, calendarMetrics);
 	}
 
 
@@ -1816,21 +1821,11 @@ public final class RecurrenceRule
 	}
 
 
-	public RecurrenceIterator iterator()
-	{
-		if (mStart == null)
-		{
-			throw new IllegalStateException("No start date has been set yet. Use setStart(Calendar) ");
-		}
-		return iterator(mStart);
-	}
-
-
 	@Override
 	public String toString()
 	{
 		// the average rule is not longer than 100 characters, we add some buffer to avoid a copy operation
-		StringWriter result = new StringWriter(160);
+		StringBuilder result = new StringBuilder(160);
 		boolean first = true;
 		// just write all parts separated by semicolon to the result string
 		// the order of the parts guarantees that FREQ is always the first part (as required by RFC 2445)
@@ -1892,19 +1887,19 @@ public final class RecurrenceRule
 
 
 		/**
-		 * Write the string representation of a value of type <T> to a {@link StringWriter}.
+		 * Write the string representation of a value of type <T> to a {@link StringBuilder}.
 		 * <p>
 		 * The default implementation just calls {@link #toString()} on the value.
 		 * </p>
 		 * 
 		 * @param out
-		 *            The {@link StringWriter} to write to.
+		 *            The {@link StringBuilder} to write to.
 		 * @param value
 		 *            The value to serialize.
 		 */
-		public void serialize(StringWriter out, Object value)
+		public void serialize(StringBuilder out, Object value)
 		{
-			out.write(value.toString());
+			out.append(value.toString());
 		}
 	}
 
@@ -1933,14 +1928,14 @@ public final class RecurrenceRule
 
 
 		/**
-		 * Serialize a single list element value. The default implementation just calls {@link #toString()} on the valie instancel.
+		 * Serialize a single list element value. The default implementation just calls {@link #toString()} on the value instance.
 		 * 
 		 * @param out
-		 *            The writer to write to.
+		 *            The {@link StringBuilder} to write to.
 		 * @param value
 		 *            The value to serialize.
 		 */
-		void serializeValue(StringWriter out, Object value)
+		void serializeValue(StringBuilder out, Object value)
 		{
 			out.append(value.toString());
 		}
@@ -1984,7 +1979,7 @@ public final class RecurrenceRule
 
 
 		@Override
-		public void serialize(StringWriter out, Object value)
+		public void serialize(StringBuilder out, Object value)
 		{
 			boolean first = true;
 			for (Object v : (Collection<?>) value)
@@ -2139,18 +2134,18 @@ public final class RecurrenceRule
 	}
 
 	/**
-	 * Converts the date-time value of an UNTIL part from/to a {@link Calendar} instance.
+	 * Converts the date-time value of an UNTIL part from/to a {@link DateTime} instance.
 	 * 
 	 * @author Marten Gajda <marten@dmfs.org>
 	 */
-	private static class DateTimeConverter extends ValueConverter<Calendar>
+	private static class DateTimeConverter extends ValueConverter<DateTime>
 	{
 		@Override
-		public Calendar parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public DateTime parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
-				return Calendar.parse(value);
+				return DateTime.parse((TimeZone) null, value);
 			}
 			catch (Exception e)
 			{
@@ -2159,7 +2154,7 @@ public final class RecurrenceRule
 				{
 					try
 					{
-						return Calendar.parse(value.substring(0, value.length() - 1));
+						return DateTime.parse(DEFAULT_CALENDAR_SCALE, null, value.substring(0, value.length() - 1));
 					}
 					catch (Exception e2)
 					{

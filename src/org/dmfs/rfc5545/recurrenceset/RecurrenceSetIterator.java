@@ -15,24 +15,24 @@
  * 
  */
 
-package org.dmfs.rfc5545.recur.recurrenceset;
+package org.dmfs.rfc5545.recurrenceset;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
-import org.dmfs.rfc5545.recur.Calendar;
+import org.dmfs.rfc5545.recur.StaticUtils;
+import org.dmfs.rfc5545.recurrenceset.AbstractRecurrenceAdapter.InstanceIterator;
 
 
 /**
  * An iterator for recurrence sets. It takes a number of {@link AbstractRecurrenceAdapter}s for instances and exceptions and iterates all resulting instances
  * (i.e. only the instances, not the exceptions).
  * <p>
- * This class doesn't implement the {@link Iterator} interface for one reasons:
+ * This class doesn't implement the {@link InstanceIterator} interface for one reasons:
  * </p>
  * <ul>
- * <li>An {@link Iterator} always returns an {@link Object}, so instead of a primitive <code>long</code> we would have to return a {@link Long}. That is an
+ * <li>An {@link InstanceIterator} always returns an {@link Object}, so instead of a primitive <code>long</code> we would have to return a {@link Long}. That is an
  * additional object which doesn't have any advantage.</li>
  * </ul>
  * 
@@ -57,26 +57,26 @@ public class RecurrenceSetIterator
 	private final static int MAX_SKIPPED_INSTANCES = 1000;
 
 	/**
-	 * An array of {@link AbstractRecurrenceAdapter} with instances. Call
+	 * An array of {@link InstanceIterator} with instances. Call
 	 * 
 	 * <pre>
 	 * Arrays.sort(mInstances, mAdapterComparator)
 	 * </pre>
 	 * 
-	 * every time you call {@link AbstractRecurrenceAdapter#next()} of the the first element to ensure the first element always has the next instance.
+	 * every time you call {@link InstanceIterator#next()} of the the first element to ensure the first element always has the next instance.
 	 */
-	private AbstractRecurrenceAdapter[] mInstances;
+	private InstanceIterator[] mInstances;
 
 	/**
-	 * An array of {@link AbstractRecurrenceAdapter} with exceptions. Call
+	 * An array of {@link InstanceIterator} with exceptions. Call
 	 * 
 	 * <pre>
 	 * Arrays.sort(mExceptions, mAdapterComparator)
 	 * </pre>
 	 * 
-	 * every time you call {@link AbstractRecurrenceAdapter#next()} of the the first element to ensure the first element always has the next exception.
+	 * every time you call {@link InstanceIterator#next()} of the the first element to ensure the first element always has the next exception.
 	 */
-	private AbstractRecurrenceAdapter[] mExceptions;
+	private InstanceIterator[] mExceptions;
 
 	/**
 	 * A number of cached instances. The instances are guaranteed to be monotonically increasing and to not contain any exceptions.
@@ -113,11 +113,11 @@ public class RecurrenceSetIterator
 	/**
 	 * A comparator that is used to sort the {@link AbstractRecurrenceAdapter}s in {@link #mInstances} and {@link #mExceptions}.
 	 */
-	private Comparator<AbstractRecurrenceAdapter> mAdapterComparator = new Comparator<AbstractRecurrenceAdapter>()
+	private Comparator<AbstractRecurrenceAdapter.InstanceIterator> mAdapterComparator = new Comparator<AbstractRecurrenceAdapter.InstanceIterator>()
 	{
 
 		@Override
-		public int compare(AbstractRecurrenceAdapter o1, AbstractRecurrenceAdapter o2)
+		public int compare(AbstractRecurrenceAdapter.InstanceIterator o1, AbstractRecurrenceAdapter.InstanceIterator o2)
 		{
 			boolean hasNext1 = o1.hasNext();
 			boolean hasNext2 = o2.hasNext();
@@ -142,17 +142,15 @@ public class RecurrenceSetIterator
 	 *            The instances, must not be <code>null</code> or empty.
 	 * @param exceptions
 	 *            The exceptions, may be null.
-	 * @param start
-	 *            The first instance.
 	 */
-	RecurrenceSetIterator(List<AbstractRecurrenceAdapter> instances, List<AbstractRecurrenceAdapter> exceptions, Calendar start)
+	RecurrenceSetIterator(List<InstanceIterator> instances, List<InstanceIterator> exceptions)
 	{
-		mInstances = instances.toArray(new AbstractRecurrenceAdapter[instances.size()]);
+		mInstances = instances.toArray(new InstanceIterator[instances.size()]);
 		Arrays.sort(mInstances, mAdapterComparator);
 
 		if (exceptions != null && exceptions.size() > 0)
 		{
-			mExceptions = exceptions.toArray(new AbstractRecurrenceAdapter[exceptions.size()]);
+			mExceptions = exceptions.toArray(new InstanceIterator[exceptions.size()]);
 			Arrays.sort(mExceptions, mAdapterComparator);
 		}
 		else
@@ -162,16 +160,24 @@ public class RecurrenceSetIterator
 	}
 
 
-	public void setIterateEnd(long end)
+	/**
+	 * Set the iteration end. The iterator will stop if the next instance is after the given date, no matter how many instances are still to come. This needs to
+	 * be set before you start iterating, otherwise you may get wrong results.
+	 * 
+	 * @param end
+	 *            The date at which to stop the iteration in milliseconds since the epoch.
+	 */
+	RecurrenceSetIterator setEnd(long end)
 	{
 		mIterateEnd = end;
+		return this;
 	}
 
 
 	/**
 	 * Check if there is at least one more instance to iterate.
 	 * 
-	 * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> othwerwise.
+	 * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> otherwise.
 	 */
 	public boolean hasNext()
 	{
@@ -209,10 +215,17 @@ public class RecurrenceSetIterator
 	}
 
 
+	/**
+	 * Fast forward to the next instance at or after the given date.
+	 * 
+	 * @param until
+	 *            The date to fast forward to in milliseconds since the epoch.
+	 */
 	public void fastForward(long until)
 	{
 		if (mInstanceCache != null)
 		{
+			// fast forward the instance cache first
 			long[] instanceCache = mInstanceCache;
 			int next = mNextInstance;
 			int instanceCount = mInstancesInCache;
@@ -229,15 +242,17 @@ public class RecurrenceSetIterator
 			}
 		}
 
-		// no upcoming instances in cache, fast forward all adapters
-		for (AbstractRecurrenceAdapter instances : mInstances)
+		// no (more) upcoming instances in cache, fast forward all adapters
+		for (InstanceIterator instances : mInstances)
 		{
 			instances.fastForward(until);
 		}
 
 		if (mExceptions != null)
 		{
-			for (AbstractRecurrenceAdapter exceptions : mExceptions)
+			// fast forward exceptions
+			// there is no need to clear the exception cache, this will happen automatically
+			for (InstanceIterator exceptions : mExceptions)
 			{
 				exceptions.fastForward(until);
 			}
@@ -264,14 +279,15 @@ public class RecurrenceSetIterator
 		}
 		long iterateEnd = mIterateEnd;
 
-		AbstractRecurrenceAdapter[] instances = mInstances;
+		InstanceIterator[] instances = mInstances;
 		int count = 0;
 		int skipped = 0;
 		long last = Long.MIN_VALUE;
 
 		if (instances != null && instances.length == 1)
 		{
-			AbstractRecurrenceAdapter ra = instances[0];
+			// the common case: only one source of instances
+			InstanceIterator ra = instances[0];
 			while (ra.hasNext() && count < INSTANCE_CACHE_SIZE)
 			{
 				try
@@ -282,7 +298,7 @@ public class RecurrenceSetIterator
 						break;
 					}
 
-					if (!isException(next) && last != next)
+					if (last != next && !isException(next))
 					{
 						instanceCache[count] = next;
 						++count;
@@ -308,7 +324,7 @@ public class RecurrenceSetIterator
 		{
 			while (instances.length > 0 && count < INSTANCE_CACHE_SIZE)
 			{
-				AbstractRecurrenceAdapter ra = instances[0];
+				InstanceIterator ra = instances[0];
 
 				try
 				{
@@ -346,7 +362,7 @@ public class RecurrenceSetIterator
 						 * 
 						 * Since the rest of the list already sorted we don't have to sort again.
 						 */
-						AbstractRecurrenceAdapter[] tempInstances = new AbstractRecurrenceAdapter[instances.length - 1];
+						InstanceIterator[] tempInstances = new InstanceIterator[instances.length - 1];
 						System.arraycopy(instances, 1, tempInstances, 0, tempInstances.length);
 						instances = mInstances = tempInstances;
 
@@ -356,7 +372,7 @@ public class RecurrenceSetIterator
 				catch (IllegalArgumentException e)
 				{
 					// remove ra from the array
-					AbstractRecurrenceAdapter[] tempInstances = new AbstractRecurrenceAdapter[instances.length - 1];
+					InstanceIterator[] tempInstances = new InstanceIterator[instances.length - 1];
 					System.arraycopy(instances, 1, tempInstances, 0, tempInstances.length);
 					instances = mInstances = tempInstances;
 				}
@@ -396,7 +412,7 @@ public class RecurrenceSetIterator
 			else if (instance <= mExceptionCache[mExceptionsInCache - 1])
 			{
 				// if instance is an exception it must be in the cache, don't scan exceptions preceding the last one
-				int pos = Arrays.binarySearch(mExceptionCache, mLastExceptionIndex, mExceptionsInCache, instance);
+				int pos = StaticUtils.linearSearch(mExceptionCache, mLastExceptionIndex + 1, mExceptionsInCache, instance);
 
 				if (pos >= 0)
 				{
@@ -430,18 +446,22 @@ public class RecurrenceSetIterator
 		long[] exceptionCache = mExceptionCache;
 		if (exceptionCache == null)
 		{
-			exceptionCache = new long[EXCEPTION_CACHE_SIZE];
-			mExceptionCache = exceptionCache;
+			exceptionCache = mExceptionCache = new long[EXCEPTION_CACHE_SIZE];
 		}
 		long iterateEnd = mIterateEnd;
 
-		AbstractRecurrenceAdapter[] exceptions = mExceptions;
+		InstanceIterator[] exceptions = mExceptions;
 		int count = 0;
 
-		if (exceptions != null && exceptions.length == 1)
+		if (exceptions.length == 0)
 		{
-			// handle the average case
-			AbstractRecurrenceAdapter ra = exceptions[0];
+			// common case #1: no exceptions
+			return;
+		}
+		if (exceptions.length == 1)
+		{
+			// common case #2: one source of exceptions
+			InstanceIterator ra = exceptions[0];
 			if (!ra.hasNext())
 			{
 				// no exceptions
@@ -469,9 +489,9 @@ public class RecurrenceSetIterator
 		}
 		else
 		{
-			while (exceptions != null && exceptions.length > 0 && count < EXCEPTION_CACHE_SIZE)
+			while (exceptions.length > 0 && count < EXCEPTION_CACHE_SIZE)
 			{
-				AbstractRecurrenceAdapter ra = exceptions[0];
+				InstanceIterator ra = exceptions[0];
 				try
 				{
 					if (ra.hasNext())
@@ -495,7 +515,7 @@ public class RecurrenceSetIterator
 						 */
 						if (exceptions.length > 1)
 						{
-							AbstractRecurrenceAdapter[] tempExceptions = new AbstractRecurrenceAdapter[exceptions.length - 1];
+							InstanceIterator[] tempExceptions = new InstanceIterator[exceptions.length - 1];
 							System.arraycopy(exceptions, 1, tempExceptions, 0, tempExceptions.length);
 							exceptions = mExceptions = tempExceptions;
 						}
@@ -510,7 +530,7 @@ public class RecurrenceSetIterator
 					// remove ra from the array
 					if (exceptions.length > 1)
 					{
-						AbstractRecurrenceAdapter[] tempExceptions = new AbstractRecurrenceAdapter[exceptions.length - 1];
+						InstanceIterator[] tempExceptions = new InstanceIterator[exceptions.length - 1];
 						System.arraycopy(exceptions, 1, tempExceptions, 0, tempExceptions.length);
 						exceptions = mExceptions = tempExceptions;
 					}

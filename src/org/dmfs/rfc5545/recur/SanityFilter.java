@@ -17,6 +17,8 @@
 
 package org.dmfs.rfc5545.recur;
 
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
@@ -117,7 +119,7 @@ final class SanityFilter extends RuleIterator
 				next = mPrevious.next();
 				simpleInstance = Instance.maskWeekday(next);
 
-			} while (last >= simpleInstance || !Instance.validate(simpleInstance, calendarMetrics));
+			} while (last >= simpleInstance || !calendarMetrics.validate(simpleInstance));
 
 			mLastResult = simpleInstance;
 
@@ -159,7 +161,7 @@ final class SanityFilter extends RuleIterator
 
 				simpleInstance = Instance.maskWeekday(next);
 
-				if ((last < simpleInstance) && Instance.validate(simpleInstance, calendarMetrics))
+				if ((last < simpleInstance) && calendarMetrics.validate(simpleInstance))
 				{
 					resultSet.add(next);
 					last = simpleInstance;

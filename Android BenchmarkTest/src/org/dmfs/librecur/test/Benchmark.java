@@ -1,6 +1,8 @@
 package org.dmfs.librecur.test;
 
-import org.dmfs.rfc5545.recur.Calendar;
+import java.util.Calendar;
+
+import org.dmfs.rfc5545.DateTime;
 
 import android.text.format.Time;
 
@@ -20,7 +22,7 @@ public abstract class Benchmark
 	}
 
 
-	public long runBenchmark(String rrule, int iterations, Calendar startCalendar, Time startTime, long rangeStart, long rangeEnd) throws Exception
+	public long runBenchmark(String rrule, int iterations, DateTime startCalendar, Time startTime, long rangeStart, long rangeEnd) throws Exception
 	{
 		long result = 0;
 
@@ -47,5 +49,5 @@ public abstract class Benchmark
 	}
 
 
-	protected abstract long run(String rrule, Calendar startCalendar, Time startTime, long rangeStart, long rangeEnd) throws Exception;
+	protected abstract long run(String rrule, DateTime startCalendar, Time startTime, long rangeStart, long rangeEnd) throws Exception;
 }

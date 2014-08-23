@@ -19,6 +19,10 @@ package org.dmfs.rfc5545.recur;
 
 import java.util.TimeZone;
 
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
+
 
 /**
  * A {@link Limiter} that filters all instances after a certain date (the one specified in the UNTIL part).
@@ -46,8 +50,8 @@ final class UntilLimiter extends Limiter
 	public UntilLimiter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, TimeZone startTimezone)
 	{
 		super(previous);
-		Calendar until = rule.getUntil();
-		mUntil = calendarMetrics.toInstance(until.getTimeInMillis(), startTimezone);
+		DateTime until = rule.getUntil();
+		mUntil = until.getInstance();
 	}
 
 
