@@ -681,8 +681,8 @@ public final class DateTime
 	 */
 	private void writeInt(StringBuilder sw, int num)
 	{
-		sw.append((num / 10) % 10 + '0');
-		sw.append((num % 10) + '0');
+		sw.append((char) ((num / 10) % 10 + '0'));
+		sw.append((char) ((num % 10) + '0'));
 	}
 
 
