@@ -157,7 +157,7 @@ public final class FastWeeklyIterator extends ByExpander
 
 					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
 
-					instance = Instance.setMonthAndDayOfMonth(Instance.setYear(instance, year), CalendarMetrics.month(monthAndDay),
+					instance = Instance.setMonthAndDayOfMonth(Instance.setYear(instance, year), CalendarMetrics.packedMonth(monthAndDay),
 						CalendarMetrics.dayOfMonth(monthAndDay));
 				}
 			}
@@ -198,7 +198,7 @@ public final class FastWeeklyIterator extends ByExpander
 
 		int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(mYear, mYearDay);
 
-		mNextInstance = Instance.setMonthAndDayOfMonth(Instance.setYear(mNextInstance, mYear), CalendarMetrics.month(monthAndDay),
+		mNextInstance = Instance.setMonthAndDayOfMonth(Instance.setYear(mNextInstance, mYear), CalendarMetrics.packedMonth(monthAndDay),
 			CalendarMetrics.dayOfMonth(monthAndDay));
 
 		return result;

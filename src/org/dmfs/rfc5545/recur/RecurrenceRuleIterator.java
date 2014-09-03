@@ -218,10 +218,12 @@ public final class RecurrenceRuleIterator
 			throw new IllegalArgumentException("Can not skip backbards");
 		}
 
+		RuleIterator iterator = mRuleIterator;
+
 		long instance;
 		do
 		{
-			instance = mRuleIterator.next();
+			instance = iterator.next();
 		} while (--skip > 0);
 
 		mNextInstance = instance;
@@ -260,11 +262,12 @@ public final class RecurrenceRuleIterator
 			return;
 		}
 
-		mRuleIterator.fastForward(untilInstance);
+		RuleIterator iterator = mRuleIterator;
+		iterator.fastForward(untilInstance);
 
 		while (next != Long.MIN_VALUE && next < untilInstance)
 		{
-			next = mRuleIterator.next();
+			next = iterator.next();
 		}
 
 		mNextInstance = next;
@@ -305,11 +308,12 @@ public final class RecurrenceRuleIterator
 			return;
 		}
 
-		mRuleIterator.fastForward(untilInstance);
+		RuleIterator iterator = mRuleIterator;
+		iterator.fastForward(untilInstance);
 
 		while (next != Long.MIN_VALUE && next < untilInstance)
 		{
-			next = mRuleIterator.next();
+			next = iterator.next();
 		}
 
 		mNextInstance = next;
@@ -317,5 +321,35 @@ public final class RecurrenceRuleIterator
 		{
 			mNextMillis = mCalendarMetrics.toMillis(next, mTimeZone);
 		}
+	}
+
+
+	/**
+	 * Skips all instances except for the last one. Ensure to call {@link #hasNext()} before calling {@link #nextMillis()} or {@link #nextDateTime()} after you
+	 * called this.
+	 * 
+	 * <p>
+	 * <strong>Note:</strong> At present this will loop infinitely when called on an infinite rule. So better check {@link RecurrenceRule#isInfinite()} first.
+	 * </p>
+	 */
+	public void skipAllButLast()
+	{
+		long prevInstance;
+		long instance = Long.MIN_VALUE;
+		RuleIterator iterator = mRuleIterator;
+
+		do
+		{
+			prevInstance = instance;
+			instance = iterator.next();
+		} while (instance != Long.MIN_VALUE);
+
+		mNextInstance = prevInstance;
+
+		if (prevInstance != Long.MIN_VALUE)
+		{
+			mNextMillis = mCalendarMetrics.toMillis(prevInstance, mTimeZone);
+		}
+
 	}
 }

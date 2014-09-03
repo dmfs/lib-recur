@@ -95,7 +95,7 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getMaxWeeksNoNum()
+	public int getMaxWeekNoNum()
 	{
 		return 53;
 	}
@@ -481,7 +481,7 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 
 		final int minutes = time / 60000;
 
-		return Instance.make(year, month(monthAndDay), dayOfMonth(monthAndDay), minutes / 60, minutes % 60, time / 1000 % 60);
+		return Instance.make(year, packedMonth(monthAndDay), dayOfMonth(monthAndDay), minutes / 60, minutes % 60, time / 1000 % 60);
 	}
 
 

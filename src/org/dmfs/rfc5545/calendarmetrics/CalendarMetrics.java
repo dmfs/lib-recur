@@ -75,6 +75,8 @@ public abstract class CalendarMetrics
 	 * @param month
 	 *            The string representation of the month.
 	 * @return A packed representation of the month.
+	 * @throws IllegalArgumentException
+	 *             if the given (leap-) month does not exist in this calendar scale or the month string is otherwise malformed.
 	 */
 	public int packedMonth(String month)
 	{
@@ -105,12 +107,17 @@ public abstract class CalendarMetrics
 	/**
 	 * Returns a packed month, which is a combination of the month number and a leap month flag. The packed months are arithmetically comparable with respect to
 	 * their natural order.
+	 * <p>
+	 * Note that not all calendar scales support leap months.
+	 * </p>
 	 * 
 	 * @param monthNum
 	 *            The 0-based month number.
 	 * @param leapMonth
 	 *            <code>true</code> if this is a leap month, false otherwise.
 	 * @return A packed representation of the month.
+	 * @throws IllegalArgumentException
+	 *             if the given (leap-) month does not exist in this calendar scale.
 	 */
 	public int packedMonth(int monthNum, boolean leapMonth)
 	{
@@ -122,8 +129,8 @@ public abstract class CalendarMetrics
 	 * Returns whether a certain packed month is a leap month, i.e. a month that exists in certain years only.
 	 * 
 	 * @param packedMonth
-	 *            The month to test.
-	 * @return <code>true</code> if the month is a leap month and not existent in all years, <code>false</code> otherwise.
+	 *            The packed month to test.
+	 * @return <code>true</code> if the month is a leap month and not present in all years, <code>false</code> otherwise.
 	 */
 	public boolean isLeapMonth(int packedMonth)
 	{
@@ -132,11 +139,11 @@ public abstract class CalendarMetrics
 
 
 	/**
-	 * Returns whether a certain packed month is a leap month, i.e. a month that exists in certain years only.
+	 * Returns the month number of a packed month.
 	 * 
 	 * @param packedMonth
-	 *            The month to test.
-	 * @return <code>true</code> if the month is a leap month and not existent in all years, <code>false</code> otherwise.
+	 *            The packed month to test.
+	 * @return the month number that is encoded in the packed month.
 	 */
 	public int monthNum(int packedMonth)
 	{
@@ -147,24 +154,24 @@ public abstract class CalendarMetrics
 	/**
 	 * Returns a packed value that contains a packed month and a month day.
 	 * 
-	 * @param month
+	 * @param packedMonth
 	 * @param day
 	 * @return
 	 */
-	public static int monthAndDay(int month, int day)
+	public static int monthAndDay(int packedMonth, int day)
 	{
-		return (month << 8) + day;
+		return (packedMonth << 8) + day;
 	}
 
 
 	/**
-	 * Get the month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
+	 * Get the packed month from a compound MonthAndDay value like {@link #getMonthAndDayOfYearDay(int, int)} returns it.
 	 * 
 	 * @param monthAndDay
 	 *            An integer that contains a month and a day.
 	 * @return The month.
 	 */
-	public static int month(int monthAndDay)
+	public static int packedMonth(int monthAndDay)
 	{
 		return monthAndDay >> 8;
 	}
@@ -204,11 +211,11 @@ public abstract class CalendarMetrics
 	 * 
 	 * @return
 	 */
-	public abstract int getMaxWeeksNoNum();
+	public abstract int getMaxWeekNoNum();
 
 
 	/**
-	 * Returns whether a certain date is a leap day, i.e. a day that exists in certain years only.
+	 * Returns whether a certain date is a leap day, i.e. a day that exists in leap years only.
 	 * 
 	 * @param month
 	 *            The month of the date to test.
@@ -224,11 +231,11 @@ public abstract class CalendarMetrics
 	 * 
 	 * @param year
 	 *            The year.
-	 * @param month
-	 *            The month (0-based).
+	 * @param packedMonth
+	 *            The packed month.
 	 * @return The number of days in that month.
 	 */
-	public abstract int getDaysPerPackedMonth(int year, int month);
+	public abstract int getDaysPerPackedMonth(int year, int packedMonth);
 
 
 	/**
@@ -257,11 +264,11 @@ public abstract class CalendarMetrics
 
 	/**
 	 * Determines month and day for a given day of year. The result contains both, month and day in a single integer. To split the values use
-	 * {@link #month(int)} and {@link #dayOfMonth(int)} like in:
+	 * {@link #packedMonth(int)} and {@link #dayOfMonth(int)} like in:
 	 * 
 	 * <pre>
 	 * int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-	 * int month = CalendarMetrics.month(monthAndDay);
+	 * int month = CalendarMetrics.packedMonth(monthAndDay);
 	 * int dayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 	 * </pre>
 	 * 
@@ -274,7 +281,7 @@ public abstract class CalendarMetrics
 	public abstract int getMonthAndDayOfYearDay(int year, int yearDay);
 
 
-	public abstract int getYearDaysForPackedMonth(int year, int month);
+	public abstract int getYearDaysForPackedMonth(int year, int packedMonth);
 
 
 	public abstract int getMonthsPerYear(int year);
@@ -303,19 +310,19 @@ public abstract class CalendarMetrics
 	 * 
 	 * @param year
 	 *            The year.
-	 * @param month
-	 *            The month.
+	 * @param packedMonth
+	 *            The packed month.
 	 * @param dayOfMonth
 	 *            The day of month.
 	 * @return The day of year.
 	 */
-	public abstract int getDayOfYear(int year, int month, int dayOfMonth);
+	public abstract int getDayOfYear(int year, int packedMonth, int dayOfMonth);
 
 
 	/**
 	 * Get the day of the year for the specified ISO week date, see <a href="http://en.wikipedia.org/wiki/ISO_week_date">ISO week date</a>
 	 * <p>
-	 * If the day belongs to the previous year a zero or negative value is returned. If the day belongs to the next year the result is larger than
+	 * If the day belongs to the previous year zero or a negative value is returned. If the day belongs to the next year the result is larger than
 	 * {@link #getDaysPerYear(int)} for <code>year</code>.
 	 * </p>
 	 * 
@@ -387,8 +394,8 @@ public abstract class CalendarMetrics
 	 *            The time zone or <code>null</code> for floating dates (and all-day dates).
 	 * @param year
 	 *            The year.
-	 * @param month
-	 *            The month (0-based).
+	 * @param packedMonth
+	 *            The packed month.
 	 * @param dayOfMonth
 	 *            The day of the month.
 	 * @param hours
@@ -401,7 +408,7 @@ public abstract class CalendarMetrics
 	 *            The milliseconds.
 	 * @return The milliseconds since the epoch.
 	 */
-	public abstract long toMillis(TimeZone timeZone, int year, int month, int dayOfMonth, int hours, int minutes, int seconds, int millis);
+	public abstract long toMillis(TimeZone timeZone, int year, int packedMonth, int dayOfMonth, int hours, int minutes, int seconds, int millis);
 
 
 	/**
@@ -410,7 +417,7 @@ public abstract class CalendarMetrics
 	 * @param timestamp
 	 *            The time in milliseconds since the epoch.
 	 * @param timeZone
-	 *            The time zone or <code>null</code> for UTC.
+	 *            The time zone, may be <code>null</code> in which case UTC will be used.
 	 * @return
 	 */
 	public abstract long toInstance(long timestamp, TimeZone timeZone);
@@ -470,10 +477,14 @@ public abstract class CalendarMetrics
 	@Override
 	public int hashCode()
 	{
-		return super.hashCode();
+		return getClass().hashCode();
 	}
 
 
+	/**
+	 * By default two {@link CalendarMetrics} equal when they are of the same class and the week definition equals. Subclasses may override this to change this
+	 * behavior, i.e. Islamic calendars need to match the leap year rule as well.
+	 */
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -483,17 +494,19 @@ public abstract class CalendarMetrics
 		}
 
 		// two CalendarMetrics equal when their classes and the week definition are the same
-		return getClass() == obj.getClass();
+		return getClass() == obj.getClass() && minDaysInFirstWeek == ((CalendarMetrics) obj).minDaysInFirstWeek
+			&& weekStart == ((CalendarMetrics) obj).weekStart;
 	}
 
 
-	public boolean scaleEquals(Object obj)
+	/**
+	 * Returns whether two {@link CalendarMetrics} implement the same calendar scale.
+	 * 
+	 * By default two {@link CalendarMetrics} use the same calendar scale when they are of the same class. Subclasses may override this to change this behavior,
+	 * i.e. Islamic calendars need to match the leap year rule as well.
+	 */
+	public boolean scaleEquals(CalendarMetrics obj)
 	{
-		if (!(obj instanceof CalendarMetrics))
-		{
-			return false;
-		}
-
 		// two CalendarMetrics are of the same Scale classes are the same
 		return getClass() == obj.getClass();
 	}

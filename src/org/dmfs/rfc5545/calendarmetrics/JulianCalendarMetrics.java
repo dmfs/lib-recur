@@ -212,7 +212,7 @@ public class JulianCalendarMetrics extends GregorianCalendarMetrics
 
 		final int minutes = time / 60000;
 
-		return Instance.make(year, month(monthAndDay), dayOfMonth(monthAndDay), minutes / 60, minutes % 60, time / 1000 % 60);
+		return Instance.make(year, packedMonth(monthAndDay), dayOfMonth(monthAndDay), minutes / 60, minutes % 60, time / 1000 % 60);
 	}
 
 

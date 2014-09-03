@@ -83,7 +83,7 @@ public class GregorianCalendarMetricsTest
 			for (int weekStart = 0; weekStart < 7; ++weekStart)
 			{
 				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
-				assertEquals(53, tools.getMaxWeeksNoNum());
+				assertEquals(53, tools.getMaxWeekNoNum());
 			}
 		}
 	}
@@ -389,7 +389,7 @@ public class GregorianCalendarMetricsTest
 						// System.out.println("" + testCal);
 
 						int monthAndDay = tools.getMonthAndDayOfYearDay(year, yearday);
-						int month = CalendarMetrics.month(monthAndDay);
+						int month = CalendarMetrics.packedMonth(monthAndDay);
 						int day = CalendarMetrics.dayOfMonth(monthAndDay);
 						String errMsgMonth = "", errMsgDay = "";
 						// errMsgMonth = "month failed for year " + year + " yearday " + yearday + " weekstart " + weekStart + " minDays " + minDaysInFirstWeek;

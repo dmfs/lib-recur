@@ -169,7 +169,7 @@ final class ByDayExpander extends ByExpander
 							++tempYear;
 						}
 
-						addInstance(Instance.make(tempYear, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+						addInstance(Instance.make(tempYear, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 					}
 					break;
 
@@ -202,7 +202,7 @@ final class ByDayExpander extends ByExpander
 							++tempYear;
 						}
 
-						int newMonth = CalendarMetrics.month(monthAndDay);
+						int newMonth = CalendarMetrics.packedMonth(monthAndDay);
 
 						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth + 1) > 0 || mMonths == null && newMonth == month)
 						{
@@ -253,7 +253,7 @@ final class ByDayExpander extends ByExpander
 						for (int dayOfYear = firstWeekdayOfYear; dayOfYear <= yearDays; dayOfYear += 7)
 						{
 							int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-							addInstance(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+							addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}
 					}
 					else
@@ -264,7 +264,7 @@ final class ByDayExpander extends ByExpander
 							if (dayOfYear <= yearDays)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								addInstance(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
+								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
 									second));
 							}
 						}
@@ -283,7 +283,7 @@ final class ByDayExpander extends ByExpander
 							if (dayOfYear > 0)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								addInstance(Instance.make(year, CalendarMetrics.month(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
+								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
 									second));
 							}
 						}

@@ -108,4 +108,23 @@ public class RecurrenceSet
 		}
 		return new RecurrenceSetIterator(instances, exceptions).setEnd(end);
 	}
+
+
+	/**
+	 * Returns whether this {@link RecurrenceSet} contains an infinite number of instances.
+	 * 
+	 * @return <code>true</code> if the instances in this {@link RecurrenceSet} is infinite, <code>false</code> otherwise.
+	 */
+	public boolean isInfinite()
+	{
+		for (AbstractRecurrenceAdapter adapter : mInstances)
+		{
+			if (!adapter.isInfinite())
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

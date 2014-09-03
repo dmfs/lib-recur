@@ -68,7 +68,7 @@ public abstract class AbstractRecurrenceAdapter
 
 
 		/**
-		 * Skip all instance till <code>until</code>. If <code>until</code> is an instance itself it will be the next iterated instance. If the rule doesn't
+		 * Skip all instances till <code>until</code>. If <code>until</code> is an instance itself it will be the next iterated instance. If the rule doesn't
 		 * recur till that date the next call to {@link #hasNext()} will return <code>false</code>.
 		 * 
 		 * @param until
@@ -83,7 +83,25 @@ public abstract class AbstractRecurrenceAdapter
 	 * Get an iterator for this adapter.
 	 * 
 	 * @param start
-	 *            The start date in milliseconds since the eopch.
+	 *            The start date in milliseconds since the epoch.
 	 */
 	abstract InstanceIterator getIterator(long start);
+
+
+	/**
+	 * Returns whether this adapter iterates an infinite number of instances.
+	 * 
+	 * @return <code>true</code> if the instances in this adapter are not limited, <code>false</code> otherwise.
+	 */
+	abstract boolean isInfinite();
+
+
+	/**
+	 * Returns the last instance this adapter will iterate or {@link Long#MAX_VALUE} if {@link #isInfinite()} returns <code>true</code>.
+	 * 
+	 * @param start
+	 *            The start date in milliseconds since the epoch.
+	 * @return The last instance in milliseconds since the epoch.
+	 */
+	abstract long getLastInstance(long start);
 }

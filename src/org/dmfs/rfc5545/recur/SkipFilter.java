@@ -145,7 +145,7 @@ final class SkipFilter extends RuleIterator
 								++year;
 							}
 							int dayAndMonth = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-							next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.month(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
+							next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.packedMonth(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
 						}
 					}
 					else if (calendarMetrics.isLeapMonth(month))
@@ -157,7 +157,7 @@ final class SkipFilter extends RuleIterator
 							++year;
 						}
 						int dayAndMonth = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-						next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.month(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
+						next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.packedMonth(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
 					}
 				}
 				resultSet.add(next);

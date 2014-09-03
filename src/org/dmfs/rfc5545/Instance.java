@@ -23,14 +23,14 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 
 
 /**
- * This class provides a set of static methods to manipulate date and time values stored in a single packed long value.
+ * Provides a set of static methods to manipulate date and time values stored in a single packed long value.
  * 
  * Storing the values of an instance in a single long allows to compare them quickly and it doesn't require any object instantiations.
  * <p>
  * Note that the instance value alone doesn't say much without the corresponding {@link CalendarMetrics} and {@link TimeZone}.
  * </p>
  * <p>
- * Also note: never persist packed instance values. The implementation and the format of the packed long can change.
+ * Also note: never persist packed instance values. The implementation and the format of the packed long may change.
  * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -38,12 +38,12 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 public final class Instance
 {
 	private final static int YEAR_BITS = 18;
-	private final static int MONTH_BITS = 5;
+	private final static int MONTH_BITS = 8;
 	private final static int DAY_BITS = 7;
 	private final static int HOUR_BITS = 5;
 	private final static int MINUTE_BITS = 6;
 	private final static int SECOND_BITS = 6;
-	private final static int WEEKDAY_BITS = 3;
+	private final static int WEEKDAY_BITS = 4;
 
 	private final static int WEEKDAY_POS = 0;
 	private final static int SECOND_POS = WEEKDAY_BITS + WEEKDAY_POS;
@@ -267,7 +267,7 @@ public final class Instance
 	 */
 	public static int year(long instance)
 	{
-		return (int) ((instance & YEAR_MASK) >> YEAR_POS) - YEAR_BIAS;
+		return (int) ((instance & YEAR_MASK) >>> YEAR_POS) - YEAR_BIAS;
 	}
 
 
@@ -280,7 +280,7 @@ public final class Instance
 	 */
 	public static int month(long instance)
 	{
-		return (int) ((instance & MONTH_MASK) >> MONTH_POS);
+		return (int) ((instance & MONTH_MASK) >>> MONTH_POS);
 	}
 
 
@@ -293,7 +293,7 @@ public final class Instance
 	 */
 	public static int dayOfMonth(long instance)
 	{
-		return (int) ((instance & DAY_MASK) >> DAY_POS) - DAY_BIAS;
+		return (int) ((instance & DAY_MASK) >>> DAY_POS) - DAY_BIAS;
 	}
 
 
@@ -306,7 +306,7 @@ public final class Instance
 	 */
 	public static int hour(long instance)
 	{
-		return (int) ((instance & HOUR_MASK) >> HOUR_POS);
+		return (int) ((instance & HOUR_MASK) >>> HOUR_POS);
 	}
 
 
@@ -319,7 +319,7 @@ public final class Instance
 	 */
 	public static int minute(long instance)
 	{
-		return (int) ((instance & MINUTE_MASK) >> MINUTE_POS);
+		return (int) ((instance & MINUTE_MASK) >>> MINUTE_POS);
 	}
 
 
@@ -332,7 +332,7 @@ public final class Instance
 	 */
 	public static int second(long instance)
 	{
-		return (int) ((instance & SECOND_MASK) >> SECOND_POS);
+		return (int) ((instance & SECOND_MASK) >>> SECOND_POS);
 	}
 
 
@@ -348,7 +348,7 @@ public final class Instance
 	 */
 	public static int dayOfWeek(long instance)
 	{
-		return (int) ((instance & WEEKDAY_MASK) >> WEEKDAY_POS);
+		return (int) ((instance & WEEKDAY_MASK) >>> WEEKDAY_POS);
 	}
 
 }

@@ -155,4 +155,19 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 		return new InstanceIterator(start);
 	}
 
+
+	@Override
+	boolean isInfinite()
+	{
+		// the given lists are always finite
+		return false;
+	}
+
+
+	@Override
+	long getLastInstance(long start)
+	{
+		long[] instances = mInstances;
+		return instances[instances.length - 1];
+	}
 }

@@ -17,7 +17,6 @@
 
 package org.dmfs.rfc5545.recurrenceset;
 
-import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
 
@@ -78,11 +77,6 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 	}
 
 	/**
-	 * The {@link RecurrenceRuleIterator}.
-	 */
-	private RecurrenceRuleIterator mIterator;
-
-	/**
 	 * The recurrence rule.
 	 */
 	private final RecurrenceRule mRrule;
@@ -106,5 +100,32 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 	AbstractRecurrenceAdapter.InstanceIterator getIterator(long start)
 	{
 		return new InstanceIterator(mRrule.iterator(start));
+	}
+
+
+	@Override
+	boolean isInfinite()
+	{
+		return mRrule.isInfinite();
+	}
+
+
+	@Override
+	long getLastInstance(long start)
+	{
+		if (isInfinite())
+		{
+			return Long.MAX_VALUE;
+		}
+
+		RecurrenceRuleIterator iterator = mRrule.iterator(start);
+		iterator.skipAllButLast();
+
+		long lastInstance = Long.MIN_VALUE;
+		if (iterator.hasNext())
+		{
+			lastInstance = iterator.nextMillis();
+		}
+		return lastInstance;
 	}
 }

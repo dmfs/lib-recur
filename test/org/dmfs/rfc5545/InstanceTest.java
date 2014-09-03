@@ -1,4 +1,4 @@
-package org.dmfs.rfc5545.recur;
+package org.dmfs.rfc5545;
 
 import static org.junit.Assert.assertEquals;
 
@@ -41,7 +41,7 @@ public class InstanceTest
 	@Test
 	public void testSetYear()
 	{
-		for (int year = 0; year < 4000; ++year)
+		for (int year = 0; year < 60000; ++year)
 		{
 			long i = Instance.setYear(Instance.make(0, 2, 20, 3, 45, 36), year);
 			assertEquals(year, Instance.year(i));
@@ -58,7 +58,7 @@ public class InstanceTest
 	@Test
 	public void testSetMonth()
 	{
-		for (int month = 0; month < 14; ++month)
+		for (int month = 0; month < 255; ++month)
 		{
 			long i = Instance.setMonth(Instance.make(2000, 0, 20, 3, 45, 36), month);
 			assertEquals(2000, Instance.year(i));
@@ -75,7 +75,7 @@ public class InstanceTest
 	@Test
 	public void testSetDayOfMonth()
 	{
-		for (int dayOfMonth = 1; dayOfMonth < 40; ++dayOfMonth)
+		for (int dayOfMonth = 1; dayOfMonth < 60; ++dayOfMonth)
 		{
 			long i = Instance.setDayOfMonth(Instance.make(2000, 2, 20, 3, 45, 36), dayOfMonth);
 			assertEquals(2000, Instance.year(i));

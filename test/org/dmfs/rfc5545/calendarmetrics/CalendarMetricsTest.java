@@ -19,7 +19,7 @@ public class CalendarMetricsTest
 			{
 				int mad = CalendarMetrics.monthAndDay(month, monthday);
 
-				int mo = CalendarMetrics.month(mad);
+				int mo = CalendarMetrics.packedMonth(mad);
 				int dom = CalendarMetrics.dayOfMonth(mad);
 
 				assertEquals(month, mo);

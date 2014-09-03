@@ -3,7 +3,6 @@ package org.dmfs.rfc5545.recur;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.dmfs.rfc5545.DateTime;
@@ -134,8 +133,8 @@ public class TestDate
 		if (!isFloating)
 		{
 			assertEquals(timeZone, cal.getTimeZone().getID());
-			Calendar calClone = cal.clone();
-			calClone.replaceTimeZone(TimeZone.getTimeZone(timeZone));
+			DateTime calClone = new DateTime(cal);
+			calClone.shiftToTimeZone(TimeZone.getTimeZone(timeZone));
 			compareTwoCalendars(cal, calClone);
 		}
 		else
@@ -147,16 +146,16 @@ public class TestDate
 
 	public void testToAllDay()
 	{
-		Calendar calClone = cal.clone();
+		DateTime calClone = new DateTime(cal);
 		calClone.toAllDay();
-		assertEquals(0, calClone.get(Calendar.HOUR_OF_DAY));
-		assertEquals(0, calClone.get(Calendar.MINUTE));
-		assertEquals(0, calClone.get(Calendar.SECOND));
+		assertEquals(0, calClone.getHours());
+		assertEquals(0, calClone.getMinutes());
+		assertEquals(0, calClone.getSeconds());
 
 		// date must stay the same
-		assertEquals(cal.get(Calendar.YEAR), calClone.get(Calendar.YEAR));
-		assertEquals(cal.get(Calendar.MONTH), calClone.get(Calendar.MONTH));
-		assertEquals(cal.get(Calendar.DAY_OF_MONTH), calClone.get(Calendar.DAY_OF_MONTH));
+		assertEquals(cal.getYear(), calClone.getYear());
+		assertEquals(cal.getMonth(), calClone.getMonth());
+		assertEquals(cal.getMonth(), calClone.getMonth());
 
 		assertTrue(calClone.isFloating());
 		assertTrue(calClone.isAllDay());
@@ -168,7 +167,7 @@ public class TestDate
 
 	public void testClone()
 	{
-		Calendar calClone = cal.clone();
+		DateTime calClone = new DateTime(cal);
 		compareTwoCalendars(cal, calClone);
 
 	}

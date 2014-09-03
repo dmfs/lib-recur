@@ -155,7 +155,7 @@ public final class FreqIterator extends ByExpander
 					++mNextYear;
 				}
 				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextMonth = CalendarMetrics.packedMonth(monthAndDay);
 				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 
 				break;
@@ -171,7 +171,7 @@ public final class FreqIterator extends ByExpander
 					++mNextYear;
 				}
 				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextMonth = CalendarMetrics.packedMonth(monthAndDay);
 				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 				break;
 			}
@@ -191,7 +191,7 @@ public final class FreqIterator extends ByExpander
 					}
 				}
 				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextMonth = CalendarMetrics.packedMonth(monthAndDay);
 				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 				break;
 			}
@@ -212,7 +212,7 @@ public final class FreqIterator extends ByExpander
 					}
 				}
 				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextMonth = CalendarMetrics.packedMonth(monthAndDay);
 				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 				break;
 			}
@@ -234,7 +234,7 @@ public final class FreqIterator extends ByExpander
 					}
 				}
 				int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(mNextYear, mNextDayOfYear);
-				mNextMonth = CalendarMetrics.month(monthAndDay);
+				mNextMonth = CalendarMetrics.packedMonth(monthAndDay);
 				mNextDayOfMonth = CalendarMetrics.dayOfMonth(monthAndDay);
 				break;
 			}

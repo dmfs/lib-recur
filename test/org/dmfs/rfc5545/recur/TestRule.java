@@ -50,6 +50,7 @@ public class TestRule
 	public boolean printInstances = false;
 	public static final RfcMode defaultMode = RfcMode.RFC5545_LAX;
 	public RfcMode mode;
+	public DateTime lastInstance = null;
 
 	private static final String UNTIL_REGEX = "UNTIL=(\\d{8}(T\\d{6}Z?)?)";
 	private static final Pattern untilPattern = Pattern.compile(UNTIL_REGEX);
@@ -99,6 +100,20 @@ public class TestRule
 	public TestRule setStart(String start, String tzId)
 	{
 		this.start = DateTime.parse(tzId, start);
+		return this;
+	}
+
+
+	public TestRule setLastInstance(String lastInstance)
+	{
+		this.lastInstance = DateTime.parse(lastInstance);
+		return this;
+	}
+
+
+	public TestRule setLastInstance(String lastInstance, String tzId)
+	{
+		this.lastInstance = DateTime.parse(tzId, lastInstance);
 		return this;
 	}
 
