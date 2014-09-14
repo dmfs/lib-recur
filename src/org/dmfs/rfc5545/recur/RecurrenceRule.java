@@ -837,7 +837,7 @@ public final class RecurrenceRule
 	private EnumMap<Part, Object> mParts = new EnumMap<Part, Object>(Part.class);
 
 	/**
-	 * A map of x-parts. This is only used in RFC 2445 modes.
+	 * A map of x-parts. This is only used in RFC 2445 modes, RFC 5554 doesn't support X-parts.
 	 */
 	private Map<String, String> mXParts = null;
 
@@ -930,14 +930,14 @@ public final class RecurrenceRule
 
 		boolean relaxed = mode == RfcMode.RFC2445_LAX || mode == RfcMode.RFC5545_LAX;
 
-		// we do not need this since only the constructor calls this
-		// mParts.clear();
-
 		if (relaxed)
 		{
 			// remove any spaces in LAX modes
-			recur = recur.trim().toUpperCase(Locale.ENGLISH);
+			recur = recur.trim();
 		}
+
+		// RRULEs are case-agnostic so convert everything to upper-case
+		recur = recur.toUpperCase(Locale.ENGLISH);
 
 		String[] parts = recur.split(";");
 
@@ -947,7 +947,39 @@ public final class RecurrenceRule
 			throw new InvalidRecurrenceRuleException("RFC 2445 requires FREQ to be the first part of the rule: " + recur);
 		}
 
-		// now parse each part and add it to mParts.
+		CalendarMetrics calScale = mCalendarMetrics;
+		CalendarMetrics rScale = DEFAULT_CALENDAR_SCALE;
+		EnumMap<Part, Object> partMap = mParts;
+
+		// Map<String, String> partMap = new HashMap<String, String>(12);
+		String rscaleKey = Part.RSCALE.name();
+
+		// find RSCALE first, we need it to parse some of the other parts properly
+		for (String keyvalue : parts)
+		{
+			if (keyvalue.startsWith(rscaleKey))
+			{
+				int equals = keyvalue.indexOf("=");
+				if (equals > 0)
+				{
+					String key = keyvalue.substring(0, equals);
+					if (key.equals(rscaleKey))
+					{
+						String value = keyvalue.substring(equals + 1);
+						rScale = (CalendarMetrics) Part.RSCALE.converter.parse(value, calScale, null /* that's what we're trying to find out */, relaxed);
+						partMap.put(Part.RSCALE, rScale);
+						break;
+					}
+				}
+				else if (!relaxed)
+				{
+					// strict modes throw on empty parts
+					throw new InvalidRecurrenceRuleException("Missing '=' in part '" + keyvalue + "'");
+				}
+			}
+		}
+
+		// parse all other parts now
 		for (String keyvalue : parts)
 		{
 			int equals = keyvalue.indexOf("=");
@@ -987,11 +1019,16 @@ public final class RecurrenceRule
 						throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
 					}
 
-					// ignore part in lax modes.
 					continue;
 				}
 
-				if (!relaxed && mParts.containsKey(part))
+				if (part == Part.RSCALE)
+				{
+					// we have already parsed RSCALE
+					continue;
+				}
+
+				if (!relaxed && partMap.containsKey(part))
 				{
 					// strict modes don't allow duplicate parts
 					throw new InvalidRecurrenceRuleException("duplicate part " + part + "  in " + recur);
@@ -999,10 +1036,10 @@ public final class RecurrenceRule
 
 				try
 				{
-					Object partValue = part.converter.parse(value, relaxed);
+					Object partValue = part.converter.parse(value, calScale, rScale, relaxed);
 					if (partValue != null && (part != Part.INTERVAL || !ONE.equals(partValue) /* do not store intervals with value 1 */))
 					{
-						this.mParts.put(part, partValue);
+						partMap.put(part, partValue);
 					}
 				}
 				catch (InvalidRecurrenceRuleException e)
@@ -1016,14 +1053,12 @@ public final class RecurrenceRule
 						// just skip invalid parts in lax modes
 					}
 				}
-
 			}
 			else if (!relaxed)
 			{
 				// strict modes throw on empty parts
-				throw new InvalidRecurrenceRuleException("Found empty part in " + recur);
+				throw new InvalidRecurrenceRuleException("Missing '=' in part '" + keyvalue + "'");
 			}
-
 		}
 
 		// validate the rule
@@ -1041,10 +1076,11 @@ public final class RecurrenceRule
 	 */
 	private void checkForInvalidNumericInByDay(Freq freq) throws InvalidRecurrenceRuleException
 	{
-		if (mParts.containsKey(Part.BYDAY))
+		EnumMap<Part, Object> partMap = mParts;
+		if (partMap.containsKey(Part.BYDAY))
 		{
 			@SuppressWarnings("unchecked")
-			List<WeekdayNum> values = (ArrayList<WeekdayNum>) mParts.get(Part.BYDAY);
+			List<WeekdayNum> values = (ArrayList<WeekdayNum>) partMap.get(Part.BYDAY);
 
 			for (WeekdayNum value : values)
 			{
@@ -1064,14 +1100,14 @@ public final class RecurrenceRule
 						}
 						else
 						{
-							mParts.remove(Part.BYDAY);
+							partMap.remove(Part.BYDAY);
 						}
 					}
 					/**
 					 * https://tools.ietf.org/html/rfc5545#section-3.3.10
 					 * "Furthermore, the BYDAY rule part MUST NOT be specified with a numeric value with the FREQ rule part set to YEARLY when the BYWEEKNO rule part is specified."
 					 */
-					else if (freq == Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
+					else if (freq == Freq.YEARLY && partMap.containsKey(Part.BYWEEKNO))
 					{
 						if (mode == RfcMode.RFC5545_STRICT)
 						{
@@ -1081,7 +1117,7 @@ public final class RecurrenceRule
 						}
 						else
 						{
-							mParts.remove(Part.BYDAY);
+							partMap.remove(Part.BYDAY);
 						}
 					}
 				}
@@ -1098,7 +1134,8 @@ public final class RecurrenceRule
 	 */
 	private void validate() throws InvalidRecurrenceRuleException
 	{
-		Freq freq = (Freq) mParts.get(Part.FREQ);
+		EnumMap<Part, Object> partMap = mParts;
+		Freq freq = (Freq) partMap.get(Part.FREQ);
 
 		// FREQ is mandatory part of each rule
 		if (freq == null)
@@ -1109,7 +1146,7 @@ public final class RecurrenceRule
 		final boolean strict = mode == RfcMode.RFC2445_STRICT || mode == RfcMode.RFC5545_STRICT;
 
 		// UNTIL and COUNT are mutually exclusive
-		if (mParts.containsKey(Part.UNTIL) && mParts.containsKey(Part.COUNT))
+		if (partMap.containsKey(Part.UNTIL) && partMap.containsKey(Part.COUNT))
 		{
 			throw new InvalidRecurrenceRuleException("UNTIL and COUNT must not occur in the same rule.");
 		}
@@ -1124,11 +1161,11 @@ public final class RecurrenceRule
 			else
 			{
 				// just remove interval and assume 1
-				mParts.remove(Part.INTERVAL);
+				partMap.remove(Part.INTERVAL);
 			}
 		}
 
-		if (freq != Freq.YEARLY && mParts.containsKey(Part.BYWEEKNO))
+		if (freq != Freq.YEARLY && partMap.containsKey(Part.BYWEEKNO))
 		{
 			if (strict)
 			{
@@ -1136,20 +1173,20 @@ public final class RecurrenceRule
 			}
 			else
 			{
-				mParts.put(Part.FREQ, Freq.YEARLY);
+				partMap.put(Part.FREQ, Freq.YEARLY);
 			}
 		}
 
 		if (mode == RfcMode.RFC5545_STRICT)
 		{
 			// in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
-			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && mParts.containsKey(Part.BYYEARDAY))
+			if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && partMap.containsKey(Part.BYYEARDAY))
 			{
 				throw new InvalidRecurrenceRuleException("In RFC 5545, BYYEARDAY is not allowed in DAILY, WEEKLY or MONTHLY rules");
 			}
 
 			// in RFC 5545 BYMONTHAY must not be used in WEEKLY rules
-			if (freq == Freq.WEEKLY && mParts.containsKey(Part.BYMONTHDAY))
+			if (freq == Freq.WEEKLY && partMap.containsKey(Part.BYMONTHDAY))
 			{
 				throw new InvalidRecurrenceRuleException("In RFC 5545, BYMONTHDAY is not allowed in WEEKLY rules");
 			}
@@ -1160,11 +1197,11 @@ public final class RecurrenceRule
 		 * BYSETPOS is only valid in combination with another BYxxx rule. We therefore check the number of elements. If this number is larger than cnt the rule
 		 * contains another BYxxx rule and is therefore valid.
 		 */
-		if (mParts.containsKey(Part.BYSETPOS))
+		if (partMap.containsKey(Part.BYSETPOS))
 		{
-			if (!mParts.containsKey(Part.BYDAY) && !mParts.containsKey(Part.BYMONTHDAY) && !mParts.containsKey(Part.BYMONTH)
-				&& !mParts.containsKey(Part.BYHOUR) && !mParts.containsKey(Part.BYMINUTE) && !mParts.containsKey(Part.BYSECOND)
-				&& !mParts.containsKey(Part.BYWEEKNO) && !mParts.containsKey(Part.BYYEARDAY))
+			if (!partMap.containsKey(Part.BYDAY) && !partMap.containsKey(Part.BYMONTHDAY) && !partMap.containsKey(Part.BYMONTH)
+				&& !partMap.containsKey(Part.BYHOUR) && !partMap.containsKey(Part.BYMINUTE) && !partMap.containsKey(Part.BYSECOND)
+				&& !partMap.containsKey(Part.BYWEEKNO) && !partMap.containsKey(Part.BYYEARDAY))
 			{
 				if (strict)
 				{
@@ -1174,7 +1211,7 @@ public final class RecurrenceRule
 				else
 				{
 					// we're in lax mode => drop BYSETPOS
-					mParts.remove(Part.BYSETPOS);
+					partMap.remove(Part.BYSETPOS);
 				}
 			}
 		}
@@ -1883,7 +1920,7 @@ public final class RecurrenceRule
 		 * @throws InvalidRecurrenceRuleException
 		 *             if the value is invalid.
 		 */
-		public abstract T parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException;
+		public abstract T parse(String value, CalendarMetrics calScale, CalendarMetrics rscale, boolean tolerant) throws InvalidRecurrenceRuleException;
 
 
 		/**
@@ -1942,7 +1979,7 @@ public final class RecurrenceRule
 
 
 		@Override
-		public Collection<T> parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public Collection<T> parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			List<T> result = new ArrayList<T>(32);
 			String[] values = value.split(",");
@@ -2078,7 +2115,7 @@ public final class RecurrenceRule
 	private static class WeekdayConverter extends ValueConverter<Weekday>
 	{
 		@Override
-		public Weekday parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public Weekday parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -2099,7 +2136,7 @@ public final class RecurrenceRule
 	private static class IntConverter extends ValueConverter<Integer>
 	{
 		@Override
-		public Integer parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public Integer parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -2120,7 +2157,7 @@ public final class RecurrenceRule
 	private static class FreqConverter extends ValueConverter<Freq>
 	{
 		@Override
-		public Freq parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public Freq parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -2141,7 +2178,7 @@ public final class RecurrenceRule
 	private static class DateTimeConverter extends ValueConverter<DateTime>
 	{
 		@Override
-		public DateTime parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public DateTime parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -2166,12 +2203,18 @@ public final class RecurrenceRule
 		}
 	}
 
-	private static class RScaleConverter extends ValueConverter<CalendarMetricsFactory>
+	private static class RScaleConverter extends ValueConverter<CalendarMetrics>
 	{
 		@Override
-		public CalendarMetricsFactory parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public CalendarMetrics parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
-			return UnicodeCalendarScales.getCalendarMetricsForName(value);
+			CalendarMetricsFactory result = UnicodeCalendarScales.getCalendarMetricsForName(value);
+			if (result == null)
+			{
+				// can not tolerate rscales we don't know
+				throw new InvalidRecurrenceRuleException("unknown calendar scale '" + value + "'");
+			}
+			return result.getCalendarMetrics(0 /* week start is not relevant for RSCALE */);
 		}
 	}
 
@@ -2179,7 +2222,7 @@ public final class RecurrenceRule
 	{
 
 		@Override
-		public Skip parse(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public Skip parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
