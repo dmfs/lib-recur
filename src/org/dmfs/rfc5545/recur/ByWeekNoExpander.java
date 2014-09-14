@@ -67,7 +67,6 @@ final class ByWeekNoExpander extends ByExpander
 	{
 		int year = Instance.year(instance);
 		int month = Instance.month(instance);
-		int dayOfMonth = Instance.dayOfMonth(instance);
 		int hour = Instance.hour(instance);
 		int minute = Instance.minute(instance);
 		int second = Instance.second(instance);

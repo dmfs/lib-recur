@@ -112,7 +112,7 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 			int monthNum = Integer.parseInt(month) - 1;
 			if (monthNum < 0 || monthNum > 11)
 			{
-				throw new IllegalArgumentException("month " + month + " is out of range 0..11");
+				throw new IllegalArgumentException("month " + month + " is out of range 1..12");
 			}
 			return monthNum;
 		}
@@ -120,6 +120,13 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 		{
 			throw new IllegalArgumentException("illegal month string " + month, e);
 		}
+	}
+
+
+	@Override
+	public String packedMonthToString(int packedMonth)
+	{
+		return String.valueOf(packedMonth + 1);
 	}
 
 

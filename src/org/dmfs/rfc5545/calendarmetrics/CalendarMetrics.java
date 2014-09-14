@@ -95,11 +95,24 @@ public abstract class CalendarMetrics
 
 		try
 		{
-			return Integer.parseInt(month.substring(0, len - leapBit)) << 1 + leapBit;
+			return (Integer.parseInt(month.substring(0, len - leapBit)) - 1) << 1 + leapBit;
 		}
 		catch (NumberFormatException e)
 		{
 			throw new IllegalArgumentException("illegal month string " + month, e);
+		}
+	}
+
+
+	public String packedMonthToString(int packedMonth)
+	{
+		if ((packedMonth & 1) == 1)
+		{
+			return String.valueOf(packedMonth >>> 1) + "L";
+		}
+		else
+		{
+			return String.valueOf(packedMonth >>> 1);
 		}
 	}
 

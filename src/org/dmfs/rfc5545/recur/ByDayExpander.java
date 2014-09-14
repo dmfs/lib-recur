@@ -204,7 +204,7 @@ final class ByDayExpander extends ByExpander
 
 						int newMonth = CalendarMetrics.packedMonth(monthAndDay);
 
-						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth + 1) > 0 || mMonths == null && newMonth == month)
+						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) > 0 || mMonths == null && newMonth == month)
 						{
 							addInstance(Instance.make(tempYear, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
 						}

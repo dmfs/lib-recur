@@ -66,12 +66,6 @@ final class ByMonthDayExpander extends ByExpander
 		{
 			// we have to filter by month
 			mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
-
-			// switch the month numbers to be 0-based
-			for (int i = 0, len = mMonths.length; i < len; ++i)
-			{
-				--mMonths[i];
-			}
 		}
 		else
 		{

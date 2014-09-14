@@ -104,7 +104,7 @@ public final class FastBirthdayIterator extends ByExpander
 			// adjust month if given
 			if (months != null)
 			{
-				start = Instance.setMonth(start, months.get(0) - 1);
+				start = Instance.setMonth(start, months.get(0));
 			}
 
 			// adjust day of month if given

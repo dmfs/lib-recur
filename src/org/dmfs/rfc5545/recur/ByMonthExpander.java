@@ -47,7 +47,7 @@ final class ByMonthExpander extends ByExpander
 	{
 		for (int month : mMonths)
 		{
-			long newInstance = Instance.setMonth(instance, month - 1);
+			long newInstance = Instance.setMonth(instance, month);
 			if (newInstance < start)
 			{
 				// instance is before start, nothing to do here

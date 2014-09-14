@@ -268,7 +268,7 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate month numbers.
 		 */
-		BYMONTH(new IntListConverter(1, 12).noZero()) {
+		BYMONTH(new ListValueConverter<Integer>(new MonthConverter())) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -295,7 +295,7 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate week numbers
 		 */
-		BYWEEKNO(new IntListConverter(-53, 53).noZero()) {
+		BYWEEKNO(new ListValueConverter<Integer>(new IntegerConverter(-53, 53).noZero())) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -325,7 +325,7 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate year days
 		 */
-		BYYEARDAY(new IntListConverter(-366, 366).noZero()) {
+		BYYEARDAY(new ListValueConverter<Integer>(new IntegerConverter(-366, 366).noZero())) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -355,7 +355,7 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate month days
 		 */
-		BYMONTHDAY(new IntListConverter(-31, 31).noZero()) {
+		BYMONTHDAY(new ListValueConverter<Integer>(new IntegerConverter(-31, 31).noZero())) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -382,7 +382,7 @@ public final class RecurrenceRule
 		/**
 		 * A list of {@link WeekdayNum}s on which the event recurs.
 		 */
-		BYDAY(new WeekdayListConverter()) {
+		BYDAY(new ListValueConverter<WeekdayNum>(new WeekdayNumConverter())) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -410,7 +410,7 @@ public final class RecurrenceRule
 		/**
 		 * The hours on which the event recurs. The value must be a list of integers in the range 0 to 23.
 		 */
-		BYHOUR(new IntListConverter(0, 23)) {
+		BYHOUR(new ListValueConverter<Integer>(new IntegerConverter(0, 23))) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -437,7 +437,7 @@ public final class RecurrenceRule
 		/**
 		 * The minutes on which the event recurs. The value must be a list of integers in the range 0 to 59.
 		 */
-		BYMINUTE(new IntListConverter(0, 59)) {
+		BYMINUTE(new ListValueConverter<Integer>(new IntegerConverter(0, 59))) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -464,7 +464,7 @@ public final class RecurrenceRule
 		/**
 		 * The seconds on which the event recurs. The value must be a list of integers in the range 0 to 60.
 		 */
-		BYSECOND(new IntListConverter(0, 60)) {
+		BYSECOND(new ListValueConverter<Integer>(new IntegerConverter(0, 60))) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -531,7 +531,7 @@ public final class RecurrenceRule
 		 * 
 		 * TODO: validate the values. They should be within the limits of byyearday.
 		 */
-		BYSETPOS(new IntListConverter(-500, 500).noZero()) {
+		BYSETPOS(new ListValueConverter<Integer>(new IntegerConverter(-500, 500).noZero())) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -1864,6 +1864,12 @@ public final class RecurrenceRule
 		// the average rule is not longer than 100 characters, we add some buffer to avoid a copy operation
 		StringBuilder result = new StringBuilder(160);
 		boolean first = true;
+
+		CalendarMetrics rscale = (CalendarMetrics) mParts.get(Part.RSCALE);
+		if (rscale == null)
+		{
+			rscale = DEFAULT_CALENDAR_SCALE;
+		}
 		// just write all parts separated by semicolon to the result string
 		// the order of the parts guarantees that FREQ is always the first part (as required by RFC 2445)
 		for (Part part : Part.values())
@@ -1881,7 +1887,7 @@ public final class RecurrenceRule
 				}
 				result.append(part.name());
 				result.append("=");
-				part.converter.serialize(result, value);
+				part.converter.serialize(result, value, rscale);
 			}
 		}
 
@@ -1920,7 +1926,7 @@ public final class RecurrenceRule
 		 * @throws InvalidRecurrenceRuleException
 		 *             if the value is invalid.
 		 */
-		public abstract T parse(String value, CalendarMetrics calScale, CalendarMetrics rscale, boolean tolerant) throws InvalidRecurrenceRuleException;
+		public abstract T parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException;
 
 
 		/**
@@ -1934,7 +1940,7 @@ public final class RecurrenceRule
 		 * @param value
 		 *            The value to serialize.
 		 */
-		public void serialize(StringBuilder out, Object value)
+		public void serialize(StringBuilder out, Object value, CalendarMetrics rScale)
 		{
 			out.append(value.toString());
 		}
@@ -1948,33 +1954,15 @@ public final class RecurrenceRule
 	 * @param <T>
 	 *            The type of the list elements.
 	 */
-	private static abstract class ListValueConverter<T> extends ValueConverter<Collection<T>>
+	private static class ListValueConverter<T> extends ValueConverter<Collection<T>>
 	{
-		/**
-		 * Parses the value of a single list element.
-		 * 
-		 * @param value
-		 *            The list element to parse.
-		 * @param tolerant
-		 *            <code>true</code> to ignore any errors if possible
-		 * @return The value of the list element.
-		 * @throws InvalidRecurrenceRuleException
-		 *             if the list element is invalid.
-		 */
-		abstract T parseValue(String value, boolean tolerant) throws InvalidRecurrenceRuleException;
+
+		private final ValueConverter<T> mElementConverter;
 
 
-		/**
-		 * Serialize a single list element value. The default implementation just calls {@link #toString()} on the value instance.
-		 * 
-		 * @param out
-		 *            The {@link StringBuilder} to write to.
-		 * @param value
-		 *            The value to serialize.
-		 */
-		void serializeValue(StringBuilder out, Object value)
+		public ListValueConverter(ValueConverter<T> elementConverter)
 		{
-			out.append(value.toString());
+			mElementConverter = elementConverter;
 		}
 
 
@@ -1987,7 +1975,7 @@ public final class RecurrenceRule
 			{
 				try
 				{
-					result.add(parseValue(val, tolerant));
+					result.add(mElementConverter.parse(val, calScale, rScale, tolerant));
 				}
 				catch (InvalidRecurrenceRuleException e)
 				{
@@ -2016,7 +2004,7 @@ public final class RecurrenceRule
 
 
 		@Override
-		public void serialize(StringBuilder out, Object value)
+		public void serialize(StringBuilder out, Object value, CalendarMetrics rScale)
 		{
 			boolean first = true;
 			for (Object v : (Collection<?>) value)
@@ -2030,8 +2018,30 @@ public final class RecurrenceRule
 					out.append(",");
 				}
 
-				serializeValue(out, v);
+				mElementConverter.serialize(out, v, rScale);
 			}
+		}
+	}
+
+	/**
+	 * A {@link ValueConverter} for month values.
+	 * 
+	 * @author Marten Gajda <marten@dmfs.org>
+	 */
+	private static class MonthConverter extends ValueConverter<Integer>
+	{
+
+		@Override
+		public Integer parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
+		{
+			return rScale.packedMonth(value);
+		}
+
+
+		@Override
+		public void serialize(StringBuilder out, Object value, CalendarMetrics rScale)
+		{
+			out.append(rScale.packedMonthToString((Integer) value));
 		}
 	}
 
@@ -2040,7 +2050,7 @@ public final class RecurrenceRule
 	 * 
 	 * @author Marten Gajda <marten@dmfs.org>
 	 */
-	private static class IntListConverter extends ListValueConverter<Integer>
+	private static class IntegerConverter extends ValueConverter<Integer>
 	{
 		private final int mMinValue;
 		private final int mMaxValue;
@@ -2055,7 +2065,7 @@ public final class RecurrenceRule
 		 * @param max
 		 *            The highest allowed value.
 		 */
-		public IntListConverter(int min, int max)
+		public IntegerConverter(int min, int max)
 		{
 			mMaxValue = max;
 			mMinValue = min;
@@ -2067,7 +2077,7 @@ public final class RecurrenceRule
 		 * 
 		 * @return This instance.
 		 */
-		public IntListConverter noZero()
+		public IntegerConverter noZero()
 		{
 			mNoZero = true;
 			return this;
@@ -2075,7 +2085,7 @@ public final class RecurrenceRule
 
 
 		@Override
-		Integer parseValue(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public Integer parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			try
 			{
@@ -2098,10 +2108,10 @@ public final class RecurrenceRule
 	 * 
 	 * @author Marten Gajda <marten@dmfs.org>
 	 */
-	private static class WeekdayListConverter extends ListValueConverter<WeekdayNum>
+	private static class WeekdayNumConverter extends ValueConverter<WeekdayNum>
 	{
 		@Override
-		WeekdayNum parseValue(String value, boolean tolerant) throws InvalidRecurrenceRuleException
+		public WeekdayNum parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
 			return WeekdayNum.valueOf(value, tolerant);
 		}
@@ -2182,7 +2192,7 @@ public final class RecurrenceRule
 		{
 			try
 			{
-				return DateTime.parse((TimeZone) null, value);
+				return DateTime.parse(calScale, (TimeZone) null, value);
 			}
 			catch (Exception e)
 			{
@@ -2191,7 +2201,7 @@ public final class RecurrenceRule
 				{
 					try
 					{
-						return DateTime.parse(DEFAULT_CALENDAR_SCALE, null, value.substring(0, value.length() - 1));
+						return DateTime.parse(calScale, null, value.substring(0, value.length() - 1));
 					}
 					catch (Exception e2)
 					{
