@@ -89,7 +89,7 @@ final class ByDayFilter extends ByFilter
 	@SuppressWarnings("unused")
 	private static int unpackPos(int packedDay)
 	{
-		return packedDay >> 8;
+		return packedDay >>> 8;
 	}
 
 
@@ -129,11 +129,13 @@ final class ByDayFilter extends ByFilter
 		int year = Instance.year(instance);
 		int month = Instance.month(instance);
 		int dayOfMonth = Instance.dayOfMonth(instance);
-		int dayOfWeek = mCalendarMetrics.getDayOfWeek(year, month, dayOfMonth);
+		CalendarMetrics calendarMetrics = mCalendarMetrics;
+		int dayOfWeek = calendarMetrics.getDayOfWeek(year, month, dayOfMonth);
+		int[] packedDays = mPackedDays;
 
 		if (!mHasPositions)
 		{
-			return StaticUtils.linearSearch(mPackedDays, packWeekday(0, dayOfWeek)) < 0;
+			return StaticUtils.linearSearch(packedDays, packWeekday(0, dayOfWeek)) < 0;
 		}
 		else
 		{
@@ -143,23 +145,23 @@ final class ByDayFilter extends ByFilter
 					/*
 					 * Note: if we're in a weekly scope we shouldn't be here. So we just ignore any days with positions.
 					 */
-					return StaticUtils.linearSearch(mPackedDays, packWeekday(0, dayOfWeek)) < 0;
+					return StaticUtils.linearSearch(packedDays, packWeekday(0, dayOfWeek)) < 0;
 
 				case WEEKLY_AND_MONTHLY:
 				case MONTHLY:
 				{
 					int nthDay = (dayOfMonth - 1) / 7 + 1;
-					int lastNthDay = (dayOfMonth - mCalendarMetrics.getDaysPerPackedMonth(year, month)) / 7 - 1;
-					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay, dayOfWeek)) < 0)
-						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
+					int lastNthDay = (dayOfMonth - calendarMetrics.getDaysPerPackedMonth(year, month)) / 7 - 1;
+					return (nthDay <= 0 || StaticUtils.linearSearch(packedDays, packWeekday(nthDay, dayOfWeek)) < 0)
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(packedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
 				}
 				case YEARLY:
 				{
-					int yearDay = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
+					int yearDay = calendarMetrics.getDayOfYear(year, month, dayOfMonth);
 					int nthDay = (yearDay - 1) / 7 + 1;
-					int lastNthDay = (yearDay - mCalendarMetrics.getDaysPerYear(year)) / 7 - 1;
-					return (nthDay <= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(nthDay, dayOfWeek)) < 0)
-						&& (lastNthDay >= 0 || StaticUtils.linearSearch(mPackedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
+					int lastNthDay = (yearDay - calendarMetrics.getDaysPerYear(year)) / 7 - 1;
+					return (nthDay <= 0 || StaticUtils.linearSearch(packedDays, packWeekday(nthDay, dayOfWeek)) < 0)
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(packedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
 				}
 				default:
 					return false;

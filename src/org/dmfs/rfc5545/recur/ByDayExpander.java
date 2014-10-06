@@ -128,11 +128,6 @@ final class ByDayExpander extends ByExpander
 		CalendarMetrics calendarMetrics = mCalendarMetrics;
 		int year = Instance.year(instance);
 		int month = Instance.month(instance);
-		int dayOfMonth = Instance.dayOfMonth(instance);
-		int hour = Instance.hour(instance);
-		int minute = Instance.minute(instance);
-		int second = Instance.second(instance);
-		int weekOfYear = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);
 
 		for (int packedDay : mByDay)
 		{
@@ -145,33 +140,7 @@ final class ByDayExpander extends ByExpander
 				{
 					if (pos == 0 || pos == 1) // ignore any positional days
 					{
-						int tempYear = year;
-						if (weekOfYear > 10 && month < 1)
-						{
-							// week is in previous ISO year
-							--tempYear;
-						}
-						else if (weekOfYear < 10 && month > 4)
-						{
-							// week is in next ISO year
-							++tempYear;
-						}
-
-						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day);
-
-						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
-
-						if (yearDay < 1)
-						{
-							--tempYear;
-						}
-						else if (yearDay > calendarMetrics.getDaysPerYear(tempYear))
-						{
-							++tempYear;
-						}
-
-						addInstance(Instance.make(tempYear, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
-							second));
+						addInstance(calendarMetrics.setDayOfWeek(instance, day));
 					}
 					break;
 				}
@@ -179,36 +148,13 @@ final class ByDayExpander extends ByExpander
 				{
 					if (pos == 0 || pos == 1) // ignore any positional days
 					{
-						int tempYear = year;
-						if (weekOfYear > 10 && month < 1)
-						{
-							// week is in previous ISO year
-							--tempYear;
-						}
-						else if (weekOfYear < 10 && month > 4)
-						{
-							// week is in next ISO year
-							++tempYear;
-						}
+						long newInstance = calendarMetrics.setDayOfWeek(instance, day);
 
-						int yearDay = calendarMetrics.getYearDayOfIsoYear(tempYear, weekOfYear, day);
-
-						int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(tempYear, yearDay);
-
-						if (yearDay < 1)
-						{
-							--tempYear;
-						}
-						else if (yearDay > calendarMetrics.getDaysPerYear(tempYear))
-						{
-							++tempYear;
-						}
-
-						int newMonth = CalendarMetrics.packedMonth(monthAndDay);
+						int newMonth = Instance.month(newInstance);
 
 						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) > 0 || mMonths == null && newMonth == month)
 						{
-							addInstance(Instance.make(tempYear, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+							addInstance(newInstance);
 						}
 					}
 					break;
@@ -225,19 +171,19 @@ final class ByDayExpander extends ByExpander
 					if (pos == 0)
 					{
 						// add all instances of this weekday of this month
-						for (int dayOfMonthx = firstDay; dayOfMonthx <= monthDays; dayOfMonthx += 7)
+						for (int dayOfMonth = firstDay; dayOfMonth <= monthDays; dayOfMonth += 7)
 						{
-							addInstance(Instance.setDayOfMonth(instance, dayOfMonthx));
+							addInstance(Instance.setDayOfMonth(instance, dayOfMonth));
 						}
 					}
 					else
 					{
-						int maxDays = 1 + (monthDays - firstDay) / 7;
+						int maxPos = 1 + (monthDays - firstDay) / 7;
 
 						// add just one position
-						if (pos > 0 && pos <= maxDays || pos < 0 && pos + maxDays + 1 > 0)
+						if (pos > 0 && pos <= maxPos || pos < 0 && pos + maxPos + 1 > 0)
 						{
-							addInstance(Instance.setDayOfMonth(instance, firstDay + (pos > 0 ? pos - 1 : pos + maxDays) * 7));
+							addInstance(Instance.setDayOfMonth(instance, firstDay + (pos > 0 ? pos - 1 : pos + maxPos) * 7));
 						}
 					}
 					break;
@@ -255,8 +201,8 @@ final class ByDayExpander extends ByExpander
 						for (int dayOfYear = firstWeekdayOfYear; dayOfYear <= yearDays; dayOfYear += 7)
 						{
 							int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-							addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
-								second));
+							addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay),
+								CalendarMetrics.dayOfMonth(monthAndDay)));
 						}
 					}
 					else
@@ -267,8 +213,8 @@ final class ByDayExpander extends ByExpander
 							if (dayOfYear <= yearDays)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour,
-									minute, second));
+								addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay),
+									CalendarMetrics.dayOfMonth(monthAndDay)));
 							}
 						}
 						else
@@ -286,8 +232,8 @@ final class ByDayExpander extends ByExpander
 							if (dayOfYear > 0)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour,
-									minute, second));
+								addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay),
+									CalendarMetrics.dayOfMonth(monthAndDay)));
 							}
 						}
 					}

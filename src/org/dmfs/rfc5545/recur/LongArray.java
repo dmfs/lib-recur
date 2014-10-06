@@ -48,7 +48,7 @@ final class LongArray
 	private int mPos = 0;
 
 	/**
-	 * Indicates whether this field is sorted or not.
+	 * Indicates whether this field is sorted or not. If this is <code>true</code> the field is strictly monotonically ordered.
 	 */
 	private boolean mSorted = true;
 
@@ -89,7 +89,11 @@ final class LongArray
 		{
 			longs = resizeBuffer(len + (len >> 1));
 		}
-		mSorted &= count == 0 || data >= longs[count - 1];
+		/*
+		 * The condition below is too strict. The field would still be sorted if data = longs[count -1], but that can only happen when SKIP != YES. In this case
+		 * we have to deduplicate anyway. If we keep the condition strict like that we can use it as an indicator for if we need to deduplicate.
+		 */
+		mSorted &= count == 0 || data > longs[count - 1];
 		longs[count++] = data;
 		mCount = count;
 	}
@@ -193,12 +197,13 @@ final class LongArray
 	 */
 	public void deduplicate()
 	{
-		int count = mCount;
-		if (count < 2)
+		if (mSorted)
 		{
+			// the field is strictly monotonically ordered, which means there is no need to deduplicate
 			return;
 		}
 
+		int count = mCount;
 		sort();
 		long[] longs = mLongs;
 

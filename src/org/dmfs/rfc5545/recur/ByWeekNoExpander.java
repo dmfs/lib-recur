@@ -157,7 +157,7 @@ final class ByWeekNoExpander extends ByExpander
 				final int newMonth = CalendarMetrics.packedMonth(monthAndDay);
 				if (newMonth == month)
 				{
-					addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+					addInstance(Instance.setMonthAndDayOfMonth(instance, newMonth, CalendarMetrics.dayOfMonth(monthAndDay)));
 				}
 			}
 			else
@@ -176,7 +176,7 @@ final class ByWeekNoExpander extends ByExpander
 				}
 
 				final int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-				addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+				addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay)));
 			}
 		}
 	}

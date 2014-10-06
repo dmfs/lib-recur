@@ -487,6 +487,120 @@ public abstract class CalendarMetrics
 	}
 
 
+	/*
+	 * Methods to manipulate instances.
+	 */
+
+	/**
+	 * Moves the given instance forward by one month. In many cases this is faster than {@link #nextMonth(long, int)} with <code>n = 1</code>.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @return A new instance.
+	 */
+	public abstract long nextMonth(long instance);
+
+
+	/**
+	 * Moves the given instance forward by one or more months.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @param n
+	 *            The number of months to add.
+	 * @return A new instance.
+	 */
+	public abstract long nextMonth(long instance, int n);
+
+
+	/**
+	 * Moves the given instance backward by one month. In many cases this is faster than {@link #prevMonth(long, int)} with <code>n = 1</code>.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @return A new instance.
+	 */
+	public abstract long prevMonth(long instance);
+
+
+	/**
+	 * Moves the given instance backward by one or more months.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @param n
+	 *            The number of months to go back.
+	 * @return A new instance.
+	 */
+	public abstract long prevMonth(long instance, int n);
+
+
+	/**
+	 * Moves the given instance forward to the next (existing day).
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @return A new instance.
+	 */
+	public abstract long nextDay(long instance);
+
+
+	/**
+	 * Moves the given instance forward by one or more days.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @param n
+	 *            The number of days to add.
+	 * @return A new instance.
+	 */
+	public abstract long nextDay(long instance, int n);
+
+
+	/**
+	 * Moves the given instance backward to the previous (existing) day.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @return A new instance.
+	 */
+	public abstract long prevDay(long instance);
+
+
+	/**
+	 * Moves the given instance backward by one or more days.
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @param n
+	 *            The number of days to go back.
+	 * @return A new instance.
+	 */
+	public abstract long prevDay(long instance, int n);
+
+
+	/**
+	 * Get the start date of the week the given instance is in.
+	 * 
+	 * @param instance
+	 *            The instance.
+	 * @return The instance of the start of the week.
+	 */
+	public abstract long startOfWeek(long instance);
+
+
+	/**
+	 * Changes the day of week of the given instance ot the given value, but keeping the week number constant
+	 * 
+	 * @param instance
+	 *            The instance to modify.
+	 * @param dayOfWeek
+	 *            The new day of the week.
+	 * @return A new instance.
+	 */
+	public abstract long setDayOfWeek(long instance, int dayOfWeek);
+
+
 	@Override
 	public int hashCode()
 	{

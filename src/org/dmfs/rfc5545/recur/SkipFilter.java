@@ -123,7 +123,6 @@ final class SkipFilter extends RuleIterator
 			{
 				long next = Instance.maskWeekday(prev.next());
 
-				int year = Instance.year(next);
 				int month = Instance.month(next);
 				int monthDay = Instance.dayOfMonth(next);
 
@@ -133,39 +132,43 @@ final class SkipFilter extends RuleIterator
 					{
 						if (mSkip == Skip.BACKWARD)
 						{
+							// leap days are always the last day of a month, so we won't roll over to the previous month
 							next = Instance.setDayOfMonth(next, monthDay - 1);
 						}
 						else
 						// mSkip == Skip.FORWARD
 						{
-							int yearDay = calendarMetrics.getDayOfYear(year, month, monthDay);
-							if (yearDay > calendarMetrics.getDaysPerYear(year))
-							{
-								yearDay -= calendarMetrics.getDaysPerYear(year);
-								++year;
-							}
-							int dayAndMonth = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-							next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.packedMonth(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
+							next = calendarMetrics.nextDay(next);
 						}
 					}
 					else if (calendarMetrics.isLeapMonth(month))
 					{
-						// FIXME: the month calculation is incorrect
-						int yearDay = calendarMetrics.getDayOfYear(year, mSkip == Skip.BACKWARD ? month - 1 : month + 1, monthDay);
-						if (yearDay > calendarMetrics.getDaysPerYear(year))
+						if (mSkip == Skip.BACKWARD)
 						{
-							yearDay -= calendarMetrics.getDaysPerYear(year);
-							++year;
+							next = calendarMetrics.prevMonth(next);
+							if (!calendarMetrics.validate(next))
+							{
+								// the day doesn't exist in the previous month, go back to the last day of that month
+								next = Instance.setDayOfMonth(next, calendarMetrics.getDaysPerPackedMonth(Instance.year(next), Instance.month(next)));
+							}
 						}
-						int dayAndMonth = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-						next = Instance.setMonthAndDayOfMonth(next, CalendarMetrics.packedMonth(dayAndMonth), CalendarMetrics.dayOfMonth(dayAndMonth));
+						else
+						// mSkip == Skip.FORWARD
+						{
+							next = calendarMetrics.nextMonth(next);
+							if (!calendarMetrics.validate(next))
+							{
+								// the day doesn't exist in the next month, go forward to the first day of the next month
+								next = Instance.setDayOfMonth(calendarMetrics.nextMonth(next), 1);
+							}
+						}
 					}
 				}
 				resultSet.add(next);
 			}
 		} while (!resultSet.hasNext());
 
-		// we need to sort, because the element order might have changed
+		// we need to de-duplicate
 		resultSet.deduplicate();
 
 		mLastResult = last;

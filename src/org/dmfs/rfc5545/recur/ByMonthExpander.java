@@ -38,6 +38,7 @@ final class ByMonthExpander extends ByExpander
 	public ByMonthExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
 	{
 		super(previous, calendarTools, start);
+		// sort array to iterate the months in the right order, that saves an additional sorting of each interval
 		mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
 	}
 

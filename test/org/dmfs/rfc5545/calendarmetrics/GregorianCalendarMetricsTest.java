@@ -25,8 +25,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.dmfs.rfc5545.Instance;
-import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
-import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -717,6 +715,80 @@ public class GregorianCalendarMetricsTest
 								assertEquals(errMsg, testCal.get(Calendar.HOUR_OF_DAY), Instance.hour(instance));
 								assertEquals(errMsg, testCal.get(Calendar.MINUTE), Instance.minute(instance));
 								assertEquals(errMsg, testCal.get(Calendar.SECOND), Instance.second(instance));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	@Test
+	public void testStartOfWeek()
+	{
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+
+				for (int year = 1700; year < 3000; ++year)
+				{
+					for (int month = 0; month < tools.getMonthsPerYear(year); ++month)
+					{
+						for (int day = 1; day <= tools.getDaysPerPackedMonth(year, month); ++day)
+						{
+							long instance = Instance.make(year, month, day, 0, 0, 0);
+							int week = tools.getWeekOfYear(year, month, day);
+
+							instance = tools.startOfWeek(instance);
+
+							String errMsg = "";
+							// errMsg = "getYearDayOfIsoYear failed for year=" + year + " week=" + week + " weekStart=" + weekStart + " minDays="
+							// + minDaysInFirstWeek;
+
+							assertEquals(errMsg, weekStart,
+								tools.getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance)));
+							assertEquals(errMsg, week, tools.getWeekOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance)));
+						}
+					}
+				}
+			}
+		}
+	}
+
+
+	@Test
+	public void testSetDayOfWeek()
+	{
+		for (int minDaysInFirstWeek = 1; minDaysInFirstWeek < 8; ++minDaysInFirstWeek)
+		{
+			for (int weekStart = 0; weekStart < 7; ++weekStart)
+			{
+				CalendarMetrics tools = new GregorianCalendarMetrics(weekStart, minDaysInFirstWeek);
+
+				for (int year = 1700; year < 3000; ++year)
+				{
+					for (int month = 0; month < tools.getMonthsPerYear(year); ++month)
+					{
+						for (int day = 1; day <= tools.getDaysPerPackedMonth(year, month); ++day)
+						{
+							for (int dayOfWeek = 0; dayOfWeek < 7; ++dayOfWeek)
+							{
+								long instance = Instance.make(year, month, day, 0, 0, 0);
+								int week = tools.getWeekOfYear(year, month, day);
+
+								instance = tools.setDayOfWeek(instance, dayOfWeek);
+
+								String errMsg = "";
+								// errMsg = "getYearDayOfIsoYear failed for year=" + year + " week=" + week + " dayOfWeek=" + dayOfWeek + " weekStart="
+								// + weekStart + " minDays=" + minDaysInFirstWeek;
+
+								assertEquals(errMsg, dayOfWeek,
+									tools.getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance)));
+								assertEquals(errMsg, week,
+									tools.getWeekOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance)));
 							}
 						}
 					}

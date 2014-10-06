@@ -70,37 +70,26 @@ final class ByMonthFilter extends ByFilter
 		}
 		else
 		{
-			if (StaticUtils.linearSearch(mMonths, month) >= 0)
+			int[] months = mMonths;
+			CalendarMetrics calendarMetrics = mCalendarMetrics;
+
+			if (StaticUtils.linearSearch(months, month) >= 0)
 			{
 				return false;
 			}
 
-			int year = Instance.year(instance);
-			int dayOfMonth = Instance.dayOfMonth(instance);
-			int weekOfYear = mCalendarMetrics.getWeekOfYear(year, month, dayOfMonth);
-
-			// TODO: find a better way to determine the actual ISO year
-			if (weekOfYear > 10 && month < 1)
-			{
-				// week is in previous ISO year
-				--year;
-			}
-			else if (weekOfYear < 2 && month > 6)
-			{
-				// week is in next ISO year
-				++year;
-			}
-
-			int yearDayOfWeekStart = mCalendarMetrics.getYearDayOfWeekStart(year, weekOfYear);
+			long startOfWeek = calendarMetrics.startOfWeek(instance);
 
 			// check if the month of the week start is in mMonths
-			if (StaticUtils.linearSearch(mMonths, mCalendarMetrics.getPackedMonthOfYearDay(year, yearDayOfWeekStart)) >= 0)
+			if (StaticUtils.linearSearch(months, Instance.month(startOfWeek)) >= 0)
 			{
 				return false;
 			}
 
+			long endOfWeek = calendarMetrics.nextDay(startOfWeek, 6);
+
 			// check if the month of the week end is in mMonths
-			return StaticUtils.linearSearch(mMonths, mCalendarMetrics.getPackedMonthOfYearDay(year, yearDayOfWeekStart + 6)) < 0;
+			return StaticUtils.linearSearch(months, Instance.month(endOfWeek)) < 0;
 		}
 	}
 }

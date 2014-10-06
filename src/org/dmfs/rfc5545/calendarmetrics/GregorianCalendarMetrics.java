@@ -497,4 +497,242 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 	{
 		return day == 29 && packedMonth == 1;
 	}
+
+
+	@Override
+	public long nextMonth(long instance)
+	{
+		int newMonth = Instance.month(instance) + 1;
+
+		if (newMonth < 12)
+		{
+			return Instance.setMonth(instance, newMonth);
+		}
+		else
+		{
+			return Instance.setYear(Instance.setMonth(instance, 0), Instance.year(instance) + 1);
+		}
+	}
+
+
+	@Override
+	public long nextMonth(long instance, int n)
+	{
+		if (n < 0)
+		{
+			throw new IllegalArgumentException("n must be >=0");
+		}
+		if (n == 0)
+		{
+			return instance;
+		}
+
+		int newMonth = Instance.month(instance) + n;
+
+		if (newMonth < 12)
+		{
+			return Instance.setMonth(instance, newMonth);
+		}
+		else
+		{
+			return Instance.setYear(Instance.setMonth(instance, newMonth % 12), Instance.year(instance) + newMonth / 12);
+		}
+	}
+
+
+	@Override
+	public long prevMonth(long instance)
+	{
+		int newMonth = Instance.month(instance) - 1;
+
+		if (newMonth >= 0)
+		{
+			return Instance.setMonth(instance, newMonth);
+		}
+		else
+		{
+			return Instance.setYear(Instance.setMonth(instance, 11), Instance.year(instance) - 1);
+		}
+	}
+
+
+	@Override
+	public long prevMonth(long instance, int n)
+	{
+		if (n < 0)
+		{
+			throw new IllegalArgumentException("n must be >=0");
+		}
+		if (n == 0)
+		{
+			return instance;
+		}
+
+		int newMonth = Instance.month(instance) - n;
+
+		if (newMonth >= 0)
+		{
+			return Instance.setMonth(instance, newMonth);
+		}
+		else
+		{
+			return Instance.setYear(Instance.setMonth(instance, (12 + newMonth % 12) % 12), Instance.year(instance) + newMonth / 12);
+		}
+	}
+
+
+	@Override
+	public long nextDay(long instance)
+	{
+		int day = Instance.dayOfMonth(instance) + 1;
+		int year = Instance.year(instance);
+		int month = Instance.month(instance);
+
+		if (day > getDaysPerPackedMonth(year, month))
+		{
+			day = 1;
+			if (++month == 12)
+			{
+				instance = Instance.setYear(instance, year + 1);
+				month = 0;
+			}
+			instance = Instance.setMonth(instance, month);
+		}
+		return Instance.setDayOfMonth(instance, day);
+	}
+
+
+	@Override
+	public long nextDay(long instance, int n)
+	{
+		if (n < 0)
+		{
+			throw new IllegalArgumentException("n must be >=0");
+		}
+		if (n == 0)
+		{
+			return instance;
+		}
+
+		int year = Instance.year(instance);
+		int month = Instance.month(instance);
+		int day = Math.min(Instance.dayOfMonth(instance), getDaysPerPackedMonth(year, month));
+
+		int yearDay = getDayOfYear(year, month, day) + n;
+		int yearDays;
+		while (yearDay > (yearDays = getDaysPerYear(year)))
+		{
+			yearDay -= yearDays;
+			year++;
+		}
+
+		int monthAndDay = getMonthAndDayOfYearDay(year, yearDay);
+		return Instance.setYear(Instance.setMonthAndDayOfMonth(instance, packedMonth(monthAndDay), dayOfMonth(monthAndDay)), year);
+	}
+
+
+	@Override
+	public long prevDay(long instance)
+	{
+		int day = Instance.dayOfMonth(instance) - 1;
+
+		if (day == 0)
+		{
+			int year = Instance.year(instance);
+			int month = Instance.month(instance) - 1;
+			if (month == -1)
+			{
+				instance = Instance.setYear(instance, --year);
+				month = 11;
+			}
+			day = getDaysPerPackedMonth(year, month);
+			instance = Instance.setMonth(instance, month);
+		}
+		return Instance.setDayOfMonth(instance, day);
+	}
+
+
+	@Override
+	public long prevDay(long instance, int n)
+	{
+		if (n < 0)
+		{
+			throw new IllegalArgumentException("n must be >=0");
+		}
+		if (n == 0)
+		{
+			return instance;
+		}
+
+		int year = Instance.year(instance);
+		int month = Instance.month(instance);
+		int day = Math.min(Instance.dayOfMonth(instance), getDaysPerPackedMonth(year, month) + 1);
+
+		int yearDay = getDayOfYear(year, month, day) - n;
+		while (yearDay < 1)
+		{
+			year--;
+			yearDay += getDaysPerYear(year);
+		}
+
+		int monthAndDay = getMonthAndDayOfYearDay(year, yearDay);
+		return Instance.setYear(Instance.setMonthAndDayOfMonth(instance, packedMonth(monthAndDay), dayOfMonth(monthAndDay)), year);
+	}
+
+
+	@Override
+	public long startOfWeek(long instance)
+	{
+		int currentDayOfWeek = getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
+
+		int offset = (weekStart - currentDayOfWeek - 7) % 7;
+
+		if (offset == 0)
+		{
+			return instance;
+		}
+		if (offset == -1)
+		{
+			return prevDay(instance);
+		}
+		else
+		{
+			return prevDay(instance, -offset);
+		}
+	}
+
+
+	@Override
+	public long setDayOfWeek(long instance, int dayOfWeek)
+	{
+		int currentDayOfWeek = getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
+
+		int offset = (weekStart - currentDayOfWeek - 7) % 7 + (dayOfWeek - weekStart + 7) % 7;
+
+		switch (offset)
+		{
+			case -6:
+			case -5:
+			case -4:
+			case -3:
+			case -2:
+				return prevDay(instance, -offset);
+			case -1:
+				return prevDay(instance);
+			case 0:
+				return instance;
+			case 1:
+				return nextDay(instance);
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+				return nextDay(instance, offset);
+		}
+		/*
+		 * We will never get here, this is just to make Eclipse happy.
+		 */
+		return instance;
+	}
 }
