@@ -36,7 +36,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 final class ByMonthDayExpander extends ByExpander
 {
 	/**
-	 * A list of days of month to expand or let pass.
+	 * A list of days of month to expand.
 	 */
 	private final int[] mMonthDays;
 
@@ -65,7 +65,7 @@ final class ByMonthDayExpander extends ByExpander
 		if (mScope == Scope.WEEKLY_AND_MONTHLY && rule.hasPart(Part.BYMONTH))
 		{
 			// we have to filter by month
-			mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
+			mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
 		}
 		else
 		{
@@ -101,6 +101,7 @@ final class ByMonthDayExpander extends ByExpander
 		int nextMonthDays = 0;
 		if (mScope == Scope.WEEKLY || mScope == Scope.WEEKLY_AND_MONTHLY)
 		{
+			// FIXME: the following won't work with calendar scales that have leap months
 			if (month == 0)
 			{
 				prevMonthDays = calendarMetrics.getDaysPerPackedMonth(year - 1, calendarMetrics.getMonthsPerYear(year - 1) - 1);

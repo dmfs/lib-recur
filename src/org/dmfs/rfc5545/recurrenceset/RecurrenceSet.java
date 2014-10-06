@@ -25,8 +25,8 @@ import org.dmfs.rfc5545.recurrenceset.AbstractRecurrenceAdapter.InstanceIterator
 
 
 /**
- * A recurrence set iterator. This class iterates all instances of a recurrence set. A recurrence set consists of all instances defined by a recurrence rule or
- * a list if instances except for exception instances. Exception instances are defined by exceptions rules or lists of exception instances.
+ * A recurrence set. A recurrence set consists of all instances defined by a recurrence rule or a list if instances except for exception instances. Exception
+ * instances are defined by exceptions rules or lists of exception instances.
  * <p>
  * This class allows you to add any number of recurrence rules, recurrence instances, exception rules and exception instance. It returns an {@link Iterator}
  * that iterates all resulting instances.
@@ -119,12 +119,13 @@ public class RecurrenceSet
 	{
 		for (AbstractRecurrenceAdapter adapter : mInstances)
 		{
-			if (!adapter.isInfinite())
+			if (adapter.isInfinite())
 			{
-				return false;
+				// the set is infinite if there is at least one adapter with an infinite number of instances
+				return true;
 			}
 		}
 
-		return true;
+		return false;
 	}
 }

@@ -46,8 +46,8 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 		};
 	};
 
-	public final static String CALENDAR_SCALE_ALIAS = "gregorian";
-	public final static String CALENDAR_SCALE_NAME = "gregory";
+	public final static String CALENDAR_SCALE_ALIAS = "GREGORIAN";
+	public final static String CALENDAR_SCALE_NAME = "GREGORY";
 
 	/**
 	 * The number of days in a specific month. This is for non-leap years. For leap years add <code>1</code> to <code>DAYS_PER_MONTH[1]</code>.

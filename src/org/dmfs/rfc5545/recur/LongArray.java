@@ -21,7 +21,7 @@ import java.util.Arrays;
 
 
 /**
- * Helper to maintain a list of <code>long</code> values.
+ * Maintains a list of <code>long</code> values.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -193,13 +193,14 @@ final class LongArray
 	 */
 	public void deduplicate()
 	{
-		sort();
-		long[] longs = mLongs;
 		int count = mCount;
 		if (count < 2)
 		{
 			return;
 		}
+
+		sort();
+		long[] longs = mLongs;
 
 		int next = 1;
 		long last = longs[0];

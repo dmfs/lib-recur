@@ -48,6 +48,9 @@ public class JulianCalendarMetrics extends GregorianCalendarMetrics
 		};
 	};
 
+	public final static String CALENDAR_SCALE_ALIAS = "JULIAN";
+	public final static String CALENDAR_SCALE_NAME = "JULIUS";
+
 	private GregorianCalendarMetrics mGregorianCalendarMetrics;
 
 

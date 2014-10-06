@@ -143,7 +143,7 @@ final class ByWeekNoExpander extends ByExpander
 			else if (mScope == Scope.MONTHLY)
 			{
 				/*
-				 * Expand instances that are in instance.month.
+				 * Expand instances in this week and month.
 				 */
 				int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
 

@@ -88,6 +88,12 @@ public final class DateTime
 	private boolean mAllday;
 
 
+	/**
+	 * Clone constructor to create a DateTime from another DateTime.
+	 * 
+	 * @param dateTime
+	 *            The {@link DateTime} to clone.
+	 */
 	public DateTime(DateTime dateTime)
 	{
 		mCalendarMetrics = dateTime.mCalendarMetrics;
@@ -100,6 +106,14 @@ public final class DateTime
 	}
 
 
+	/**
+	 * Clone constructor that changes the {@link CalendarMetrics}. It will represent the same absolute time, but instances will be in another calendar scale.
+	 * 
+	 * @param calendarMetrics
+	 *            The calendar scale to use.
+	 * @param dateTime
+	 *            The {@link DateTime} to clone from.
+	 */
 	public DateTime(CalendarMetrics calendarMetrics, DateTime dateTime)
 	{
 		mCalendarMetrics = calendarMetrics;
@@ -109,18 +123,29 @@ public final class DateTime
 		{
 			toAllDay();
 		}
-		mInstance = -1;
-		mWeekOfYear = dateTime.mWeekOfYear;
-		mDayOfWeek = dateTime.mDayOfWeek;
 	}
 
 
+	/**
+	 * Create a new {@link DateTime} from the given time stamp using {@link #DEFAULT_CALENDAR_SCALE} and {@link #UTC}.
+	 * 
+	 * @param timestamp
+	 *            The time in milliseconds since the epoch of this date-time value.
+	 */
 	public DateTime(long timestamp)
 	{
 		this(DEFAULT_CALENDAR_SCALE, null, timestamp);
 	}
 
 
+	/**
+	 * Create a new {@link DateTime} from the given time stamp using {@link #DEFAULT_CALENDAR_SCALE} and the given time zone.
+	 * 
+	 * @param timezone
+	 *            The {@link TimeZone} of the new instance.
+	 * @param timestamp
+	 *            The time in milliseconds since the epoch of this date-time value.
+	 */
 	public DateTime(TimeZone timezone, long timestamp)
 	{
 		this(DEFAULT_CALENDAR_SCALE, timezone, timestamp);
@@ -145,6 +170,22 @@ public final class DateTime
 	}
 
 
+	/**
+	 * Create a new floating DateTime using {@link #DEFAULT_CALENDAR_SCALE}.
+	 * 
+	 * @param year
+	 *            The year.
+	 * @param month
+	 *            The month.
+	 * @param dayOfMonth
+	 *            The day of the month.
+	 * @param hours
+	 *            The hour.
+	 * @param minutes
+	 *            The minutes.
+	 * @param seconds
+	 *            The seconds.
+	 */
 	public DateTime(int year, int month, int dayOfMonth, int hours, int minutes, int seconds)
 	{
 		this((TimeZone) null, year, month, dayOfMonth, hours, minutes, seconds);

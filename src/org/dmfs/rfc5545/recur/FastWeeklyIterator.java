@@ -229,6 +229,7 @@ public final class FastWeeklyIterator extends ByExpander
 		int monthsOfPrevYear = mCalendarMetrics.getMonthsPerYear(untilYear - 1);
 		int nextMonth = Instance.month(mNextInstance);
 
+		// FIXME: make sure that untilMonth = 0 works with leap months or change it accordingly.
 		/* we have to ensure we iterate the correct week, so we just stop one month before */
 		while ((mYear < untilYear - 1 || mYear == untilYear - 1 && untilMonth == 0 && nextMonth < monthsOfPrevYear - 1 || mYear == untilYear
 			&& nextMonth < untilMonth)

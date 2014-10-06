@@ -32,8 +32,8 @@ import org.dmfs.rfc5545.recurrenceset.AbstractRecurrenceAdapter.InstanceIterator
  * This class doesn't implement the {@link InstanceIterator} interface for one reasons:
  * </p>
  * <ul>
- * <li>An {@link InstanceIterator} always returns an {@link Object}, so instead of a primitive <code>long</code> we would have to return a {@link Long}. That is an
- * additional object which doesn't have any advantage.</li>
+ * <li>An {@link InstanceIterator} always returns an {@link Object}, so instead of a primitive <code>long</code> we would have to return a {@link Long}. That is
+ * an additional object which doesn't have any advantage.</li>
  * </ul>
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -49,7 +49,7 @@ public class RecurrenceSetIterator
 	/**
 	 * Calculate this many exceptions in advance.
 	 */
-	private final static int EXCEPTION_CACHE_SIZE = 32;
+	private final static int EXCEPTION_CACHE_SIZE = 16;
 
 	/**
 	 * Throw if we skipped this many instances in a line, because they were exceptions.
@@ -235,7 +235,7 @@ public class RecurrenceSetIterator
 				next++;
 			}
 
-			if (next < mInstancesInCache)
+			if (next < instanceCount)
 			{
 				mNextInstance = next;
 				return;

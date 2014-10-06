@@ -137,6 +137,7 @@ public final class FreqIterator extends ByExpander
 			{
 				mNextMonth += mInterval;
 				int maxMonths;
+				// FIXME: this won't work with leap months
 				while (mNextMonth >= (maxMonths = calendarMetrics.getMonthsPerYear(mNextYear)))
 				{
 					mNextMonth -= maxMonths;

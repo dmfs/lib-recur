@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.TimeZone;
 
 import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 
 
 /**
@@ -106,11 +107,27 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 	 * Create an adapter for the instances in <code>list</code>.
 	 * 
 	 * @param list
-	 *            A comma separated list if instances using the date-time format as defined in RFC 5545.
+	 *            A comma separated list of instances using the date-time format as defined in RFC 5545.
 	 * @param timeZone
 	 *            The time zone to apply to the instances.
 	 */
 	public RecurrenceList(String list, TimeZone timeZone)
+	{
+		this(DateTime.DEFAULT_CALENDAR_SCALE, list, timeZone);
+	}
+
+
+	/**
+	 * Create an adapter for the instances in <code>list</code>.
+	 * 
+	 * @param calendarMetrics
+	 *            The calendar scale to use.
+	 * @param list
+	 *            A comma separated list of instances using the date-time format as defined in RFC 5545.
+	 * @param timeZone
+	 *            The time zone to apply to the instances.
+	 */
+	public RecurrenceList(CalendarMetrics calendarMetrics, String list, TimeZone timeZone)
 	{
 		if (list == null || list.length() == 0)
 		{
@@ -125,7 +142,7 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 
 		for (String instanceString : instances)
 		{
-			DateTime instance = DateTime.parse(timeZone, instanceString);
+			DateTime instance = DateTime.parse(calendarMetrics, timeZone, instanceString);
 			mInstances[count] = instance.getTimestamp();
 			++count;
 		}

@@ -150,6 +150,7 @@ final class SkipFilter extends RuleIterator
 					}
 					else if (calendarMetrics.isLeapMonth(month))
 					{
+						// FIXME: the month calculation is incorrect
 						int yearDay = calendarMetrics.getDayOfYear(year, mSkip == Skip.BACKWARD ? month - 1 : month + 1, monthDay);
 						if (yearDay > calendarMetrics.getDaysPerYear(year))
 						{
@@ -165,7 +166,7 @@ final class SkipFilter extends RuleIterator
 		} while (!resultSet.hasNext());
 
 		// we need to sort, because the element order might have changed
-		resultSet.sort();
+		resultSet.deduplicate();
 
 		mLastResult = last;
 		return resultSet;

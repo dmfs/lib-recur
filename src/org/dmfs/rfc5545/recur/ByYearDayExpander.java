@@ -114,7 +114,7 @@ final class ByYearDayExpander extends ByExpander
 					if (0 < actualDay && actualDay <= yearDays && newWeek == oldWeek)
 					{
 						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
-						addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+						addInstance(Instance.setMonthAndDayOfMonth(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay)));
 					}
 					else if (0 < nextYearDay && nextYearDay <= nextYearDays && nextYearDay < 7)
 					{
@@ -125,8 +125,8 @@ final class ByYearDayExpander extends ByExpander
 						if (newWeek == oldWeek)
 						{
 							int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year + 1, nextYearDay);
-							addInstance(Instance.make(year + 1, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
-								second));
+							addInstance(Instance.make(year + 1, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour,
+								minute, second));
 						}
 					}
 					else if (0 < prevYearDay && prevYearDay <= prevYearDays && prevYearDay > prevYearDays - 7)
@@ -138,8 +138,8 @@ final class ByYearDayExpander extends ByExpander
 						if (newWeek == oldWeek)
 						{
 							int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year - 1, prevYearDay);
-							addInstance(Instance.make(year - 1, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
-								second));
+							addInstance(Instance.make(year - 1, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour,
+								minute, second));
 						}
 					}
 					break;
@@ -171,7 +171,7 @@ final class ByYearDayExpander extends ByExpander
 						int newMonth = CalendarMetrics.packedMonth(monthAndDay);
 						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
-							addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+							addInstance(Instance.setMonthAndDayOfMonth(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay)));
 						}
 					}
 					else if (0 < nextYearDay && nextYearDay <= nextYearDays && nextYearDay < 7)
@@ -210,7 +210,7 @@ final class ByYearDayExpander extends ByExpander
 						int newMonth = CalendarMetrics.packedMonth(monthAndDay);
 						if (newMonth == month)
 						{
-							addInstance(Instance.make(year, newMonth, CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+							addInstance(Instance.setMonthAndDayOfMonth(instance, newMonth, CalendarMetrics.dayOfMonth(monthAndDay)));
 						}
 					}
 					break;
@@ -220,7 +220,7 @@ final class ByYearDayExpander extends ByExpander
 					if (0 < actualDay && actualDay <= yearDays && !(actualDay < startDayOfYear && year == Instance.year(start)))
 					{
 						int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
-						addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+						addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay)));
 					}
 					break;
 				}

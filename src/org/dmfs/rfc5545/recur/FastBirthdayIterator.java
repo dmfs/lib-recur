@@ -67,7 +67,9 @@ public final class FastBirthdayIterator extends ByExpander
 	{
 		super(null, calendarMetrics, firstInstance);
 
-		mInterval = rule.getInterval();
+		int interval = rule.getInterval();
+
+		mInterval = rule.getFreq() == Freq.MONTHLY ? interval > 12 ? interval / 12 : 1 : interval;
 
 		mNextInstance = firstInstance;
 	}
@@ -96,9 +98,20 @@ public final class FastBirthdayIterator extends ByExpander
 		List<Integer> months = rule.getByPart(Part.BYMONTH);
 		List<Integer> days = rule.getByPart(Part.BYMONTHDAY);
 
-		if (months != null && months.size() == 1
-			&& (days == null && (freq == Freq.MONTHLY || freq != Freq.YEARLY) || days != null && days.size() == 1 && days.get(0) > 0)
-			|| (freq == Freq.YEARLY && months == null && days == null))
+		if (freq == Freq.MONTHLY)
+		{
+			int interval = rule.getInterval();
+			if (interval == 5 || interval > 6 && interval % 12 != 0)
+			{
+				// monthly interval is not a divider or a multiple of 12 (a full year).
+				return null;
+			}
+		}
+
+		if (months != null
+			&& months.size() == 1
+			&& (days == null && (freq == Freq.MONTHLY || freq == Freq.YEARLY) || (days != null && days.size() == 1 && days.get(0) > 0 && (freq == Freq.MONTHLY
+				|| freq == Freq.YEARLY || freq == Freq.DAILY))) || (freq == Freq.YEARLY && months == null && days == null))
 		{
 
 			// adjust month if given

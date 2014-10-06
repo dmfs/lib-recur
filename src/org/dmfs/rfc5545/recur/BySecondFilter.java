@@ -23,7 +23,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits or expands recurrence rules by seconds.
+ * A filter that limits recurrence rules by seconds.
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */

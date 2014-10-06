@@ -18,7 +18,7 @@
 package org.dmfs.rfc5545.recurrenceset;
 
 /**
- * An abstract adapter for recurrence instance sets. This represents the instances from a specific instance set (e.g. an rrule, an exrule, a list of rdates or
+ * An abstract adapter for recurrence instance sets. This represents the instances of a specific instance set (e.g. an rrule, an exrule, a list of rdates or
  * exdates)
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -32,7 +32,7 @@ public abstract class AbstractRecurrenceAdapter
 		/**
 		 * Check if there is at least one more instance to iterate.
 		 * 
-		 * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> othwerwise.
+		 * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> otherwise.
 		 */
 		abstract boolean hasNext();
 

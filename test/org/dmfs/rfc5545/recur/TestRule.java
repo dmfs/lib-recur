@@ -250,7 +250,7 @@ public class TestRule
 		if (monthdays != null)
 		{
 			String errMsg = "";
-			// errMsg = "monthday of " + instance + " not in " + monthdays + " rule: " + rule;
+			errMsg = "monthday of " + instance + " not in " + monthdays + " rule: " + rule;
 			assertTrue(errMsg, monthdays.contains(instance.getDayOfMonth()));
 		}
 	}

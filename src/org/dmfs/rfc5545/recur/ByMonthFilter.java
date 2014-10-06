@@ -80,7 +80,7 @@ final class ByMonthFilter extends ByFilter
 			int weekOfYear = mCalendarMetrics.getWeekOfYear(year, month, dayOfMonth);
 
 			// TODO: find a better way to determine the actual ISO year
-			if (weekOfYear > 48 && month < 1)
+			if (weekOfYear > 10 && month < 1)
 			{
 				// week is in previous ISO year
 				--year;

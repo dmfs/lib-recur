@@ -35,7 +35,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 final class ByYearDayFilter extends ByFilter
 {
 	/**
-	 * The year days to let pass or to expand.
+	 * The year days to let pass.
 	 */
 	private final int[] mYearDays;
 

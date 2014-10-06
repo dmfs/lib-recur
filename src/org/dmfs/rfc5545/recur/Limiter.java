@@ -18,11 +18,8 @@
 package org.dmfs.rfc5545.recur;
 
 /**
- * Limits the instance set of a recurrence rule. The only subclasses are {@link CountLimiter} and {@link UntilLimiter} which limit by instance count or by last
+ * Limits the instance set of a recurrence rule. The subclasses are {@link CountLimiter} and {@link UntilLimiter} which limit by instance count or by last
  * recurrence date respectively.
- * <p>
- * A limiter must always be the last iterator in the chain of iterators.
- * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */

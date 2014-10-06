@@ -52,6 +52,9 @@ import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
  * <p>
  * TODO: Add proper implementation of the {@link #equals(Object)} method.
  * </p>
+ * <p>
+ * TODO: Add support for jCal rules.
+ * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
@@ -498,8 +501,8 @@ public final class RecurrenceRule
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
-				// don't return a SKIP expander if we skip non-existing dates, SanityFilter will take care of that. Also, this is irrelevant for other
-				// frequencies than YEARLY and MONTHLY.
+				// don't return a SKIP expander if we skip non-existing dates, SanityFilter will take care of that. Also, this is irrelevant for
+				// frequencies other than YEARLY and MONTHLY.
 				Freq freq = rule.getFreq();
 				if ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && rule.getSkip() != Skip.YES)
 				{
@@ -1741,26 +1744,20 @@ public final class RecurrenceRule
 		DateTime until = getUntil();
 		if (until != null)
 		{
-			if (until.isFloating() != start.isFloating())
-			{
-				throw new IllegalArgumentException("using floating start times with absolute until values (and vice versa) is not allowed");
-			}
 			if (until.isAllDay() != start.isAllDay())
 			{
 				throw new IllegalArgumentException("using allday start times with non-allday until values (and vice versa) is not allowed");
 			}
+			if (until.isFloating() != start.isFloating())
+			{
+				throw new IllegalArgumentException("using floating start times with absolute until values (and vice versa) is not allowed");
+			}
 		}
 
-		CalendarMetricsFactory calendarMetricsFactory = (CalendarMetricsFactory) mParts.get(Part.RSCALE);
-		CalendarMetrics calendarMetrics;
-		if (calendarMetricsFactory == null)
+		CalendarMetrics calendarMetrics = (CalendarMetrics) mParts.get(Part.RSCALE);
+		if (calendarMetrics == null)
 		{
-			// TODO: this is wrong, we can not assume Gregorian Calendar if the factory is null - we need to ensure there is no RSCALE present
 			calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
-		}
-		else
-		{
-			calendarMetrics = calendarMetricsFactory.getCalendarMetrics(getWeekStart().ordinal());
 		}
 
 		boolean sanityFilterAdded = false;

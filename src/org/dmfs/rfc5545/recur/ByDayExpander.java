@@ -142,6 +142,7 @@ final class ByDayExpander extends ByExpander
 			switch (mScope)
 			{
 				case WEEKLY:
+				{
 					if (pos == 0 || pos == 1) // ignore any positional days
 					{
 						int tempYear = year;
@@ -169,12 +170,13 @@ final class ByDayExpander extends ByExpander
 							++tempYear;
 						}
 
-						addInstance(Instance.make(tempYear, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+						addInstance(Instance.make(tempYear, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
+							second));
 					}
 					break;
-
+				}
 				case WEEKLY_AND_MONTHLY: // the rule is either MONTHLY with BYWEEKNO expansion, WEEKLY with BYMONTH filter or YEARLY with BYMONTH and BYWEEKNO
-
+				{
 					if (pos == 0 || pos == 1) // ignore any positional days
 					{
 						int tempYear = year;
@@ -210,9 +212,9 @@ final class ByDayExpander extends ByExpander
 						}
 					}
 					break;
-
+				}
 				case MONTHLY: // the rule is MONTHLY or there is a BYMONTH filter present
-
+				{
 					// get the first week day and the number of days of this month
 					int weekDayOfFirstInMonth = calendarMetrics.getDayOfWeek(year, month, 1);
 					int monthDays = calendarMetrics.getDaysPerPackedMonth(year, month);
@@ -231,17 +233,17 @@ final class ByDayExpander extends ByExpander
 					else
 					{
 						int maxDays = 1 + (monthDays - firstDay) / 7;
-						// add just one position
 
+						// add just one position
 						if (pos > 0 && pos <= maxDays || pos < 0 && pos + maxDays + 1 > 0)
 						{
 							addInstance(Instance.setDayOfMonth(instance, firstDay + (pos > 0 ? pos - 1 : pos + maxDays) * 7));
 						}
 					}
 					break;
-
+				}
 				case YEARLY: // no other BY* filters are present
-
+				{
 					// calculate the first occurrence of this weekday in this year
 					int firstWeekdayOfYear = (day - calendarMetrics.getWeekDayOfFirstYearDay(year) + 7) % 7 + 1;
 
@@ -253,7 +255,8 @@ final class ByDayExpander extends ByExpander
 						for (int dayOfYear = firstWeekdayOfYear; dayOfYear <= yearDays; dayOfYear += 7)
 						{
 							int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-							addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute, second));
+							addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
+								second));
 						}
 					}
 					else
@@ -264,8 +267,8 @@ final class ByDayExpander extends ByExpander
 							if (dayOfYear <= yearDays)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
-									second));
+								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour,
+									minute, second));
 							}
 						}
 						else
@@ -283,12 +286,13 @@ final class ByDayExpander extends ByExpander
 							if (dayOfYear > 0)
 							{
 								int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
-								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour, minute,
-									second));
+								addInstance(Instance.make(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay), hour,
+									minute, second));
 							}
 						}
 					}
 					break;
+				}
 			}
 		}
 	}
