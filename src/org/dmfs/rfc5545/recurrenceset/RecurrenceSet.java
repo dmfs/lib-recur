@@ -47,6 +47,11 @@ public class RecurrenceSet
 	 */
 	private List<AbstractRecurrenceAdapter> mExceptions = null;
 
+	/**
+	 * Indicates if the recurrence set is infinite.
+	 */
+	private boolean mIsInfinite = false;
+
 
 	/**
 	 * Add instances to the set of instances.
@@ -57,6 +62,9 @@ public class RecurrenceSet
 	public void addInstances(AbstractRecurrenceAdapter adapter)
 	{
 		mInstances.add(adapter);
+
+		// the entire set is infinite if there is at least one infinite instance set
+		mIsInfinite |= adapter.isInfinite();
 	}
 
 
@@ -76,6 +84,13 @@ public class RecurrenceSet
 	}
 
 
+	/**
+	 * Get an iterator for the specified start time.
+	 * 
+	 * @param start
+	 *            The start time in milliseconds since the epoch.
+	 * @return A {@link RecurrenceSetIterator} that iterates all instances.
+	 */
 	public RecurrenceSetIterator iterator(long start)
 	{
 		return iterator(start, Long.MAX_VALUE);
@@ -86,8 +101,10 @@ public class RecurrenceSet
 	 * Return a new {@link RecurrenceSetIterator} for this recurrence set.
 	 * 
 	 * @param start
+	 *            The start time in milliseconds since the epoch.
 	 * @param end
-	 * @return
+	 *            The end of the time range to iterate in milliseconds since the epoch.
+	 * @return A {@link RecurrenceSetIterator} that iterates all instances.
 	 */
 	public RecurrenceSetIterator iterator(long start, long end)
 	{
@@ -117,15 +134,52 @@ public class RecurrenceSet
 	 */
 	public boolean isInfinite()
 	{
+		return mIsInfinite;
+	}
+
+
+	public long getLastInstance(long start)
+	{
+		if (isInfinite())
+		{
+			throw new IllegalStateException("can not calculate the last instance of an infinite recurrence set");
+		}
+
+		if (mExceptions != null && mExceptions.size() > 0)
+		{
+			/*
+			 * This is the difficult case.
+			 * 
+			 * The last instance of the given rules might be an exception. Unfortunately there doesn't seem to be an easier way to get the very last instance
+			 * than by iterating all instances.
+			 */
+			long last = Long.MIN_VALUE;
+
+			RecurrenceSetIterator iterator = iterator(start);
+			while (iterator.hasNext())
+			{
+				last = iterator.next();
+			}
+			return last;
+		}
+
+		if (mInstances.size() == 1)
+		{
+			// simple case, only one set of instances
+			return mInstances.get(0).getLastInstance(start);
+		}
+
+		// We have multiple instance sets, but no exceptions. That means we just have to determine the maximum instance over all sets.
+		long last = Long.MIN_VALUE;
 		for (AbstractRecurrenceAdapter adapter : mInstances)
 		{
-			if (adapter.isInfinite())
+			long lastOfAdapter = adapter.getLastInstance(start);
+			if (lastOfAdapter > last)
 			{
-				// the set is infinite if there is at least one adapter with an infinite number of instances
-				return true;
+				last = lastOfAdapter;
 			}
 		}
 
-		return false;
+		return last;
 	}
 }
