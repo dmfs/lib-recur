@@ -312,10 +312,38 @@ public abstract class CalendarMetrics
 	public abstract int getWeekOfYear(int year, int yearDay);
 
 
-	public abstract int getDayOfWeek(int year, int yearDay);
+	/**
+	 * Returns the day of week of the given year date.
+	 * 
+	 * @param year
+	 *            The year.
+	 * @param yearDay
+	 *            The day of the year.
+	 * @return An int for the day of the week where <code>0</code> means Sunday and <code>6</code> means Saturday or the respective week days in the respective
+	 *         calendar scale.
+	 */
+	public int getDayOfWeek(int year, int yearDay)
+	{
+		return (getWeekDayOfFirstYearDay(year) + yearDay - 1) % 7;
+	}
 
 
-	public abstract int getDayOfWeek(int year, int month, int dayOfMonth);
+	/**
+	 * Returns the day of week of the given date.
+	 * 
+	 * @param year
+	 *            The year.
+	 * @param packedMonth
+	 *            The packed month number.
+	 * @param dayOfMonth
+	 *            The day of the month.
+	 * @return An int for the day of the week where <code>0</code> means Sunday and <code>6</code> means Saturday or the respective week days in the respective
+	 *         calendar scale.
+	 */
+	public int getDayOfWeek(int year, int packedMonth, int dayOfMonth)
+	{
+		return getDayOfWeek(year, getDayOfYear(year, packedMonth, dayOfMonth));
+	}
 
 
 	/**
@@ -586,7 +614,25 @@ public abstract class CalendarMetrics
 	 *            The instance.
 	 * @return The instance of the start of the week.
 	 */
-	public abstract long startOfWeek(long instance);
+	public long startOfWeek(long instance)
+	{
+		int currentDayOfWeek = getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
+
+		int offset = (weekStart - currentDayOfWeek - 7) % 7;
+
+		if (offset == 0)
+		{
+			return instance;
+		}
+		if (offset == -1)
+		{
+			return prevDay(instance);
+		}
+		else
+		{
+			return prevDay(instance, -offset);
+		}
+	}
 
 
 	/**
@@ -598,7 +644,38 @@ public abstract class CalendarMetrics
 	 *            The new day of the week.
 	 * @return A new instance.
 	 */
-	public abstract long setDayOfWeek(long instance, int dayOfWeek);
+	public long setDayOfWeek(long instance, int dayOfWeek)
+	{
+		int currentDayOfWeek = getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
+
+		int offset = (weekStart - currentDayOfWeek - 7) % 7 + (dayOfWeek - weekStart + 7) % 7;
+
+		switch (offset)
+		{
+			case -6:
+			case -5:
+			case -4:
+			case -3:
+			case -2:
+				return prevDay(instance, -offset);
+			case -1:
+				return prevDay(instance);
+			case 0:
+				return instance;
+			case 1:
+				return nextDay(instance);
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+				return nextDay(instance, offset);
+		}
+		/*
+		 * We will never get here, this is just to make the compiler happy.
+		 */
+		return instance;
+	}
 
 
 	@Override

@@ -680,9 +680,9 @@ public class JulianCalendarMetricsTest
 				{
 					for (int day = 1; day <= tools.getDaysPerPackedMonth(year, month); ++day)
 					{
-						for (int hour = 0; hour < 24; hour += 2)
+						for (int hour = 0; hour < 24; ++hour)
 						{
-							for (int minute = 0; minute < 1; ++minute)
+							for (int minute = 0; minute < 60; ++minute)
 							{
 								testCal.set(year, month, day, hour, minute, 0);
 								// errMsg = "getUtcTimeStamp failed for year=" + year + " month=" + month + " day=" + day + " weekStart=" + " minDays="

@@ -28,7 +28,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Weekday;
  * 
  * @author Marten Gajda <marten@dmfs.org>
  */
-public class GregorianCalendarMetrics extends CalendarMetrics
+public class GregorianCalendarMetrics extends NoLeapMonthCalendarMetrics
 {
 	public final static CalendarMetricsFactory FACTORY = new CalendarMetricsFactory()
 	{
@@ -102,61 +102,6 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int packedMonth(String month)
-	{
-		/*
-		 * Since the Gregorian calendar doesn't have leap months, we can return the 0-based month number as packed month
-		 */
-		try
-		{
-			int monthNum = Integer.parseInt(month) - 1;
-			if (monthNum < 0 || monthNum > 11)
-			{
-				throw new IllegalArgumentException("month " + month + " is out of range 1..12");
-			}
-			return monthNum;
-		}
-		catch (NumberFormatException e)
-		{
-			throw new IllegalArgumentException("illegal month string " + month, e);
-		}
-	}
-
-
-	@Override
-	public String packedMonthToString(int packedMonth)
-	{
-		return String.valueOf(packedMonth + 1);
-	}
-
-
-	@Override
-	public int packedMonth(int monthNum, boolean leapMonth)
-	{
-		/*
-		 * Since the Gregorian calendar doesn't have leap months, we can just return the 0-based month number as packed month
-		 */
-		return monthNum;
-	}
-
-
-	@Override
-	public boolean isLeapMonth(int packedMonth)
-	{
-		// Gregorian calendar doesn't have leap months
-		return false;
-	}
-
-
-	@Override
-	public int monthNum(int packedMonth)
-	{
-		// Gregorian calendar doesn't have leap months, so packed months are just the month numbers.
-		return packedMonth;
-	}
-
-
-	@Override
 	public int getDaysPerPackedMonth(int year, int packedMonth)
 	{
 		if (packedMonth == 1 && isLeapYear(year))
@@ -185,7 +130,7 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 
 
 	@Override
-	public int getMonthsPerYear(int year)
+	public int getMonthsPerYear()
 	{
 		return 12;
 	}
@@ -235,22 +180,6 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 
 			return week > weeksInYear ? week - weeksInYear : week;
 		}
-	}
-
-
-	@Override
-	public int getDayOfWeek(int year, int yearDay)
-	{
-		/* using Gauss's algorithm, see http://en.wikipedia.org/wiki/Calculating_the_day_of_the_week#Gauss.27s_algorithm */
-		int y = year - 1;
-		return (yearDay + 5 * (y & 3) + 4 * (y % 100) + 6 * (y % 400)) % 7;
-	}
-
-
-	@Override
-	public int getDayOfWeek(int year, int packedMonth, int dayOfMonth)
-	{
-		return getDayOfWeek(year, getDayOfYear(year, packedMonth, dayOfMonth));
 	}
 
 
@@ -498,241 +427,4 @@ public class GregorianCalendarMetrics extends CalendarMetrics
 		return day == 29 && packedMonth == 1;
 	}
 
-
-	@Override
-	public long nextMonth(long instance)
-	{
-		int newMonth = Instance.month(instance) + 1;
-
-		if (newMonth < 12)
-		{
-			return Instance.setMonth(instance, newMonth);
-		}
-		else
-		{
-			return Instance.setYear(Instance.setMonth(instance, 0), Instance.year(instance) + 1);
-		}
-	}
-
-
-	@Override
-	public long nextMonth(long instance, int n)
-	{
-		if (n < 0)
-		{
-			throw new IllegalArgumentException("n must be >=0");
-		}
-		if (n == 0)
-		{
-			return instance;
-		}
-
-		int newMonth = Instance.month(instance) + n;
-
-		if (newMonth < 12)
-		{
-			return Instance.setMonth(instance, newMonth);
-		}
-		else
-		{
-			return Instance.setYear(Instance.setMonth(instance, newMonth % 12), Instance.year(instance) + newMonth / 12);
-		}
-	}
-
-
-	@Override
-	public long prevMonth(long instance)
-	{
-		int newMonth = Instance.month(instance) - 1;
-
-		if (newMonth >= 0)
-		{
-			return Instance.setMonth(instance, newMonth);
-		}
-		else
-		{
-			return Instance.setYear(Instance.setMonth(instance, 11), Instance.year(instance) - 1);
-		}
-	}
-
-
-	@Override
-	public long prevMonth(long instance, int n)
-	{
-		if (n < 0)
-		{
-			throw new IllegalArgumentException("n must be >=0");
-		}
-		if (n == 0)
-		{
-			return instance;
-		}
-
-		int newMonth = Instance.month(instance) - n;
-
-		if (newMonth >= 0)
-		{
-			return Instance.setMonth(instance, newMonth);
-		}
-		else
-		{
-			return Instance.setYear(Instance.setMonth(instance, (12 + newMonth % 12) % 12), Instance.year(instance) + newMonth / 12);
-		}
-	}
-
-
-	@Override
-	public long nextDay(long instance)
-	{
-		int day = Instance.dayOfMonth(instance) + 1;
-		int year = Instance.year(instance);
-		int month = Instance.month(instance);
-
-		if (day > getDaysPerPackedMonth(year, month))
-		{
-			day = 1;
-			if (++month == 12)
-			{
-				instance = Instance.setYear(instance, year + 1);
-				month = 0;
-			}
-			instance = Instance.setMonth(instance, month);
-		}
-		return Instance.setDayOfMonth(instance, day);
-	}
-
-
-	@Override
-	public long nextDay(long instance, int n)
-	{
-		if (n < 0)
-		{
-			throw new IllegalArgumentException("n must be >=0");
-		}
-		if (n == 0)
-		{
-			return instance;
-		}
-
-		int year = Instance.year(instance);
-		int month = Instance.month(instance);
-		int day = Math.min(Instance.dayOfMonth(instance), getDaysPerPackedMonth(year, month));
-
-		int yearDay = getDayOfYear(year, month, day) + n;
-		int yearDays;
-		while (yearDay > (yearDays = getDaysPerYear(year)))
-		{
-			yearDay -= yearDays;
-			year++;
-		}
-
-		int monthAndDay = getMonthAndDayOfYearDay(year, yearDay);
-		return Instance.setYear(Instance.setMonthAndDayOfMonth(instance, packedMonth(monthAndDay), dayOfMonth(monthAndDay)), year);
-	}
-
-
-	@Override
-	public long prevDay(long instance)
-	{
-		int day = Instance.dayOfMonth(instance) - 1;
-
-		if (day == 0)
-		{
-			int year = Instance.year(instance);
-			int month = Instance.month(instance) - 1;
-			if (month == -1)
-			{
-				instance = Instance.setYear(instance, --year);
-				month = 11;
-			}
-			day = getDaysPerPackedMonth(year, month);
-			instance = Instance.setMonth(instance, month);
-		}
-		return Instance.setDayOfMonth(instance, day);
-	}
-
-
-	@Override
-	public long prevDay(long instance, int n)
-	{
-		if (n < 0)
-		{
-			throw new IllegalArgumentException("n must be >=0");
-		}
-		if (n == 0)
-		{
-			return instance;
-		}
-
-		int year = Instance.year(instance);
-		int month = Instance.month(instance);
-		int day = Math.min(Instance.dayOfMonth(instance), getDaysPerPackedMonth(year, month) + 1);
-
-		int yearDay = getDayOfYear(year, month, day) - n;
-		while (yearDay < 1)
-		{
-			year--;
-			yearDay += getDaysPerYear(year);
-		}
-
-		int monthAndDay = getMonthAndDayOfYearDay(year, yearDay);
-		return Instance.setYear(Instance.setMonthAndDayOfMonth(instance, packedMonth(monthAndDay), dayOfMonth(monthAndDay)), year);
-	}
-
-
-	@Override
-	public long startOfWeek(long instance)
-	{
-		int currentDayOfWeek = getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
-
-		int offset = (weekStart - currentDayOfWeek - 7) % 7;
-
-		if (offset == 0)
-		{
-			return instance;
-		}
-		if (offset == -1)
-		{
-			return prevDay(instance);
-		}
-		else
-		{
-			return prevDay(instance, -offset);
-		}
-	}
-
-
-	@Override
-	public long setDayOfWeek(long instance, int dayOfWeek)
-	{
-		int currentDayOfWeek = getDayOfWeek(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance));
-
-		int offset = (weekStart - currentDayOfWeek - 7) % 7 + (dayOfWeek - weekStart + 7) % 7;
-
-		switch (offset)
-		{
-			case -6:
-			case -5:
-			case -4:
-			case -3:
-			case -2:
-				return prevDay(instance, -offset);
-			case -1:
-				return prevDay(instance);
-			case 0:
-				return instance;
-			case 1:
-				return nextDay(instance);
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-				return nextDay(instance, offset);
-		}
-		/*
-		 * We will never get here, this is just to make Eclipse happy.
-		 */
-		return instance;
-	}
 }
