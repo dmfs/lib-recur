@@ -92,8 +92,9 @@ To build a rule you have to specify a base frequency and optionally an RfcMode. 
 * Add tests for edge cases
 * Add validator and a validator log
 * Add a couple of additional checks to ensure the built rule is valid
-* don't use a Calendar instance for calendar calculations, use CalendarMetrics instead.
-* let the expanding instance do the filtering for subsequent filters. That requires a lot of changes, but it'll improve performance immensely.
+* Add support for more calendar scales
+* Fix handling of calendar scales with leap months
+
 
 ## License
 
