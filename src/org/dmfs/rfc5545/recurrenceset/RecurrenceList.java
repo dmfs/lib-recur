@@ -167,7 +167,7 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 
 
 	@Override
-	InstanceIterator getIterator(long start)
+	InstanceIterator getIterator(TimeZone timezone, long start)
 	{
 		return new InstanceIterator(start);
 	}
@@ -182,7 +182,7 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 
 
 	@Override
-	long getLastInstance(long start)
+	long getLastInstance(TimeZone timezone, long start)
 	{
 		long[] instances = mInstances;
 		return instances[instances.length - 1];

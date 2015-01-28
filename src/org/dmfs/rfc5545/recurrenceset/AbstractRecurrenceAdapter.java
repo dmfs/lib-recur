@@ -17,6 +17,9 @@
 
 package org.dmfs.rfc5545.recurrenceset;
 
+import java.util.TimeZone;
+
+
 /**
  * An abstract adapter for recurrence instance sets. This represents the instances of a specific instance set (e.g. an rrule, an exrule, a list of rdates or
  * exdates)
@@ -82,10 +85,12 @@ public abstract class AbstractRecurrenceAdapter
 	/**
 	 * Get an iterator for this adapter.
 	 * 
+	 * @param timezone
+	 *            The {@link TimeZone} of the first instance.
 	 * @param start
 	 *            The start date in milliseconds since the epoch.
 	 */
-	abstract InstanceIterator getIterator(long start);
+	abstract InstanceIterator getIterator(TimeZone timezone, long start);
 
 
 	/**
@@ -99,9 +104,11 @@ public abstract class AbstractRecurrenceAdapter
 	/**
 	 * Returns the last instance this adapter will iterate or {@link Long#MAX_VALUE} if {@link #isInfinite()} returns <code>true</code>.
 	 * 
+	 * @param timezone
+	 *            The {@link TimeZone} of the first instance.
 	 * @param start
 	 *            The start date in milliseconds since the epoch.
 	 * @return The last instance in milliseconds since the epoch.
 	 */
-	abstract long getLastInstance(long start);
+	abstract long getLastInstance(TimeZone timezone, long start);
 }

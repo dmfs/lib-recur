@@ -20,6 +20,7 @@ package org.dmfs.rfc5545.recurrenceset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.dmfs.rfc5545.recurrenceset.AbstractRecurrenceAdapter.InstanceIterator;
 
@@ -87,31 +88,35 @@ public class RecurrenceSet
 	/**
 	 * Get an iterator for the specified start time.
 	 * 
+	 * @param timezone
+	 *            The {@link TimeZone} of the first instance.
 	 * @param start
 	 *            The start time in milliseconds since the epoch.
 	 * @return A {@link RecurrenceSetIterator} that iterates all instances.
 	 */
-	public RecurrenceSetIterator iterator(long start)
+	public RecurrenceSetIterator iterator(TimeZone timezone, long start)
 	{
-		return iterator(start, Long.MAX_VALUE);
+		return iterator(timezone, start, Long.MAX_VALUE);
 	}
 
 
 	/**
 	 * Return a new {@link RecurrenceSetIterator} for this recurrence set.
 	 * 
+	 * @param timezone
+	 *            The {@link TimeZone} of the first instance.
 	 * @param start
 	 *            The start time in milliseconds since the epoch.
 	 * @param end
 	 *            The end of the time range to iterate in milliseconds since the epoch.
 	 * @return A {@link RecurrenceSetIterator} that iterates all instances.
 	 */
-	public RecurrenceSetIterator iterator(long start, long end)
+	public RecurrenceSetIterator iterator(TimeZone timezone, long start, long end)
 	{
 		List<InstanceIterator> instances = new ArrayList<InstanceIterator>(mInstances.size());
 		for (AbstractRecurrenceAdapter adapter : mInstances)
 		{
-			instances.add(adapter.getIterator(start));
+			instances.add(adapter.getIterator(timezone, start));
 		}
 
 		List<InstanceIterator> exceptions = null;
@@ -120,7 +125,7 @@ public class RecurrenceSet
 			exceptions = new ArrayList<InstanceIterator>(mExceptions.size());
 			for (AbstractRecurrenceAdapter adapter : mExceptions)
 			{
-				exceptions.add(adapter.getIterator(start));
+				exceptions.add(adapter.getIterator(timezone, start));
 			}
 		}
 		return new RecurrenceSetIterator(instances, exceptions).setEnd(end);
@@ -138,7 +143,7 @@ public class RecurrenceSet
 	}
 
 
-	public long getLastInstance(long start)
+	public long getLastInstance(TimeZone timezone, long start)
 	{
 		if (isInfinite())
 		{
@@ -155,7 +160,7 @@ public class RecurrenceSet
 			 */
 			long last = Long.MIN_VALUE;
 
-			RecurrenceSetIterator iterator = iterator(start);
+			RecurrenceSetIterator iterator = iterator(timezone, start);
 			while (iterator.hasNext())
 			{
 				last = iterator.next();
@@ -166,14 +171,14 @@ public class RecurrenceSet
 		if (mInstances.size() == 1)
 		{
 			// simple case, only one set of instances
-			return mInstances.get(0).getLastInstance(start);
+			return mInstances.get(0).getLastInstance(timezone, start);
 		}
 
 		// We have multiple instance sets, but no exceptions. That means we just have to determine the maximum instance over all sets.
 		long last = Long.MIN_VALUE;
 		for (AbstractRecurrenceAdapter adapter : mInstances)
 		{
-			long lastOfAdapter = adapter.getLastInstance(start);
+			long lastOfAdapter = adapter.getLastInstance(timezone, start);
 			if (lastOfAdapter > last)
 			{
 				last = lastOfAdapter;

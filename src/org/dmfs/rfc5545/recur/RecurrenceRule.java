@@ -1722,9 +1722,9 @@ public final class RecurrenceRule
 	}
 
 
-	public RecurrenceRuleIterator iterator(long start)
+	public RecurrenceRuleIterator iterator(long start, TimeZone timezone)
 	{
-		return iterator(new DateTime(mCalendarMetrics, DateTime.UTC, start));
+		return iterator(new DateTime(mCalendarMetrics, timezone, start));
 	}
 
 

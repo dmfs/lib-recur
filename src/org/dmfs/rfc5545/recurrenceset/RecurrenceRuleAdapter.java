@@ -17,6 +17,8 @@
 
 package org.dmfs.rfc5545.recurrenceset;
 
+import java.util.TimeZone;
+
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
 
@@ -97,9 +99,9 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 
 
 	@Override
-	AbstractRecurrenceAdapter.InstanceIterator getIterator(long start)
+	AbstractRecurrenceAdapter.InstanceIterator getIterator(TimeZone timezone, long start)
 	{
-		return new InstanceIterator(mRrule.iterator(start));
+		return new InstanceIterator(mRrule.iterator(start, timezone));
 	}
 
 
@@ -111,14 +113,14 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 
 
 	@Override
-	long getLastInstance(long start)
+	long getLastInstance(TimeZone timezone, long start)
 	{
 		if (isInfinite())
 		{
 			return Long.MAX_VALUE;
 		}
 
-		RecurrenceRuleIterator iterator = mRrule.iterator(start);
+		RecurrenceRuleIterator iterator = mRrule.iterator(start, timezone);
 		iterator.skipAllButLast();
 
 		long lastInstance = Long.MIN_VALUE;
