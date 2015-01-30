@@ -20,7 +20,6 @@ package org.dmfs.rfc5545;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
@@ -44,11 +43,6 @@ public final class DateTime
 	 * Static instance of the time zone UTC.
 	 */
 	public final static TimeZone UTC = TimeZone.getTimeZone("UTC");
-
-	/**
-	 * The pattern that all date time strings must match.
-	 */
-	private final static Pattern PATTERN_DATE_TIME = Pattern.compile("\\d{8}(T\\d{6}Z?)?");
 
 	/**
 	 * The {@link CalendarMetrics} of this {@link DateTime} object.
@@ -588,11 +582,6 @@ public final class DateTime
 
 		try
 		{
-			if (!PATTERN_DATE_TIME.matcher(string).matches())
-			{
-				throw new IllegalArgumentException("illegal date-time string: '" + string + "'");
-			}
-
 			if (string.length() == 8)
 			{
 				return new DateTime(calendarMetrics, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
