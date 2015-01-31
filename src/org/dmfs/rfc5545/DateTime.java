@@ -584,20 +584,17 @@ public final class DateTime
 		{
 			if (string.length() == 8)
 			{
-				return new DateTime(calendarMetrics, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
-					Integer.parseInt(string.substring(6, 8)));
+				return new DateTime(calendarMetrics, parseFourDigits(string, 0), parseTwoDigits(string, 4) - 1, parseTwoDigits(string, 6));
 			}
 			else if (string.length() == 15 && string.charAt(8) == 'T')
 			{
-				return new DateTime(calendarMetrics, timeZone, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
-					Integer.parseInt(string.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)),
-					Integer.parseInt(string.substring(13, 15)));
+				return new DateTime(calendarMetrics, timeZone, parseFourDigits(string, 0), parseTwoDigits(string, 4) - 1, parseTwoDigits(string, 6),
+					parseTwoDigits(string, 9), parseTwoDigits(string, 11), parseTwoDigits(string, 13));
 			}
 			else if (string.length() == 16 && string.charAt(8) == 'T' && string.charAt(15) == 'Z')
 			{
-				return new DateTime(calendarMetrics, UTC, Integer.parseInt(string.substring(0, 4)), Integer.parseInt(string.substring(4, 6)) - 1,
-					Integer.parseInt(string.substring(6, 8)), Integer.parseInt(string.substring(9, 11)), Integer.parseInt(string.substring(11, 13)),
-					Integer.parseInt(string.substring(13, 15)));
+				return new DateTime(calendarMetrics, UTC, parseFourDigits(string, 0), parseTwoDigits(string, 4) - 1, parseTwoDigits(string, 6), parseTwoDigits(
+					string, 9), parseTwoDigits(string, 11), parseTwoDigits(string, 13));
 			}
 		}
 		catch (NumberFormatException e)
@@ -754,6 +751,48 @@ public final class DateTime
 		}
 
 		return first != null && second != null && (firstId.equals(secondId) || first.equals(second) || first.hasSameRules(second));
+	}
+
+
+	/**
+	 * Parses the next four characters in the given {@link String} at the given offset as an integer.
+	 * 
+	 * @param string
+	 *            The {@link String} to parse.
+	 * @param offset
+	 *            The offset of the number in the string.
+	 * @return The integer value.
+	 * @throws NumberFormatException
+	 *             if the String doesn't contain digits at the given offset.
+	 */
+	private static int parseFourDigits(String string, int offset)
+	{
+		return parseTwoDigits(string, offset) * 100 + parseTwoDigits(string, offset + 2);
+	}
+
+
+	/**
+	 * Parses the next two characters in the given {@link String} at the given offset as an integer.
+	 * 
+	 * @param string
+	 *            The {@link String} to parse.
+	 * @param offset
+	 *            The offset of the number in the string.
+	 * @return The integer value.
+	 * @throws NumberFormatException
+	 *             if the String doesn't contain digits at the given offset.
+	 */
+	private static int parseTwoDigits(String string, int offset)
+	{
+		int d1 = string.charAt(offset) - '0';
+		int d2 = string.charAt(offset + 1) - '0';
+
+		if (d1 < 0 || d2 < 0 || d1 > 9 || d2 > 9)
+		{
+			throw new NumberFormatException("illegal digit in number " + string.substring(offset, 2));
+		}
+
+		return d1 * 10 + d2;
 	}
 
 }
