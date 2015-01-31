@@ -1722,9 +1722,27 @@ public final class RecurrenceRule
 	}
 
 
+	/**
+	 * Get a new {@link RuleIterator} that iterates all instances of this rule.
+	 * <p>
+	 * <strong>Note:</strong> If the rule contains an UNTIL part with a floating value, you have to provide <code>null</code> as the timezone.
+	 * </p>
+	 * 
+	 * @param start
+	 *            The time of the first instance in milliseconds since the epoch.
+	 * @param timezone
+	 *            The {@link TimeZone} of the first instance or <code>null</code> for floating times.
+	 * @return A {@link RecurrenceRuleIterator}.
+	 */
 	public RecurrenceRuleIterator iterator(long start, TimeZone timezone)
 	{
-		return iterator(new DateTime(mCalendarMetrics, timezone, start));
+		DateTime dt = new DateTime(mCalendarMetrics, timezone, start);
+		DateTime until = getUntil();
+		if (until != null && until.isAllDay())
+		{
+			dt.toAllDay();
+		}
+		return iterator(dt);
 	}
 
 
@@ -1842,6 +1860,19 @@ public final class RecurrenceRule
 	}
 
 
+	/**
+	 * Returns a sanity filter, depending on whether the rule contains a SKIP part or not.
+	 * 
+	 * @param previous
+	 *            The current iterator chain.
+	 * @param calendarMetrics
+	 *            The {@link CalendarMetrics} of calendar scale.
+	 * @param startInstance
+	 *            The time of the first instance in milliseconds since the epoch.
+	 * @param startTimeZone
+	 *            The {@link TimeZone} of the first instance.
+	 * @return The iterator chain with appended sanity filter.
+	 */
 	private RuleIterator getSanityFilter(RuleIterator previous, CalendarMetrics calendarMetrics, long startInstance, TimeZone startTimeZone)
 	{
 		if (getSkip() != Skip.YES)
@@ -2210,6 +2241,11 @@ public final class RecurrenceRule
 		}
 	}
 
+	/**
+	 * Converts the value of the RSCALE part to a {@link CalendarMetrics} value.
+	 * 
+	 * @author Marten Gajda <marten@dmfs.org>
+	 */
 	private static class RScaleConverter extends ValueConverter<CalendarMetrics>
 	{
 		@Override
@@ -2225,6 +2261,11 @@ public final class RecurrenceRule
 		}
 	}
 
+	/**
+	 * Converts the value of the SKIP part to a {@link Skip} value.
+	 * 
+	 * @author Marten Gajda <marten@dmfs.org
+	 */
 	private static class SkipValueConverter extends ValueConverter<Skip>
 	{
 
