@@ -197,7 +197,7 @@ final class ByDayExpander extends ByExpander
 
 					if (pos == 0)
 					{
-						// add an instance for every occurrence if this week day.
+						// add an instance for every occurrence of this week day.
 						for (int dayOfYear = firstWeekdayOfYear; dayOfYear <= yearDays; dayOfYear += 7)
 						{
 							int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, dayOfYear);
