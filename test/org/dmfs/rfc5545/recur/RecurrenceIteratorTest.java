@@ -247,7 +247,7 @@ public class RecurrenceIteratorTest
 			{
 				RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
 
-				if (r1.getSkip() != Skip.YES)
+				if (r1.getSkip() != Skip.OMIT)
 				{
 					// walking start doesn't work with SKIP, since that might change the order
 					continue;
@@ -1269,13 +1269,13 @@ public class RecurrenceIteratorTest
 			.setStart("20130301").setUntil("20171231").setMonths(2, 3).setMonthdays(1, 29).setInstances(905));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
 			.setStart("20130228").setUntil("20171231").setMonths(2).setMonthdays(28, 29).setInstances(905));
-		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=YES;UNTIL=29171231", RfcMode.RFC2445_LAX).setStart("20130228")
+		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=OMIT;UNTIL=29171231", RfcMode.RFC2445_LAX).setStart("20130228")
 			.setUntil("20171231").setMonths(2).setMonthdays(1, 29).setInstances(220));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130301")
 			.setCount(20).setMonths(2, 3).setMonthdays(1, 29).setInstances(20));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130228")
 			.setCount(20).setMonths(2).setMonthdays(28, 29).setInstances(20));
-		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=YES;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130228")
+		mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=OMIT;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130228")
 			.setCount(20).setMonths(2).setMonthdays(1, 29).setInstances(20));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=48;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
 			.setStart("20130228").setUntil("20171231").setMonths(3).setMonthdays(1).setInstances(228));
