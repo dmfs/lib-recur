@@ -125,7 +125,7 @@ public final class FastWeeklyIterator extends ByExpander
 		Freq freq = rule.getFreq();
 		if (freq != Freq.WEEKLY || rule.hasPart(Part.BYMONTH) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYWEEKNO)
 			|| rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE) || rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS)
-			|| rule.getSkip() != Skip.YES)
+			|| rule.getSkip() != Skip.OMIT)
 		{
 			return null;
 		}

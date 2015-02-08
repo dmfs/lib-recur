@@ -135,13 +135,12 @@ public final class RecurrenceRule
 	public enum Skip
 	{
 		/**
-		 * YES is the default for rules without {@link Part#SCALE} parameter. It means that non-existing dates are just ignored.
+		 * OMIT is the default value. It means that non-existing dates are just ignored.
 		 */
-		YES,
+		OMIT,
 
 		/**
-		 * BACKWARD is the default for rules with {@link Part#SCALE} parameter. It means that non-existing instanced get rolled back to the previous day (for
-		 * leap days) or month (for leap months).
+		 * BACKWARD means that non-existing instanced get rolled back to the previous day (for leap days) or month (for leap months).
 		 */
 		BACKWARD,
 
@@ -294,6 +293,34 @@ public final class RecurrenceRule
 		},
 
 		/**
+		 * The SKIP filter for months. This must not appear in an RRULE, any attempt to parse a value will fail. This is just an implementation helper.
+		 */
+		_BYMONTHSKIP(ERROR_CONVERTER) {
+
+			@Override
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+				throws UnsupportedOperationException
+			{
+				return new ByMonthSkipFilter(rule, previous, calendarMetrics, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("_BYMONTHSKIP doesn't support  filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				return true;
+			}
+
+		},
+
+		/**
 		 * A list of week numbers that specify in which weeks the instances recur.
 		 * 
 		 * TODO: validate week numbers
@@ -380,6 +407,34 @@ public final class RecurrenceRule
 				Freq freq = rule.getFreq();
 				return (freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY /* for RFC 2445 */) && !(rule.hasPart(Part.BYYEARDAY));
 			}
+		},
+
+		/**
+		 * The SKIP filter for monthdays. This must not appear in an RRULE, any attempt to parse a value will fail. This is just an implementation helper.
+		 */
+		_BYMONTHDAYSKIP(ERROR_CONVERTER) {
+
+			@Override
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+				throws UnsupportedOperationException
+			{
+				return new ByMonthDaySkipFilter(rule, previous, calendarMetrics, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("_BYMONTHDAYSKIP doesn't support filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				return true;
+			}
+
 		},
 
 		/**
@@ -501,17 +556,19 @@ public final class RecurrenceRule
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
-				// don't return a SKIP expander if we skip non-existing dates, SanityFilter will take care of that. Also, this is irrelevant for
-				// frequencies other than YEARLY and MONTHLY.
-				Freq freq = rule.getFreq();
-				if ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && rule.getSkip() != Skip.YES)
+				/*
+				 * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
+				 * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
+				 * year.
+				 * 
+				 * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
+				 * SanityFilter.
+				 */
+				if (rule.getFreq() == Freq.YEARLY && rule.getSkip() == Skip.FORWARD)
 				{
-					return new SkipFilter(rule, previous, calendarMetrics, start);
+					return new SkipBuffer(rule, previous, calendarMetrics, start);
 				}
-				else
-				{
-					return null;
-				}
+				return null;
 			}
 
 
@@ -527,6 +584,35 @@ public final class RecurrenceRule
 			{
 				return true;
 			}
+		},
+
+		/**
+		 * Filters all invalid dates. This must not appear in an RRULE, any attempt to parse a value will fail. This is just an implementation helper.
+		 */
+		_SANITY_FILTER(ERROR_CONVERTER) {
+
+			@Override
+			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+				throws UnsupportedOperationException
+			{
+				// note: despite it's name the SanityFilter is implemented as an expander, because it may have to inject the start date.
+				return new SanityFilter(rule, previous, calendarMetrics, start);
+			}
+
+
+			@Override
+			ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+			{
+				throw new UnsupportedOperationException("_SANITY doesn't support filtering");
+			}
+
+
+			@Override
+			boolean expands(RecurrenceRule rule)
+			{
+				return true;
+			}
+
 		},
 
 		/**
@@ -552,7 +638,7 @@ public final class RecurrenceRule
 			@Override
 			boolean expands(RecurrenceRule rule)
 			{
-				throw new UnsupportedOperationException("BYSETPOS doesn't support expansion nor filtering");
+				return true;
 			}
 		},
 
@@ -578,7 +664,7 @@ public final class RecurrenceRule
 			@Override
 			boolean expands(RecurrenceRule rule)
 			{
-				throw new UnsupportedOperationException("UNTIL doesn't support expansion nor filtering");
+				return true;
 			}
 
 		},
@@ -605,7 +691,7 @@ public final class RecurrenceRule
 			@Override
 			boolean expands(RecurrenceRule rule)
 			{
-				throw new UnsupportedOperationException("COUNT doesn't support expansion nor filtering");
+				return true;
 			}
 
 		};
@@ -1075,6 +1161,14 @@ public final class RecurrenceRule
 			partMap.put(Part.SKIP, SKIP_DEFAULT);
 		}
 
+		Freq freq = getFreq();
+		if (getSkip() != Skip.OMIT && (freq == Freq.YEARLY || freq == Freq.MONTHLY))
+		{
+			// this rule needs skip filters
+			mParts.put(Part._BYMONTHSKIP, null);
+			mParts.put(Part._BYMONTHDAYSKIP, null);
+		}
+
 		// validate the rule
 		validate();
 	}
@@ -1316,21 +1410,45 @@ public final class RecurrenceRule
 	public Skip getSkip()
 	{
 		Skip skip = (Skip) mParts.get(Part.SKIP);
-		return skip == null ? (mParts.containsKey(Part.RSCALE) ? Skip.BACKWARD : Skip.YES) : skip;
+		return skip == null ? Skip.OMIT : skip;
 	}
 
 
 	/**
-	 * Set the skip part of this recurrence rule.
-	 * 
-	 * TODO: ensure RSCALE is set if required (SKIP is not YES).
+	 * Set the skip part of this recurrence rule. Consider to set a {@link Part#RSCALE} value when setting a SKIP rule, otherwise it will default to GREGORIAN
+	 * calendar.
 	 * 
 	 * @param skip
-	 *            The new {@link Skip} value of this rule.
+	 *            The new {@link Skip} value of this rule, <code>null</code> and {@link Skip#OMIT} will remove the SKIP part, the later one is the default
+	 *            anyway.
 	 */
 	public void setSkip(Skip skip)
 	{
-		mParts.put(Part.SKIP, skip);
+		if (skip == null || skip == Skip.OMIT)
+		{
+			mParts.remove(Part.SKIP);
+
+			// remove filters as well
+			mParts.remove(Part._BYMONTHSKIP);
+			mParts.remove(Part._BYMONTHDAYSKIP);
+		}
+		else
+		{
+			mParts.put(Part.SKIP, skip);
+			if (!mParts.containsKey(Part.RSCALE))
+			{
+				mParts.put(Part.RSCALE, DEFAULT_CALENDAR_SCALE);
+			}
+
+			Freq freq = getFreq();
+			if (freq == Freq.YEARLY || freq == Freq.MONTHLY)
+			{
+				// this rule needs skip filters
+				mParts.put(Part._BYMONTHSKIP, null);
+				mParts.put(Part._BYMONTHDAYSKIP, null);
+			}
+
+		}
 	}
 
 
@@ -1789,13 +1907,10 @@ public final class RecurrenceRule
 			calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
 		}
 
-		boolean sanityFilterAdded = false;
 		long startInstance = start.getInstance();
 
 		RuleIterator iterator = FastBirthdayIterator.getInstance(this, calendarMetrics, startInstance);
 		TimeZone startTimeZone = start.isFloating() ? null : start.getTimeZone();
-
-		boolean needSkipBuffer = getSkip() == Skip.FORWARD;
 
 		if (iterator != null)
 		{
@@ -1803,13 +1918,11 @@ public final class RecurrenceRule
 			{
 				iterator = Part.UNTIL.getExpander(this, new SanityFilter(this, iterator, calendarMetrics, startInstance), calendarMetrics, startInstance,
 					startTimeZone);
-				sanityFilterAdded = true;
 			}
 			else if (hasPart(Part.COUNT))
 			{
 				iterator = Part.COUNT.getExpander(this, new SanityFilter(this, iterator, calendarMetrics, startInstance), calendarMetrics, startInstance,
 					startTimeZone);
-				sanityFilterAdded = true;
 			}
 		}
 		else if ((iterator = FastWeeklyIterator.getInstance(this, calendarMetrics, startInstance)) != null)
@@ -1818,82 +1931,32 @@ public final class RecurrenceRule
 			{
 				iterator = Part.UNTIL.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
 			}
-			// COUNT is already taken care of by FastWeeklyIterator
-
-			// we don't need a sanity filter in this case
-			sanityFilterAdded = true;
 		}
 		else
 		{
+			// add SanityFilet of not present yet
+			mParts.put(Part._SANITY_FILTER, null);
+
 			// since FREQ is the first part anyway we don't have to create it separately
 			for (Part p : mParts.keySet())
 			{
 				// add a filter for each rule part
 				if (p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
 				{
-					if (p == Part.UNTIL || p == Part.COUNT || p == Part.BYSETPOS)
-					{
-						if (!sanityFilterAdded)
-						{
-							// insert SanityFilter before adding limiting filter or BYSETPOS, otherwise we may count filtered elements
-							iterator = getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone);
-						}
-
-						if (needSkipBuffer && (p == Part.UNTIL || p == Part.COUNT))
-						{
-							iterator = new SkipBuffer(this, iterator, calendarMetrics, startInstance);
-							needSkipBuffer = false;
-						}
-
-						iterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
-
-						sanityFilterAdded = true;
-					}
-					else if (!p.expands(this))
-					{
-						((ByExpander) iterator).addFilter(p.getFilter(this, calendarMetrics));
-					}
-					else
+					if (p.expands(this))
 					{
 						// if a part returns null for the expander just skip it
 						RuleIterator newIterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
 						iterator = newIterator == null ? iterator : newIterator;
-
-						// the skip filter also performs sanity checking
-						sanityFilterAdded |= p == Part.SKIP;
+					}
+					else
+					{
+						((ByExpander) iterator).addFilter(p.getFilter(this, calendarMetrics));
 					}
 				}
 			}
 		}
-		// add a SanityFilter if not already done.
-		return new RecurrenceRuleIterator(sanityFilterAdded ? (needSkipBuffer ? new SkipBuffer(this, iterator, calendarMetrics, startInstance) : iterator)
-			: getSanityFilter(iterator, calendarMetrics, startInstance, startTimeZone), start, calendarMetrics);
-	}
-
-
-	/**
-	 * Returns a sanity filter, depending on whether the rule contains a SKIP part or not.
-	 * 
-	 * @param previous
-	 *            The current iterator chain.
-	 * @param calendarMetrics
-	 *            The {@link CalendarMetrics} of calendar scale.
-	 * @param startInstance
-	 *            The time of the first instance in milliseconds since the epoch.
-	 * @param startTimeZone
-	 *            The {@link TimeZone} of the first instance.
-	 * @return The iterator chain with appended sanity filter.
-	 */
-	private RuleIterator getSanityFilter(RuleIterator previous, CalendarMetrics calendarMetrics, long startInstance, TimeZone startTimeZone)
-	{
-		if (getSkip() != Skip.YES)
-		{
-			return Part.SKIP.getExpander(this, previous, calendarMetrics, startInstance, startTimeZone);
-		}
-		else
-		{
-			return new SanityFilter(this, previous, calendarMetrics, startInstance);
-		}
+		return new RecurrenceRuleIterator(iterator, start, calendarMetrics);
 	}
 
 
@@ -1913,6 +1976,12 @@ public final class RecurrenceRule
 		// the order of the parts guarantees that FREQ is always the first part (as required by RFC 2445)
 		for (Part part : Part.values())
 		{
+			if (part == Part._BYMONTHDAYSKIP || part == Part._BYMONTHSKIP || part == Part._SANITY_FILTER)
+			{
+				// don't render these two
+				continue;
+			}
+
 			Object value = mParts.get(part);
 			if (value != null)
 			{
@@ -2280,7 +2349,7 @@ public final class RecurrenceRule
 	/**
 	 * Converts the value of the SKIP part to a {@link Skip} value.
 	 * 
-	 * @author Marten Gajda <marten@dmfs.org
+	 * @author Marten Gajda <marten@dmfs.org>
 	 */
 	private static class SkipValueConverter extends ValueConverter<Skip>
 	{
@@ -2297,6 +2366,17 @@ public final class RecurrenceRule
 				throw new InvalidRecurrenceRuleException("Unknown SKIP value " + value);
 			}
 		}
-
 	}
+
+	/**
+	 * A static instance of a {@link ValueConverter} that throws an error when trying to parse a value. This is for parts that are only implementation helpers.
+	 */
+	private final static ValueConverter<Void> ERROR_CONVERTER = new ValueConverter<Void>()
+	{
+		public Void parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
+		{
+			throw new InvalidRecurrenceRuleException("part not allowed in an RRULE");
+		}
+	};
+
 }
