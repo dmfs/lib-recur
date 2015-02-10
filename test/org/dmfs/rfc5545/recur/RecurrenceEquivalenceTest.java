@@ -54,9 +54,9 @@ public class RecurrenceEquivalenceTest
 		 */
 		public boolean compareRules()
 		{
-			for (Set<DateTime> instancesA : expandAll())
+			for (List<DateTime> instancesA : expandAll())
 			{
-				for (Set<DateTime> instancesB : expandAll())
+				for (List<DateTime> instancesB : expandAll())
 				{
 					if (!instancesA.equals(instancesB))
 					{
@@ -68,9 +68,9 @@ public class RecurrenceEquivalenceTest
 		}
 
 
-		private List<Set<DateTime>> expandAll()
+		private List<List<DateTime>> expandAll()
 		{
-			List<Set<DateTime>> instanceCollection = new ArrayList<Set<DateTime>>();
+			List<List<DateTime>> instanceCollection = new ArrayList<List<DateTime>>();
 			for (TestRule recRule : rules)
 			{
 				instanceCollection.add(expandRule(recRule));
@@ -79,20 +79,20 @@ public class RecurrenceEquivalenceTest
 		}
 
 
-		private Set<DateTime> expandRule(TestRule rule)
+		private List<DateTime> expandRule(TestRule rule)
 		{
 			try
 			{
 				RecurrenceRule r = new RecurrenceRule(rule.rule, rule.mode);
 				RecurrenceRuleIterator it = r.iterator(rule.start);
-				Set<DateTime> instances = new HashSet<DateTime>();
+				List<DateTime> instances = new ArrayList<DateTime>(1000);
 				int count = 0;
 				while (it.hasNext())
 				{
 					DateTime instance = it.nextDateTime();
 					instances.add(instance);
 					count++;
-					if (count == RecurrenceIteratorTest.MAX_ITERATIONS)
+					if (count == 10/* RecurrenceIteratorTest.MAX_ITERATIONS */)
 					{
 						break;
 					}
@@ -142,10 +142,10 @@ public class RecurrenceEquivalenceTest
 
 		// last month in year
 		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12"), new TestRule(
-			"FREQ=DAILY;BYMONTH=12;BYMONTHDAY=1")));
+			"FREQ=DAILY;BYMONTH=12;BYMONTHDAY=1")).setStart("20101201"));
 
 		mRules.add(new Unit(new TestRule("FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYSETPOS=-1"), new TestRule("FREQ=MONTHLY;BYMONTH=12"), new TestRule(
-			"FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=27"), new TestRule("FREQ=DAILY;BYMONTH=12;BYMONTHDAY=27")).setStart("20100327"));
+			"FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=27"), new TestRule("FREQ=DAILY;BYMONTH=12;BYMONTHDAY=27")).setStart("20101227"));
 
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=1"), new TestRule("FREQ=YEARLY;BYMONTH=2")));
 		mRules.add(new Unit(new TestRule("FREQ=DAILY;BYMONTH=2;BYMONTHDAY=3"), new TestRule("FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=3")).setStart("20100505"));
