@@ -247,7 +247,7 @@ public class RecurrenceIteratorTest
 			{
 				RecurrenceRule r1 = new RecurrenceRule(rule.rule, rule.mode);
 
-				if (r1.getSkip() != Skip.YES)
+				if (r1.getSkip() != Skip.OMIT)
 				{
 					// walking start doesn't work with SKIP, since that might change the order
 					continue;
