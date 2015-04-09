@@ -351,4 +351,43 @@ public final class Instance
 		return (int) ((instance & WEEKDAY_MASK) >>> WEEKDAY_POS);
 	}
 
+
+	/**
+	 * Convert the given instance to a {@link String}. The result will represent a floating date-time value as of <a
+	 * href="https://tools.ietf.org/html/rfc5545#section-3.3.5">RFC 5545, Section 3.3.5</a>.
+	 * 
+	 * @param instance
+	 *            An instance value.
+	 * @return A string representation of the given instance.
+	 */
+	public static String toString(long instance)
+	{
+		StringBuilder result = new StringBuilder(16);
+		int year = Instance.year(instance);
+		writeInt(result, year / 100);
+		writeInt(result, year % 100);
+		writeInt(result, Instance.month(instance) + 1);
+		writeInt(result, Instance.dayOfMonth(instance));
+		result.append('T');
+		writeInt(result, Instance.hour(instance));
+		writeInt(result, Instance.minute(instance));
+		writeInt(result, Instance.second(instance));
+		return result.toString();
+	}
+
+
+	/**
+	 * A helper to write two digit leading zero integers. This method writes only the two least significant digits.
+	 * 
+	 * @param sw
+	 *            The {@link StringBuilder} to write to.
+	 * @param num
+	 *            The int to write.
+	 */
+	private static void writeInt(StringBuilder sw, int num)
+	{
+		sw.append((char) ((num / 10) % 10 + '0'));
+		sw.append((char) ((num % 10) + '0'));
+	}
+
 }
