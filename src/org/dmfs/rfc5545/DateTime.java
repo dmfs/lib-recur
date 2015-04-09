@@ -706,7 +706,7 @@ public final class DateTime
 	 * @param num
 	 *            The int to write.
 	 */
-	private void writeInt(StringBuilder sw, int num)
+	private static void writeInt(StringBuilder sw, int num)
 	{
 		sw.append((char) ((num / 10) % 10 + '0'));
 		sw.append((char) ((num % 10) + '0'));
@@ -722,7 +722,7 @@ public final class DateTime
 	 *            The int to write.
 	 * @throws IOException
 	 */
-	private void writeInt(Writer w, int num) throws IOException
+	private static void writeInt(Writer w, int num) throws IOException
 	{
 		w.write((num / 10) % 10 + '0');
 		w.write((num % 10) + '0');
