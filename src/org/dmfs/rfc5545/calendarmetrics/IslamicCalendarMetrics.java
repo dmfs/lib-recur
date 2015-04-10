@@ -63,17 +63,18 @@ public class IslamicCalendarMetrics extends NoLeapMonthCalendarMetrics
 		};
 	};
 
-	/**
-	 * This is the number of milliseconds between {I}0001-01-01 and {I}1389-10-22 (i.e. {G}1970-01-01). Since this is the 9th year of the 30 year cycle, the
-	 * number of leap years in the cycle is the same for all patterns.
-	 */
-	public final static long MILLIS_TO_1389_10_22 = 42552259200000L;
-
 	public final static long DAYS_PER_CYCLE = 30 * 354 + 11;
 
 	public final static long MILLIS_PER_DAY = 24 * 3600 * 1000;
 
 	public final static long MILLIS_PER_CYCLE = DAYS_PER_CYCLE * MILLIS_PER_DAY;
+
+	/**
+	 * This is the number of milliseconds between {I}0001-01-01 (civil scale) and {I}1389-10-22 (civil scale) (i.e. {G}1970-01-01). Since this is the 9th year
+	 * of the 30 year cycle, the number of leap years in the cycle is the same for all patterns.
+	 */
+	public final static long MILLIS_TO_1389_10_22C = ((1389 - 1) / 30 * DAYS_PER_CYCLE + (1389 - 1) % 30 * 354 + 3 /* leap days */+ 5 /* months à 30 days */
+		* 30 + 4 /* months à 29 days */* 29 + 21 /* days */) * MILLIS_PER_DAY;
 
 	public final static String CALENDAR_SCALE_TLBA = "ISLAMIC-TLBA";
 	public final static String CALENDAR_SCALE_CIVIL = "ISLAMIC_CIVIL";
@@ -236,7 +237,7 @@ public class IslamicCalendarMetrics extends NoLeapMonthCalendarMetrics
 	 */
 	boolean isLeapYear(int year)
 	{
-		return (LEAP_YEAR_PATTERNS[mLeapYearPatternIndex] & (1 << (year % 30 + 1))) != 0;
+		return (LEAP_YEAR_PATTERNS[mLeapYearPatternIndex] & (1 << ((year - 1) % 30 + 1))) != 0;
 	}
 
 
@@ -355,7 +356,7 @@ public class IslamicCalendarMetrics extends NoLeapMonthCalendarMetrics
 		}
 
 		// rebase to 0001-01-01
-		localTime += mCivil ? MILLIS_TO_1389_10_22 : MILLIS_TO_1389_10_22 + MILLIS_PER_DAY;
+		localTime += mCivil ? MILLIS_TO_1389_10_22C : MILLIS_TO_1389_10_22C + MILLIS_PER_DAY;
 
 		// split the time of the day in milliseconds
 		int time = (int) (localTime % (24L * 3600L * 1000L));
@@ -376,13 +377,16 @@ public class IslamicCalendarMetrics extends NoLeapMonthCalendarMetrics
 		// the days in the current cycle
 		final long daysInCycle = localTime % DAYS_PER_CYCLE;
 
-		// get an estimate of the year, this might be off by 1
+		// get an estimate of the year, this is 0-based and might be off by 1
 		int year = (int) (daysInCycle / 355);
 
-		int yearDay = (int) (daysInCycle - (year * 354 + LEAP_YEAR_COUNT[mLeapYearPatternIndex][year - 1]));
+		int yearDay = (int) (daysInCycle - (year * 354 + LEAP_YEAR_COUNT[mLeapYearPatternIndex][year])) + 1;
+
+		// switch year to 1-based
+		++year;
 
 		// adjust the year
-		if (yearDay > 355 || yearDay == 354 && isLeapYear(year))
+		if (yearDay > 355 || yearDay == 355 && !isLeapYear(year))
 		{
 			// day is in next year
 			yearDay -= getDaysPerYear(year);
@@ -417,12 +421,12 @@ public class IslamicCalendarMetrics extends NoLeapMonthCalendarMetrics
 		int iPackedMonth = Instance.month(islamicInstance);
 		int iDayOfMonth = Instance.dayOfMonth(islamicInstance);
 
-		int yearInCycle = iYear % 30;
+		int yearInCycle = (iYear - 1) % 30;
 
-		long iTimeStamp = (((iYear / 30) * DAYS_PER_CYCLE + (354 * yearInCycle + LEAP_YEAR_COUNT[mLeapYearPatternIndex][yearInCycle - 1])) + getDayOfYear(
-			iYear, iPackedMonth, iDayOfMonth)) * 24 * 3600 * 1000L;
+		long iTimeStamp = ((((iYear - 1) / 30) * DAYS_PER_CYCLE + (354 * yearInCycle + LEAP_YEAR_COUNT[mLeapYearPatternIndex][yearInCycle]))
+			+ getDayOfYear(iYear, iPackedMonth, iDayOfMonth) - 1) * 24 * 3600 * 1000L;
 
-		long localTime = mCivil ? iTimeStamp - MILLIS_TO_1389_10_22 : iTimeStamp - MILLIS_TO_1389_10_22 - MILLIS_PER_DAY;
+		long localTime = mCivil ? iTimeStamp - MILLIS_TO_1389_10_22C : iTimeStamp - MILLIS_TO_1389_10_22C - MILLIS_PER_DAY;
 
 		// convert the "floating" timestamp to a Gregorian calendar instance
 		return GREGORIAN_METRICS.toInstance(localTime, null);
