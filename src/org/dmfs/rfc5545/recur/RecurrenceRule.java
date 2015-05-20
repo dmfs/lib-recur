@@ -916,6 +916,11 @@ public final class RecurrenceRule
 	private final static CalendarMetrics DEFAULT_CALENDAR_SCALE = new GregorianCalendarMetrics(Weekday.MO.ordinal(), 4);
 
 	/**
+	 * The default skip value if RSCALE is present but SKIP is not.
+	 */
+	private final static Skip SKIP_DEFAULT = Skip.BACKWARD;
+
+	/**
 	 * The parser mode. This can not be changed once the rule has been created.
 	 */
 	public final RfcMode mode;
@@ -1148,6 +1153,12 @@ public final class RecurrenceRule
 				// strict modes throw on empty parts
 				throw new InvalidRecurrenceRuleException("Missing '=' in part '" + keyvalue + "'");
 			}
+		}
+
+		if (partMap.containsKey(Part.RSCALE) && !partMap.containsKey(Part.SKIP))
+		{
+			// ensure the default value is present
+			partMap.put(Part.SKIP, SKIP_DEFAULT);
 		}
 
 		Freq freq = getFreq();
@@ -2287,9 +2298,12 @@ public final class RecurrenceRule
 		@Override
 		public DateTime parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
 		{
+			DateTime result = null;
 			try
 			{
-				return DateTime.parse(calScale, (TimeZone) null, value);
+				result = DateTime.parse(calScale, (TimeZone) null, value);
+				// convert the rule to RSCALE, since we do all calculations in this scale
+				return calScale.scaleEquals(rScale) ? result : new DateTime(rScale, result);
 			}
 			catch (Exception e)
 			{
@@ -2298,7 +2312,9 @@ public final class RecurrenceRule
 				{
 					try
 					{
-						return DateTime.parse(calScale, null, value.substring(0, value.length() - 1));
+						result = DateTime.parse(calScale, null, value.substring(0, value.length() - 1));
+						// convert the rule to RSCALE, since we do all calculations in this scale
+						return calScale.scaleEquals(rScale) ? result : new DateTime(rScale, result);
 					}
 					catch (Exception e2)
 					{
