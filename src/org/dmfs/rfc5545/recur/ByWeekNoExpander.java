@@ -102,7 +102,7 @@ final class ByWeekNoExpander extends ByExpander
 				}
 				else
 				{
-					int firstDayOfWeek = mCalendarMetrics.weekStart;
+					int firstDayOfWeek = mCalendarMetrics.weekStartInt;
 
 					// check if the first day of this week is still in this month
 					int yearDay2 = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, firstDayOfWeek);

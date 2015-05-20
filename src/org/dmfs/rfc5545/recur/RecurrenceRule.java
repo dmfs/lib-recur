@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.TimeZone;
 
 import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.Weekday;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics.CalendarMetricsFactory;
 import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
@@ -115,18 +116,6 @@ public final class RecurrenceRule
 	public enum Freq
 	{
 		YEARLY, MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY;
-	}
-
-	/**
-	 * Enumeration of valid week days. The weekdays are ordered, so you can use the ordinal value to get the week day number (i.e.
-	 * <code>Weekday.SU.ordinal() == 0</code>, <code>Weekday.MO.ordinal() == 1 </code>...).
-	 * <p>
-	 * Please note that the ordinal value is not compatible with the day values of {@link java.util.Calendar}.
-	 * </p>
-	 */
-	public enum Weekday
-	{
-		SU, MO, TU, WE, TH, FR, SA;
 	}
 
 	/**
@@ -913,7 +902,7 @@ public final class RecurrenceRule
 	/**
 	 * The default calendar scale - Gregorian Calendar.
 	 */
-	private final static CalendarMetrics DEFAULT_CALENDAR_SCALE = new GregorianCalendarMetrics(Weekday.MO.ordinal(), 4);
+	private final static CalendarMetrics DEFAULT_CALENDAR_SCALE = new GregorianCalendarMetrics(Weekday.MO, 4);
 
 	/**
 	 * The default skip value if RSCALE is present but SKIP is not.
@@ -1904,7 +1893,7 @@ public final class RecurrenceRule
 		CalendarMetrics calendarMetrics = (CalendarMetrics) mParts.get(Part.RSCALE);
 		if (calendarMetrics == null)
 		{
-			calendarMetrics = new GregorianCalendarMetrics(getWeekStart().ordinal(), 4);
+			calendarMetrics = new GregorianCalendarMetrics(getWeekStart(), 4);
 		}
 
 		long startInstance = start.getInstance();
@@ -2342,7 +2331,7 @@ public final class RecurrenceRule
 				// can not tolerate rscales we don't know
 				throw new InvalidRecurrenceRuleException("unknown calendar scale '" + value + "'");
 			}
-			return result.getCalendarMetrics(0 /* week start is not relevant for RSCALE */);
+			return result.getCalendarMetrics(Weekday.SU /* week start is not relevant for RSCALE */);
 		}
 	}
 

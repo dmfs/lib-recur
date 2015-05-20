@@ -134,7 +134,7 @@ public class TestDate
 		{
 			assertEquals(timeZone, cal.getTimeZone().getID());
 			DateTime calClone = new DateTime(cal);
-			calClone.shiftToTimeZone(TimeZone.getTimeZone(timeZone));
+			calClone.shiftTimeZone(TimeZone.getTimeZone(timeZone));
 			compareTwoCalendars(cal, calClone);
 		}
 		else

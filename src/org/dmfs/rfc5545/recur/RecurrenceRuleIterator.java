@@ -141,7 +141,7 @@ public final class RecurrenceRuleIterator
 		}
 		else
 		{
-			result.shiftToTimeZone(mTimeZone);
+			result.shiftTimeZone(mTimeZone);
 		}
 
 		return result;
@@ -190,7 +190,7 @@ public final class RecurrenceRuleIterator
 		}
 		else
 		{
-			result.shiftToTimeZone(mTimeZone);
+			result.shiftTimeZone(mTimeZone);
 		}
 		return result;
 	}
@@ -296,7 +296,7 @@ public final class RecurrenceRuleIterator
 		}
 
 		DateTime untilDate = new DateTime(until);
-		untilDate.shiftToTimeZone(mTimeZone);
+		untilDate.shiftTimeZone(mTimeZone);
 
 		// convert until to an instance
 		long untilInstance = untilDate.getInstance();
