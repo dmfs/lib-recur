@@ -113,7 +113,7 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 	 */
 	public RecurrenceList(String list, TimeZone timeZone)
 	{
-		this(DateTime.DEFAULT_CALENDAR_SCALE, list, timeZone);
+		this(DateTime.GREGORIAN_CALENDAR_SCALE, list, timeZone);
 	}
 
 

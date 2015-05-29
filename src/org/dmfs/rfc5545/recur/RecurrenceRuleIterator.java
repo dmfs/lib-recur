@@ -17,7 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.dmfs.rfc5545.DateTime;
@@ -30,10 +29,6 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
  * <p>
  * <strong>Note:</strong> Some rules may recur forever, so be sure to add some limitation to your code that stops iterating after a certain number of instances
  * or at a certain date.
- * </p>
- * <p>
- * TODO: optimize {@link #fastForward(long)} & {@link #fastForward(Calendar)}. Using {@link Calendar} seems to slow down making it even slower than iterating
- * all instances.
  * </p>
  * 
  * @author Marten Gajda <marten@dmfs.org>
@@ -133,18 +128,17 @@ public final class RecurrenceRuleIterator
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
-		DateTime result = new DateTime(mTimeZone, mNextMillis);
+		long nextMillis = mNextMillis;
 		fetchNextInstance();
 		if (mAllDay)
 		{
-			result.toAllDay();
+			// TODO: avoid creating a temporary instance of DateTime
+			return new DateTime(mTimeZone, nextMillis).toAllDay();
 		}
 		else
 		{
-			result.shiftTimeZone(mTimeZone);
+			return new DateTime(mTimeZone, nextMillis);
 		}
-
-		return result;
 	}
 
 
@@ -183,16 +177,15 @@ public final class RecurrenceRuleIterator
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
-		DateTime result = new DateTime(mTimeZone, mNextMillis);
 		if (mAllDay)
 		{
-			result.toAllDay();
+			// TODO: avoid creating a temporary instance of DateTime
+			return new DateTime(mTimeZone, mNextMillis).toAllDay();
 		}
 		else
 		{
-			result.shiftTimeZone(mTimeZone);
+			return new DateTime(mTimeZone, mNextMillis);
 		}
-		return result;
 	}
 
 
@@ -295,8 +288,7 @@ public final class RecurrenceRuleIterator
 			return;
 		}
 
-		DateTime untilDate = new DateTime(until);
-		untilDate.shiftTimeZone(mTimeZone);
+		DateTime untilDate = until.shiftTimeZone(mTimeZone);
 
 		// convert until to an instance
 		long untilInstance = untilDate.getInstance();

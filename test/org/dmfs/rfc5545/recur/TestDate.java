@@ -58,7 +58,6 @@ public class TestDate
 	public void testEvent()
 	{
 		cal = DateTime.parse(dateTime);
-		testClone();
 		testFlags();
 		testDate();
 		testTime();
@@ -133,8 +132,7 @@ public class TestDate
 		if (!isFloating)
 		{
 			assertEquals(timeZone, cal.getTimeZone().getID());
-			DateTime calClone = new DateTime(cal);
-			calClone.shiftTimeZone(TimeZone.getTimeZone(timeZone));
+			DateTime calClone = cal.shiftTimeZone(TimeZone.getTimeZone(timeZone));
 			compareTwoCalendars(cal, calClone);
 		}
 		else
@@ -146,8 +144,7 @@ public class TestDate
 
 	public void testToAllDay()
 	{
-		DateTime calClone = new DateTime(cal);
-		calClone.toAllDay();
+		DateTime calClone = cal.toAllDay();
 		assertEquals(0, calClone.getHours());
 		assertEquals(0, calClone.getMinutes());
 		assertEquals(0, calClone.getSeconds());
@@ -164,11 +161,4 @@ public class TestDate
 
 	}
 
-
-	public void testClone()
-	{
-		DateTime calClone = new DateTime(cal);
-		compareTwoCalendars(cal, calClone);
-
-	}
 }

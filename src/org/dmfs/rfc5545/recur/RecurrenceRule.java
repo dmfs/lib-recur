@@ -1854,11 +1854,12 @@ public final class RecurrenceRule
 	 */
 	public RecurrenceRuleIterator iterator(long start, TimeZone timezone)
 	{
+		// TODO: avoid creating a temporary DATETIME instance.
 		DateTime dt = new DateTime(mCalendarMetrics, timezone, start);
 		DateTime until = getUntil();
 		if (until != null && until.isAllDay())
 		{
-			dt.toAllDay();
+			dt = dt.toAllDay();
 		}
 		return iterator(dt);
 	}
