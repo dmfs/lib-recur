@@ -1606,7 +1606,7 @@ public final class RecurrenceRule
 	 * Set a specific by-rule. <code>part</code> may be one of {@link Part#BYSECOND}, {@link Part#BYMINUTE}, {@link Part#BYHOUR}, {@link Part#BYMONTHDAY},
 	 * {@link Part#BYYEARDAY}, {@link Part#BYWEEKNO}, {@link Part#BYMONTH}, or {@link Part#BYSETPOS}.
 	 * <p>
-	 * To set {@link Part#BYDAY} use {@link #setByDayPart()}.
+	 * To set {@link Part#BYDAY} use {@link #setByDayPart(List)}.
 	 * </p>
 	 * 
 	 * @param part
@@ -1648,7 +1648,7 @@ public final class RecurrenceRule
 	 * Set a specific by-rule. <code>part</code> may be one of {@link Part#BYSECOND}, {@link Part#BYMINUTE}, {@link Part#BYHOUR}, {@link Part#BYMONTHDAY},
 	 * {@link Part#BYYEARDAY}, {@link Part#BYWEEKNO}, {@link Part#BYMONTH}, or {@link Part#BYSETPOS}.
 	 * <p>
-	 * To set {@link Part#BYDAY} use {@link #setByDayRule()}.
+	 * To set {@link Part#BYDAY} use {@link #setByDayPart(List)}.
 	 * </p>
 	 * 
 	 * @param part

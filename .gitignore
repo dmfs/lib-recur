@@ -14,3 +14,11 @@ jars/
 libs/
 
 gen/
+
+*.bak
+*.swp
+local.properties
+*.class
+*.jar
+*~
+

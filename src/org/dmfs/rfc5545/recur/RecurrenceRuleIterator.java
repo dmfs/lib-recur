@@ -149,8 +149,8 @@ public final class RecurrenceRuleIterator
 
 
 	/**
-	 * Peek at the next instance to be returned by {@link #next()} without actually iterating it. Calling this method (even multiple times) won't affect the
-	 * instances returned by {@link #next()}.
+	 * Peek at the next instance to be returned by {@link #nextMillis()} without actually iterating it. Calling this method (even multiple times) won't affect
+	 * the instances returned by {@link #nextMillis()}.
 	 * 
 	 * @return the upcoming instance or <code>null</code> if there are no more instances.
 	 */
@@ -165,8 +165,8 @@ public final class RecurrenceRuleIterator
 
 
 	/**
-	 * Peek at the next instance to be returned by {@link #next()} without actually iterating it. Calling this method (even multiple times) won't affect the
-	 * instances returned by {@link #next()}.
+	 * Peek at the next instance to be returned by {@link #nextDateTime()} without actually iterating it. Calling this method (even multiple times) won't affect
+	 * the instances returned by {@link #nextDateTime()}.
 	 * 
 	 * @return the upcoming instance or <code>null</code> if there are no more instances.
 	 */
@@ -236,7 +236,7 @@ public final class RecurrenceRuleIterator
 	 * </p>
 	 * 
 	 * @param until
-	 *            The time stamp of earliest date to be returned by the next call to {@link #next()}.
+	 *            The time stamp of earliest date to be returned by the next call to {@link #nextMillis()} or {@link #nextDateTime()}.
 	 */
 	public void fastForward(long until)
 	{
@@ -279,7 +279,7 @@ public final class RecurrenceRuleIterator
 	 * </p>
 	 * 
 	 * @param until
-	 *            The earliest date to be returned by the next call to {@link #next()}.
+	 *            The earliest date to be returned by the next call to {@link #nextMillis()} or {@link #nextDateTime()}.
 	 */
 	public void fastForward(DateTime until)
 	{

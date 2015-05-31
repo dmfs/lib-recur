@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project name="lib-recur" default="build" basedir=".">
+
+	<property name="base.dir" value="${basedir}" />
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="jar.dir" value="${dist.dir}/lib" />
+
+	<!-- define Maven coordinates -->
+	<property name="groupId" value="org.dmfs" />
+	<property name="artifactId" value="${ant.project.name}" />
+
+	<!-- defined maven snapshots and staging repository id and url -->
+	<property name="ossrh-snapshots-repository-url"
+		value="https://oss.sonatype.org/content/repositories/snapshots/" />
+	<property name="ossrh-staging-repository-url"
+		value="https://oss.sonatype.org/service/local/staging/deploy/maven2/" />
+	<!-- there server id in the Maven settings.xml -->
+	<property name="ossrh-server-id" value="ossrh" />
+
+	<path id="libraryclasspath">
+		<pathelement location="libs/rfc5545-datetime-0.2.1.jar" />
+	</path>
+
+	<path id="classpath">
+		<pathelement location="bin/classes" />
+		<path refid="libraryclasspath" />
+	</path>
+
+	<available file=".git" type="dir" property="git.present" />
+	<target name="gitinfo" description="determine git properties"
+		if="git.present">
+		<exec executable="git" outputproperty="git.commithash"
+			failifexecutionfails="false" errorproperty="">
+			<arg value="rev-parse" />
+			<arg value="HEAD" />
+		</exec>
+		<exec executable="git" outputproperty="git.repo"
+			failifexecutionfails="false" errorproperty="">
+			<arg value="config" />
+			<arg value="--get" />
+			<arg value="remote.github.url" />
+		</exec>
+		<exec executable="git" outputproperty="git.tag"
+			failifexecutionfails="false" errorproperty="">
+			<arg value="describe" />
+			<arg value="--abbrev=0" />
+			<arg value="--tags" />
+		</exec>
+		<exec executable="git" outputproperty="git.user.email"
+			failifexecutionfails="false" errorproperty="">
+			<arg value="config" />
+			<arg value="user.email" />
+		</exec>
+		<condition property="git.tag" value="${git.tag}" else="${version}">
+			<and>
+				<isset property="git.tag" />
+				<length string="${git.tag}" trim="yes" length="0" when="greater" />
+			</and>
+		</condition>
+
+		<property name="jar" value="${jar.dir}/${artifactId}-${git.tag}.jar" />
+		<property name="javadoc-jar"
+			value="${jar.dir}/${artifactId}-${git.tag}-javadoc.jar" />
+		<property name="sources-jar"
+			value="${jar.dir}/${artifactId}-${git.tag}-sources.jar" />
+
+	</target>
+	<!-- Compile project -->
+	<target name="compile">
+		<javac srcdir="${src.dir}" includeantruntime="false" source="1.7"
+			target="1.7">
+			>
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile,gitinfo">
+		<delete file="${jar.dir}/${name}.jar" />
+		<buildnumber file=".build" />
+		<manifest file="MANIFEST.MF">
+			<attribute name="Git-Release-Hash" value="${git.commithash}" />
+			<attribute name="Git-Release-Tag" value="${git.tag}" />
+			<attribute name="Built-By" value="${git.user.email}" />
+			<attribute name="Implementation-Version" value="${git.tag}-${build.number}" />
+		</manifest>
+		<jar destfile="${jar}" basedir="${src.dir}" includes="**/*.class **/*.java"
+			manifest="MANIFEST.MF">
+			<metainf dir="${basedir}" includes="NOTICE" />
+			<metainf dir="${basedir}" includes="LICENSE" />
+		</jar>
+	</target>
+
+	<target name="dist" depends="jar">
+		<!-- build the javadoc jar -->
+		<javadoc sourcepath="${src.dir}" destdir="${dist.dir}/javadoc">
+			<classpath>
+				<path refid="classpath" />
+			</classpath>
+		</javadoc>
+
+		<jar jarfile="${javadoc-jar}" manifest="MANIFEST.MF">
+			<fileset dir="${dist.dir}/javadoc" />
+			<metainf dir="${basedir}" includes="NOTICE" />
+			<metainf dir="${basedir}" includes="LICENSE" />
+		</jar>
+
+		<!-- build the sources jar -->
+		<jar jarfile="${sources-jar}" manifest="MANIFEST.MF">
+			<fileset dir="${src.dir}" />
+			<metainf dir="${basedir}" includes="NOTICE" />
+			<metainf dir="${basedir}" includes="LICENSE" />
+		</jar>
+	</target>
+
+	<target name="cleanup">
+		<delete>
+			<fileset dir="." includes="**/*.class" />
+			<fileset file="MANIFEST.MF" />
+		</delete>
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="build" depends="jar,cleanup" />
+
+	<target name="deploy" depends="dist"
+		description="deploy snapshot version to Maven snapshot repository">
+		<exec executable="mvn">
+			<arg value="org.apache.maven.plugins:maven-deploy-plugin:2.6:deploy-file" />
+			<arg value="-Durl=${ossrh-snapshots-repository-url}" />
+			<arg value="-DrepositoryId=${ossrh-server-id}" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${jar}" />
+		</exec>
+	</target>
+
+	<!-- before this, update project version (both build.xml and pom.xml) from 
+		SNAPSHOT to RELEASE -->
+	<target name="stage" depends="dist"
+		description="deploy release version to Maven staging repository">
+		<!-- sign and deploy the main artifact -->
+		<exec executable="mvn">
+			<arg
+				value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file" />
+			<arg value="-Durl=${ossrh-staging-repository-url}" />
+			<arg value="-DrepositoryId=${ossrh-server-id}" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${jar}" />
+			<arg value="-Pgpg" />
+		</exec>
+
+		<!-- sign and deploy the sources artifact -->
+		<exec executable="mvn">
+			<arg
+				value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file" />
+			<arg value="-Durl=${ossrh-staging-repository-url}" />
+			<arg value="-DrepositoryId=${ossrh-server-id}" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${sources-jar}" />
+			<arg value="-Dclassifier=sources" />
+			<arg value="-Pgpg" />
+		</exec>
+
+		<!-- sign and deploy the javadoc artifact -->
+		<exec executable="mvn">
+			<arg
+				value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file" />
+			<arg value="-Durl=${ossrh-staging-repository-url}" />
+			<arg value="-DrepositoryId=${ossrh-server-id}" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${javadoc-jar}" />
+			<arg value="-Dclassifier=javadoc" />
+			<arg value="-Pgpg" />
+		</exec>
+	</target>
+
+</project>

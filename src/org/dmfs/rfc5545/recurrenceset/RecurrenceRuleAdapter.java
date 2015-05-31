@@ -89,8 +89,6 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 	 * 
 	 * @param rule
 	 *            The recurrence rule to adapt to.
-	 * @param start
-	 *            The first instance to iterate.
 	 */
 	public RecurrenceRuleAdapter(RecurrenceRule rule)
 	{
