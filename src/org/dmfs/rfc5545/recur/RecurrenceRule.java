@@ -111,14 +111,6 @@ public final class RecurrenceRule
 	}
 
 	/**
-	 * Enumeration of valid FREQ values.
-	 */
-	public enum Freq
-	{
-		YEARLY, MONTHLY, WEEKLY, DAILY, HOURLY, MINUTELY, SECONDLY;
-	}
-
-	/**
 	 * Values of the new SKIP parameter as added in <a href="draft-daboo-icalendar-rscale-03">tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
 	 */
 	public enum Skip

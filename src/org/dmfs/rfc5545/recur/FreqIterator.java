@@ -19,7 +19,6 @@ package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
-import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 
 
 /**
@@ -119,128 +118,8 @@ public final class FreqIterator extends ByExpander
 
 	private long nextInstance(final CalendarMetrics calendarMetrics)
 	{
-		long nextInstance = mNextInstance;
-		long result = nextInstance;
-		int interval = mInterval;
-
-		switch (mFreq)
-		{
-			case YEARLY:
-			{
-				mNextInstance = Instance.setYear(nextInstance, Instance.year(nextInstance) + interval);
-				break;
-			}
-			case MONTHLY:
-			{
-				if (interval == 1)
-				{
-					mNextInstance = calendarMetrics.nextMonth(nextInstance);
-				}
-				else
-				{
-					mNextInstance = calendarMetrics.nextMonth(nextInstance, interval);
-				}
-				break;
-			}
-			case WEEKLY:
-			{
-				mNextInstance = calendarMetrics.nextDay(nextInstance, interval * 7);
-				break;
-			}
-			case DAILY:
-			{
-				if (interval == 1)
-				{
-					mNextInstance = calendarMetrics.nextDay(nextInstance);
-				}
-				else
-				{
-					mNextInstance = calendarMetrics.nextDay(nextInstance, interval);
-				}
-				break;
-			}
-			case HOURLY:
-			{
-				int nextHour = Instance.hour(nextInstance) + interval;
-
-				if (nextHour > 23)
-				{
-					// roll over to the next day
-					if (nextHour < 48)
-					{
-						// add only one day
-						nextInstance = calendarMetrics.nextDay(nextInstance);
-					}
-					else
-					{
-						nextInstance = calendarMetrics.nextDay(nextInstance, nextHour / 24);
-					}
-					nextHour %= 24;
-				}
-				mNextInstance = Instance.setHour(nextInstance, nextHour);
-				break;
-			}
-			case MINUTELY:
-			{
-				int nextMinute = Instance.minute(nextInstance) + interval;
-
-				if (nextMinute > 59)
-				{
-					int nextHour = (Instance.hour(nextInstance) + nextMinute / 60);
-					if (nextHour > 23)
-					{
-						if (nextHour < 48)
-						{
-							// add only one day
-							nextInstance = calendarMetrics.nextDay(nextInstance);
-						}
-						else
-						{
-							nextInstance = calendarMetrics.nextDay(nextInstance, nextHour / 24);
-						}
-						nextHour %= 24;
-					}
-					nextInstance = Instance.setHour(nextInstance, nextHour);
-					nextMinute %= 60;
-				}
-				mNextInstance = Instance.setMinute(nextInstance, nextMinute);
-				break;
-			}
-			case SECONDLY:
-			{
-				int nextSecond = Instance.second(nextInstance) + interval;
-
-				if (nextSecond > 59)
-				{
-					int nextMinute = Instance.minute(nextInstance) + nextSecond / 60;
-
-					if (nextMinute > 59)
-					{
-						int nextHour = (Instance.hour(nextInstance) + nextMinute / 60);
-						if (nextHour > 23)
-						{
-							if (nextHour < 48)
-							{
-								// add only one day
-								nextInstance = calendarMetrics.nextDay(nextInstance);
-							}
-							else
-							{
-								nextInstance = calendarMetrics.nextDay(nextInstance, nextHour / 24);
-							}
-							nextHour %= 24;
-						}
-						nextInstance = Instance.setHour(nextInstance, nextHour);
-						nextMinute %= 60;
-					}
-					nextInstance = Instance.setMinute(nextInstance, nextMinute);
-					nextSecond %= 60;
-				}
-				mNextInstance = Instance.setSecond(nextInstance, nextSecond);
-				break;
-			}
-
-		}
+		long result = mNextInstance;
+		mNextInstance = mFreq.next(calendarMetrics, mNextInstance, mInterval);
 		return result;
 	}
 
@@ -255,83 +134,6 @@ public final class FreqIterator extends ByExpander
 	@Override
 	void fastForward(long untilInstance)
 	{
-		int untilYear = Instance.year(untilInstance);
-		final CalendarMetrics calendarMetrics = mCalendarMetrics;
-		long nextInstance = mNextInstance;
-		int interval = mInterval;
-
-		switch (mFreq)
-		{
-			case YEARLY:
-			{
-				int nextYear = Instance.year(nextInstance);
-				mNextInstance = Instance.setYear(nextInstance, nextYear + (Math.max(0, untilYear - nextYear) % mInterval) * mInterval);
-				break;
-			}
-			case MONTHLY:
-			{
-				/*
-				 * TODO: There is some room for optimization here:
-				 * 
-				 * If interval is less than one year we can go forward in year steps until we reached the year before "until-year".
-				 */
-				long upcomingInstance = nextInstance;
-				while (upcomingInstance < untilInstance)
-				{
-					nextInstance = upcomingInstance;
-					if (interval == 1)
-					{
-						upcomingInstance = calendarMetrics.nextMonth(upcomingInstance);
-					}
-					else
-					{
-						upcomingInstance = calendarMetrics.nextMonth(upcomingInstance, interval);
-					}
-				}
-				mNextInstance = nextInstance;
-				break;
-			}
-			case WEEKLY:
-			{
-				/*
-				 * TODO: There is some room for optimization here:
-				 * 
-				 * If interval is less than one year we can go forward in year steps until we reached the year before "until-year".
-				 */
-				long upcomingInstance = nextInstance;
-				while (upcomingInstance < untilInstance)
-				{
-					nextInstance = upcomingInstance;
-					upcomingInstance = calendarMetrics.nextDay(upcomingInstance, interval * 7);
-				}
-				mNextInstance = nextInstance;
-				break;
-			}
-			case DAILY:
-			{
-				/*
-				 * TODO: There is some room for optimization here:
-				 * 
-				 * If interval is less than one year we can go forward in year steps until we reached the year before "until-year".
-				 */
-				long upcomingInstance = nextInstance;
-				while (upcomingInstance < untilInstance)
-				{
-					nextInstance = upcomingInstance;
-					if (interval == 1)
-					{
-						upcomingInstance = calendarMetrics.nextDay(upcomingInstance);
-					}
-					else
-					{
-						upcomingInstance = calendarMetrics.nextDay(upcomingInstance, interval);
-					}
-				}
-				mNextInstance = nextInstance;
-				break;
-			}
-			default:
-				/* do nothing */
-		}
+		mNextInstance = mFreq.next(mCalendarMetrics, mNextInstance, mInterval, untilInstance);
 	}
 }

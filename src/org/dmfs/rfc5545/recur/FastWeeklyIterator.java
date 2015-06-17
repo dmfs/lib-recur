@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
-import org.dmfs.rfc5545.recur.RecurrenceRule.Freq;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
 import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
