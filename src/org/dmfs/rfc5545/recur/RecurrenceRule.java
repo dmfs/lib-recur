@@ -772,7 +772,7 @@ public final class RecurrenceRule
 	 *        ;FRIDAY, and SATURDAY days of the week.
 	 * </pre>
 	 */
-	static class WeekdayNum
+	public static class WeekdayNum
 	{
 		/**
 		 * The position of this weekday in the interval. This value is <code>0</code> if this instance means every occurrence of {@link #weekday} in the
@@ -1628,7 +1628,7 @@ public final class RecurrenceRule
 				case BYSETPOS:
 					validate(part, value);
 					mParts.put(part, value);
-
+					break;
 				default:
 					throw new IllegalArgumentException(part.name() + " is not a list type");
 			}

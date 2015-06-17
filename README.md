@@ -7,7 +7,7 @@ In addition it can be used to build valid recurrence strings in a convenient man
 
 ## Requirements
 
-Nothing special.
+[rfc5545-datetime](https://github.com/dmfs/rfc5545-datetime)
 
 ## Example code
 
