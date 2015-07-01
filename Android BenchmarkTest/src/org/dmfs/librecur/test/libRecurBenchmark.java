@@ -57,7 +57,7 @@ public class libRecurBenchmark extends BenchmarkSuite
 			long result = 0;
 			int instances = 0;
 
-			RecurrenceSetIterator iterator = rset.iterator(startCalendar.getTimestamp(), rangeEnd);
+			RecurrenceSetIterator iterator = rset.iterator(startCalendar.getTimeZone(), startCalendar.getTimestamp(), rangeEnd);
 			if (startCalendar.getTimestamp() != rangeStart)
 			{
 				iterator.fastForward(rangeStart);
