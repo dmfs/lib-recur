@@ -1142,12 +1142,23 @@ public final class RecurrenceRule
 			partMap.put(Part.SKIP, SKIP_DEFAULT);
 		}
 
-		Freq freq = getFreq();
-		if (getSkip() != Skip.OMIT && (freq == Freq.YEARLY || freq == Freq.MONTHLY))
+		if (getSkip() != Skip.OMIT)
 		{
-			// this rule needs skip filters
-			mParts.put(Part._BYMONTHSKIP, null);
-			mParts.put(Part._BYMONTHDAYSKIP, null);
+			switch (getFreq())
+			{
+				case YEARLY:
+					// add skip filter to handle leap months
+					mParts.put(Part._BYMONTHSKIP, null);
+					// fall through to also add the _BYMONTHDAYSKIP filter
+
+				case MONTHLY:
+					// add skip filter to handle leap days
+					mParts.put(Part._BYMONTHDAYSKIP, null);
+					break;
+
+				default:
+					break;
+			}
 		}
 
 		// validate the rule
