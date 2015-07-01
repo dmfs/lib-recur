@@ -100,7 +100,8 @@ public final class FreqIterator extends ByExpander
 				throw new IllegalArgumentException("too many empty recurrence sets");
 			}
 
-			result = nextInstance(calendarMetrics);
+			result = mNextInstance;
+			mNextInstance = mFreq.next(calendarMetrics, result, mInterval);
 		} while (mFilterCount > 0 && filter(result));
 
 		return result;
@@ -113,14 +114,6 @@ public final class FreqIterator extends ByExpander
 		mResultSet.clear();
 		mResultSet.add(next());
 		return mResultSet;
-	}
-
-
-	private long nextInstance(final CalendarMetrics calendarMetrics)
-	{
-		long result = mNextInstance;
-		mNextInstance = mFreq.next(calendarMetrics, mNextInstance, mInterval);
-		return result;
 	}
 
 
