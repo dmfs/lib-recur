@@ -141,7 +141,7 @@ public enum Freq
 	 * invalid date 2005-02-29.
 	 * </p>
 	 * 
-	 * This method is not public because it doesn't perform any parameter validation.
+	 * This method doesn't perform any parameter validation.
 	 * 
 	 * @param calendarMetrics
 	 *            The {@link CalendarMetrics} to use for the calculation.
