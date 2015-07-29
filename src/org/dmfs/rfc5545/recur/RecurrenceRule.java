@@ -170,7 +170,7 @@ public final class RecurrenceRule
 		/**
 		 * The base interval of the recurring instances. If not specified the interval is <code>1</code>. The value must be a positive integer.
 		 */
-		INTERVAL(new IntConverter()) {
+		INTERVAL(new IntegerConverter(1, Integer.MAX_VALUE)) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
 			{
@@ -654,7 +654,7 @@ public final class RecurrenceRule
 		 * This part specifies total number of instances. The value is a positive integer. This part is mutually exclusive with {@link #UNTIL}. If neither
 		 * {@link #COUNT} nor {@link #UNTIL} are specified the instances recur forever.
 		 */
-		COUNT(new IntConverter()) {
+		COUNT(new IntegerConverter(1, Integer.MAX_VALUE)) {
 			@Override
 			RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
 			{
@@ -2235,27 +2235,6 @@ public final class RecurrenceRule
 			catch (IllegalArgumentException e)
 			{
 				throw new InvalidRecurrenceRuleException("illegal weekday: " + value);
-			}
-		}
-	}
-
-	/**
-	 * Converts any arbitrary integer value.
-	 * 
-	 * @author Marten Gajda <marten@dmfs.org>
-	 */
-	private static class IntConverter extends ValueConverter<Integer>
-	{
-		@Override
-		public Integer parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException
-		{
-			try
-			{
-				return Integer.parseInt(value);
-			}
-			catch (NumberFormatException e)
-			{
-				throw new InvalidRecurrenceRuleException("illegal int value: " + value);
 			}
 		}
 	}
