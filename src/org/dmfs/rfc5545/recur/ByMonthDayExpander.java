@@ -91,7 +91,7 @@ final class ByMonthDayExpander extends ByExpander
 		}
 
 		int dayOfMonth = Instance.dayOfMonth(instance);
-		int weekOfYear = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);
+		int weekOfYear = 0; // we calculate this below if we need it
 		int hour = Instance.hour(instance);
 		int minute = Instance.minute(instance);
 		int second = Instance.second(instance);
@@ -100,6 +100,8 @@ final class ByMonthDayExpander extends ByExpander
 		int nextMonthDays = 0;
 		if (mScope == Scope.WEEKLY || mScope == Scope.WEEKLY_AND_MONTHLY)
 		{
+			weekOfYear = calendarMetrics.getWeekOfYear(year, month, dayOfMonth);
+
 			// FIXME: the following won't work with calendar scales that have leap months
 			if (month == 0)
 			{
