@@ -65,6 +65,11 @@ public final class RecurrenceRuleIterator
 	private long mNextMillis = Long.MIN_VALUE;
 
 	/**
+	 * Caches the upcoming {@link DateTime} value after a call to {@link #peekDateTime()}, so we don't have to build it twice.
+	 */
+	private DateTime mNextDateTime = null;
+
+	/**
 	 * The {@link CalendarMetrics} of the calendar scale to use.
 	 */
 	private final CalendarMetrics mCalendarMetrics;
@@ -93,6 +98,7 @@ public final class RecurrenceRuleIterator
 		mNextInstance = mRuleIterator.next();
 		// invalidate mNextMillis
 		mNextMillis = Long.MIN_VALUE;
+		mNextDateTime = null;
 	}
 
 
@@ -133,7 +139,15 @@ public final class RecurrenceRuleIterator
 		}
 
 		long nextInstance = mNextInstance;
+		DateTime nextDateTime = mNextDateTime;
+
 		fetchNextInstance();
+
+		if (nextDateTime != null)
+		{
+			return nextDateTime;
+		}
+
 		if (mAllDay)
 		{
 			return new DateTime(mCalendarMetrics, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
@@ -193,12 +207,12 @@ public final class RecurrenceRuleIterator
 		long nextInstance = mNextInstance;
 		if (mAllDay)
 		{
-			return new DateTime(mCalendarMetrics, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
+			return mNextDateTime = new DateTime(mCalendarMetrics, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
 		}
 		else
 		{
-			return new DateTime(mCalendarMetrics, mTimeZone, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance),
-				Instance.hour(nextInstance), Instance.minute(nextInstance), Instance.second(nextInstance));
+			return mNextDateTime = new DateTime(mCalendarMetrics, mTimeZone, Instance.year(nextInstance), Instance.month(nextInstance),
+				Instance.dayOfMonth(nextInstance), Instance.hour(nextInstance), Instance.minute(nextInstance), Instance.second(nextInstance));
 		}
 	}
 
@@ -237,6 +251,7 @@ public final class RecurrenceRuleIterator
 
 		// invalidate mNextMillis
 		mNextMillis = Long.MIN_VALUE;
+		mNextDateTime = null;
 	}
 
 
@@ -279,6 +294,7 @@ public final class RecurrenceRuleIterator
 
 		// invalidate mNextMillis
 		mNextMillis = Long.MIN_VALUE;
+		mNextDateTime = null;
 	}
 
 
@@ -323,6 +339,7 @@ public final class RecurrenceRuleIterator
 
 		// invalidate mNextMillis
 		mNextMillis = Long.MIN_VALUE;
+		mNextDateTime = null;
 	}
 
 
@@ -350,5 +367,6 @@ public final class RecurrenceRuleIterator
 
 		// invalidate mNextMillis
 		mNextMillis = Long.MIN_VALUE;
+		mNextDateTime = null;
 	}
 }
