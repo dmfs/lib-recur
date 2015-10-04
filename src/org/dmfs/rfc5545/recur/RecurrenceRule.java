@@ -899,7 +899,7 @@ public final class RecurrenceRule
 	/**
 	 * The default skip value if RSCALE is present but SKIP is not.
 	 */
-	private final static Skip SKIP_DEFAULT = Skip.BACKWARD;
+	private final static Skip SKIP_DEFAULT = Skip.OMIT;
 
 	/**
 	 * The parser mode. This can not be changed once the rule has been created.
@@ -1894,35 +1894,37 @@ public final class RecurrenceRule
 			}
 		}
 
-		CalendarMetrics calendarMetrics = (CalendarMetrics) mParts.get(Part.RSCALE);
-		if (calendarMetrics == null)
+		CalendarMetrics rScaleCalendarMetrics = (CalendarMetrics) mParts.get(Part.RSCALE);
+		if (rScaleCalendarMetrics == null)
 		{
-			calendarMetrics = new GregorianCalendarMetrics(getWeekStart(), 4);
+			rScaleCalendarMetrics = new GregorianCalendarMetrics(getWeekStart(), 4);
 		}
 
-		long startInstance = start.getInstance();
+		// make sure we convert start to the rscale calendar metrics if they don't equal
+		long startInstance = !rScaleCalendarMetrics.scaleEquals(start.getCalendarMetrics()) ? new DateTime(rScaleCalendarMetrics, start).getInstance() : start
+			.getInstance();
 
-		RuleIterator iterator = FastBirthdayIterator.getInstance(this, calendarMetrics, startInstance);
+		RuleIterator iterator = FastBirthdayIterator.getInstance(this, rScaleCalendarMetrics, startInstance);
 		TimeZone startTimeZone = start.isFloating() ? null : start.getTimeZone();
 
 		if (iterator != null)
 		{
 			if (hasPart(Part.UNTIL))
 			{
-				iterator = Part.UNTIL.getExpander(this, new SanityFilter(this, iterator, calendarMetrics, startInstance), calendarMetrics, startInstance,
-					startTimeZone);
+				iterator = Part.UNTIL.getExpander(this, new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance), rScaleCalendarMetrics,
+					startInstance, startTimeZone);
 			}
 			else if (hasPart(Part.COUNT))
 			{
-				iterator = Part.COUNT.getExpander(this, new SanityFilter(this, iterator, calendarMetrics, startInstance), calendarMetrics, startInstance,
-					startTimeZone);
+				iterator = Part.COUNT.getExpander(this, new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance), rScaleCalendarMetrics,
+					startInstance, startTimeZone);
 			}
 		}
-		else if ((iterator = FastWeeklyIterator.getInstance(this, calendarMetrics, startInstance)) != null)
+		else if ((iterator = FastWeeklyIterator.getInstance(this, rScaleCalendarMetrics, startInstance)) != null)
 		{
 			if (hasPart(Part.UNTIL))
 			{
-				iterator = Part.UNTIL.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+				iterator = Part.UNTIL.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
 			}
 		}
 		else
@@ -1939,17 +1941,17 @@ public final class RecurrenceRule
 					if (p.expands(this))
 					{
 						// if a part returns null for the expander just skip it
-						RuleIterator newIterator = p.getExpander(this, iterator, calendarMetrics, startInstance, startTimeZone);
+						RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
 						iterator = newIterator == null ? iterator : newIterator;
 					}
 					else
 					{
-						((ByExpander) iterator).addFilter(p.getFilter(this, calendarMetrics));
+						((ByExpander) iterator).addFilter(p.getFilter(this, rScaleCalendarMetrics));
 					}
 				}
 			}
 		}
-		return new RecurrenceRuleIterator(iterator, start, calendarMetrics);
+		return new RecurrenceRuleIterator(iterator, start, rScaleCalendarMetrics);
 	}
 
 
