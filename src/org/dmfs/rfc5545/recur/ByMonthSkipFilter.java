@@ -92,14 +92,36 @@ final class ByMonthSkipFilter extends RuleIterator
 
 				if (!calendarMetrics.validate(next))
 				{
-					if (mSkip == Skip.BACKWARD)
+					// this date is not valid, there are two possible reasons:
+					// 1) we're on a non-existing day (but the month is ok)
+					// 2) we're on a non-existing month
+
+					// check if the month is valid be validating the first of this month (which should be valid in that case)
+					if (calendarMetrics.validate(Instance.setDayOfMonth(next, 1)))
 					{
-						next = calendarMetrics.prevMonth(next);
+						// the month is valid, so skip the day
+						if (mSkip == Skip.BACKWARD)
+						{
+							next = calendarMetrics.prevDay(next);
+						}
+						else
+						// mSkip == Skip.FORWARD
+						{
+							next = calendarMetrics.nextDay(next);
+						}
 					}
 					else
-					// mSkip == Skip.FORWARD
 					{
-						next = calendarMetrics.nextMonth(next);
+						// the month doesn't seem to exist, so skip the month
+						if (mSkip == Skip.BACKWARD)
+						{
+							next = calendarMetrics.prevMonth(next);
+						}
+						else
+						// mSkip == Skip.FORWARD
+						{
+							next = calendarMetrics.nextMonth(next);
+						}
 					}
 				}
 				resultSet.add(next);
