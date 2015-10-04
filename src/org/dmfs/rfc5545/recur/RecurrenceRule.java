@@ -1919,6 +1919,10 @@ public final class RecurrenceRule
 				iterator = Part.COUNT.getExpander(this, new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance), rScaleCalendarMetrics,
 					startInstance, startTimeZone);
 			}
+			else
+			{
+				iterator = new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance);
+			}
 		}
 		else if ((iterator = FastWeeklyIterator.getInstance(this, rScaleCalendarMetrics, startInstance)) != null)
 		{
