@@ -60,7 +60,7 @@ public final class RecurrenceRuleIterator
 	private final TimeZone mTimeZone;
 
 	/**
-	 * Caches the upcoming millis after a call to {@link #peekMillis()}.
+	 * Caches the upcoming millis after a call to {@link #peekMillis()}. This may be {@link Long#MIN_VALUE} if the millis have not been calculated yet.
 	 */
 	private long mNextMillis = Long.MIN_VALUE;
 
@@ -90,12 +90,9 @@ public final class RecurrenceRuleIterator
 
 	private void fetchNextInstance()
 	{
-		long instance = mNextInstance = mRuleIterator.next();
-
-		if (instance != Long.MIN_VALUE)
-		{
-			mNextMillis = mCalendarMetrics.toMillis(instance, mTimeZone);
-		}
+		mNextInstance = mRuleIterator.next();
+		// invalidate mNextMillis
+		mNextMillis = Long.MIN_VALUE;
 	}
 
 
@@ -110,7 +107,14 @@ public final class RecurrenceRuleIterator
 		{
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
+
 		long result = mNextMillis;
+
+		if (result == Long.MIN_VALUE)
+		{
+			result = mCalendarMetrics.toMillis(mNextInstance, mTimeZone);
+		}
+
 		fetchNextInstance();
 		return result;
 	}
@@ -128,16 +132,16 @@ public final class RecurrenceRuleIterator
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
-		long nextMillis = mNextMillis;
+		long nextInstance = mNextInstance;
 		fetchNextInstance();
 		if (mAllDay)
 		{
-			// TODO: avoid creating a temporary instance of DateTime
-			return new DateTime(mTimeZone, nextMillis).toAllDay();
+			return new DateTime(mCalendarMetrics, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
 		}
 		else
 		{
-			return new DateTime(mTimeZone, nextMillis);
+			return new DateTime(mCalendarMetrics, mTimeZone, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance),
+				Instance.hour(nextInstance), Instance.minute(nextInstance), Instance.second(nextInstance));
 		}
 	}
 
@@ -160,7 +164,16 @@ public final class RecurrenceRuleIterator
 		{
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
-		return mNextMillis;
+
+		long result = mNextMillis;
+
+		if (result == Long.MIN_VALUE)
+		{
+			// next millis not calculated yet
+			result = mNextMillis = mCalendarMetrics.toMillis(mNextInstance, mTimeZone);
+		}
+
+		return result;
 	}
 
 
@@ -177,14 +190,15 @@ public final class RecurrenceRuleIterator
 			throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
 		}
 
+		long nextInstance = mNextInstance;
 		if (mAllDay)
 		{
-			// TODO: avoid creating a temporary instance of DateTime
-			return new DateTime(mTimeZone, mNextMillis).toAllDay();
+			return new DateTime(mCalendarMetrics, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
 		}
 		else
 		{
-			return new DateTime(mTimeZone, mNextMillis);
+			return new DateTime(mCalendarMetrics, mTimeZone, Instance.year(nextInstance), Instance.month(nextInstance), Instance.dayOfMonth(nextInstance),
+				Instance.hour(nextInstance), Instance.minute(nextInstance), Instance.second(nextInstance));
 		}
 	}
 
@@ -221,10 +235,8 @@ public final class RecurrenceRuleIterator
 
 		mNextInstance = instance;
 
-		if (instance != Long.MIN_VALUE)
-		{
-			mNextMillis = mCalendarMetrics.toMillis(instance, mTimeZone);
-		}
+		// invalidate mNextMillis
+		mNextMillis = Long.MIN_VALUE;
 	}
 
 
@@ -264,10 +276,9 @@ public final class RecurrenceRuleIterator
 		}
 
 		mNextInstance = next;
-		if (next != Long.MIN_VALUE)
-		{
-			mNextMillis = mCalendarMetrics.toMillis(next, mTimeZone);
-		}
+
+		// invalidate mNextMillis
+		mNextMillis = Long.MIN_VALUE;
 	}
 
 
@@ -309,10 +320,9 @@ public final class RecurrenceRuleIterator
 		}
 
 		mNextInstance = next;
-		if (next != Long.MIN_VALUE)
-		{
-			mNextMillis = mCalendarMetrics.toMillis(next, mTimeZone);
-		}
+
+		// invalidate mNextMillis
+		mNextMillis = Long.MIN_VALUE;
 	}
 
 
@@ -338,10 +348,7 @@ public final class RecurrenceRuleIterator
 
 		mNextInstance = prevInstance;
 
-		if (prevInstance != Long.MIN_VALUE)
-		{
-			mNextMillis = mCalendarMetrics.toMillis(prevInstance, mTimeZone);
-		}
-
+		// invalidate mNextMillis
+		mNextMillis = Long.MIN_VALUE;
 	}
 }
