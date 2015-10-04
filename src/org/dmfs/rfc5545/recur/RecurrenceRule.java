@@ -1086,12 +1086,12 @@ public final class RecurrenceRule
 								continue;
 
 							case RFC5545_STRICT:
-								throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
+								throw new InvalidRecurrenceRuleException("invalid part " + key + " in " + recur);
 						}
 					}
 					else if (!relaxed)
 					{
-						throw new InvalidRecurrenceRuleException("invalid part " + key + "  in " + recur);
+						throw new InvalidRecurrenceRuleException("invalid part " + key + " in " + recur);
 					}
 
 					continue;
@@ -1106,7 +1106,7 @@ public final class RecurrenceRule
 				if (!relaxed && partMap.containsKey(part))
 				{
 					// strict modes don't allow duplicate parts
-					throw new InvalidRecurrenceRuleException("duplicate part " + part + "  in " + recur);
+					throw new InvalidRecurrenceRuleException("duplicate part " + part + " in " + recur);
 				}
 
 				try
