@@ -19,7 +19,7 @@
 	<property name="ossrh-server-id" value="ossrh" />
 
 	<path id="libraryclasspath">
-		<pathelement location="libs/rfc5545-datetime-0.2.1.jar" />
+		<fileset dir="libs" includes="*.jar" />
 	</path>
 
 	<path id="classpath">
