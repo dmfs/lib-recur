@@ -1025,6 +1025,10 @@ public class RecurrenceIteratorTest
 		 * Rules with a specific number of instances
 		 */
 
+		// first 9 mondays of 2016
+		mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO;BYMONTH=1,2;UNTIL=20161231").setStart("20160104").setUntil("20161231").setInstances(9)
+			.setWeekdays(Calendar.MONDAY).setLastInstance("20160229"));
+
 		// every day in 2012 -> 366 instances
 		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(366).setLastInstance("20121231"));
 		mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(366)

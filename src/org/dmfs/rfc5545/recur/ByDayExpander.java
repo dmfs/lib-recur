@@ -151,7 +151,7 @@ final class ByDayExpander extends ByExpander
 
 						int newMonth = Instance.month(newInstance);
 
-						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) > 0 || mMonths == null && newMonth == month)
+						if (mMonths != null && StaticUtils.linearSearch(mMonths, newMonth) >= 0 || mMonths == null && newMonth == month)
 						{
 							addInstance(newInstance);
 						}
