@@ -152,7 +152,8 @@ final class ByDayFilter extends ByFilter
 					int nthDay = (dayOfMonth - 1) / 7 + 1;
 					int lastNthDay = (dayOfMonth - calendarMetrics.getDaysPerPackedMonth(year, month)) / 7 - 1;
 					return (nthDay <= 0 || StaticUtils.linearSearch(packedDays, packWeekday(nthDay, dayOfWeek)) < 0)
-						&& (lastNthDay >= 0 || StaticUtils.linearSearch(packedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(packedDays, packWeekday(lastNthDay, dayOfWeek)) < 0)
+						&& StaticUtils.linearSearch(packedDays, packWeekday(0, dayOfWeek)) < 0;
 				}
 				case YEARLY:
 				{
@@ -160,7 +161,8 @@ final class ByDayFilter extends ByFilter
 					int nthDay = (yearDay - 1) / 7 + 1;
 					int lastNthDay = (yearDay - calendarMetrics.getDaysPerYear(year)) / 7 - 1;
 					return (nthDay <= 0 || StaticUtils.linearSearch(packedDays, packWeekday(nthDay, dayOfWeek)) < 0)
-						&& (lastNthDay >= 0 || StaticUtils.linearSearch(packedDays, packWeekday(lastNthDay, dayOfWeek)) < 0);
+						&& (lastNthDay >= 0 || StaticUtils.linearSearch(packedDays, packWeekday(lastNthDay, dayOfWeek)) < 0)
+						&& StaticUtils.linearSearch(packedDays, packWeekday(0, dayOfWeek)) < 0;
 				}
 				default:
 					return false;
