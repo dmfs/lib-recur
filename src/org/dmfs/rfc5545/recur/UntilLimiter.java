@@ -51,6 +51,10 @@ final class UntilLimiter extends Limiter
 	{
 		super(previous);
 		DateTime until = rule.getUntil();
+		if (!until.isFloating())
+		{
+			until = until.shiftTimeZone(startTimezone);
+		}
 		mUntil = until.getInstance();
 	}
 

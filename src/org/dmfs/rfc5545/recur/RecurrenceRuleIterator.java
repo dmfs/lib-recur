@@ -354,9 +354,9 @@ public final class RecurrenceRuleIterator
 	public void skipAllButLast()
 	{
 		long prevInstance;
-		long instance = Long.MIN_VALUE;
+		long instance = mNextInstance;
 		RuleIterator iterator = mRuleIterator;
-
+		
 		do
 		{
 			prevInstance = instance;

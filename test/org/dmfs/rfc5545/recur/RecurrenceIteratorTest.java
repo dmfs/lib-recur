@@ -407,6 +407,11 @@ public class RecurrenceIteratorTest
 
 			iterator.skipAllButLast();
 
+			if (!iterator.hasNext())
+			{
+				fail(String.format("No more instances for %s", rule.rule));
+			}
+			
 			DateTime lastInstance = iterator.nextDateTime();
 			assertEquals(rule.lastInstance.getTimestamp(), lastInstance.getTimestamp());
 
@@ -1325,5 +1330,16 @@ public class RecurrenceIteratorTest
 			.setMonthdays(10).setLastInstance("20541010"));
 		mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=10;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
 			.setMonthdays(10).setLastInstance("20541010"));
+		
+		/* Test time zone related issues */
+		
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "Europe/Berlin").setInstances(2).setLastInstance("20160521T080000", "Europe/Berlin"));
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "UTC").setInstances(1).setLastInstance("20160520T080000", "UTC"));
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "America/New_York").setInstances(1).setLastInstance("20160520T080000", "America/New_York"));
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "Europe/Moscow").setInstances(2).setLastInstance("20160521T080000", "Europe/Moscow"));
+
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000").setStart("20160520T050000").setInstances(2).setLastInstance("20160521T050000"));
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000").setStart("20160520T060000").setInstances(2).setLastInstance("20160521T060000"));
+		mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000").setStart("20160520T070000").setInstances(1).setLastInstance("20160520T070000"));
 	}
 }
