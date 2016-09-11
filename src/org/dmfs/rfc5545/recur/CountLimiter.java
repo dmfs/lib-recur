@@ -24,43 +24,43 @@ package org.dmfs.rfc5545.recur;
  */
 class CountLimiter extends Limiter
 {
-	/**
-	 * The number of instances to let pass.
-	 */
-	private final int mLimit;
+  /**
+   * The number of instances to let pass.
+   */
+  private final int mLimit;
 
-	/**
-	 * The number of instances already passed.
-	 */
-	private int mCounter = 0;
-
-
-	/**
-	 * Creates a limiter that limits by instance number.
-	 * 
-	 * @param rule
-	 *            The {@link RecurrenceRule} to limit.
-	 * @param previous
-	 *            The previous iterator instance.
-	 */
-	CountLimiter(RecurrenceRule rule, RuleIterator previous)
-	{
-		super(previous);
-		mLimit = rule.getCount();
-	}
+  /**
+   * The number of instances already passed.
+   */
+  private int mCounter = 0;
 
 
-	@Override
-	boolean stop(long instance)
-	{
-		// Stop if more than mLimit instances have been iterated.
-		return ++mCounter > mLimit;
-	}
+  /**
+   * Creates a limiter that limits by instance number.
+   * 
+   * @param rule
+   *            The {@link RecurrenceRule} to limit.
+   * @param previous
+   *            The previous iterator instance.
+   */
+  CountLimiter(RecurrenceRule rule, RuleIterator previous)
+  {
+    super(previous);
+    mLimit = rule.getCount();
+  }
 
 
-	@Override
-	void fastForward(long untilInstance)
-	{
-		// we can not fast forward, because we have to count the instances
-	}
+  @Override
+  boolean stop(long instance)
+  {
+    // Stop if more than mLimit instances have been iterated.
+    return ++mCounter > mLimit;
+  }
+
+
+  @Override
+  void fastForward(long untilInstance)
+  {
+    // we can not fast forward, because we have to count the instances
+  }
 }

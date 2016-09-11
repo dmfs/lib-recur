@@ -38,203 +38,203 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.WeekdayNum;
  */
 public final class FastWeeklyIterator extends ByExpander
 {
-	/**
-	 * The interval of the rule.
-	 */
-	private final int mInterval;
+  /**
+   * The interval of the rule.
+   */
+  private final int mInterval;
 
-	/**
-	 * A {@link LongArray} to hold the instances of the current interval.
-	 */
-	private final LongArray mResultSet = new LongArray(1);
+  /**
+   * A {@link LongArray} to hold the instances of the current interval.
+   */
+  private final LongArray mResultSet = new LongArray(1);
 
-	/**
-	 * The first instance to iterate.
-	 */
-	private final long mStart;
+  /**
+   * The first instance to iterate.
+   */
+  private final long mStart;
 
-	/**
-	 * The next instance to iterate.
-	 */
-	private long mNextInstance;
+  /**
+   * The next instance to iterate.
+   */
+  private long mNextInstance;
 
-	/**
-	 * The current year.
-	 */
-	private int mYear;
+  /**
+   * The current year.
+   */
+  private int mYear;
 
-	/**
-	 * The current yearday.
-	 */
-	private int mYearDay;
+  /**
+   * The current yearday.
+   */
+  private int mYearDay;
 
-	/**
-	 * The maximum number of instances to iterate.
-	 */
-	private final int mInstanceLimit;
+  /**
+   * The maximum number of instances to iterate.
+   */
+  private final int mInstanceLimit;
 
-	/**
-	 * The number of instances already iterated.
-	 */
-	private int mCount;
-
-
-	/**
-	 * Create a new WeeklyTypeIterator for the given rule, start date and first instance.
-	 * 
-	 * @param rule
-	 *            The rule to iterate.
-	 * @param calendarMetrics
-	 *            The {@link CalendarMetrics} to use.
-	 * @param start
-	 *            The first instance to iterate.
-	 * @param firstInstance
-	 *            The first instance of the rule. If start is not synchronized with the rule, this is the first instance after start. It equals start otherwise.
-	 */
-	private FastWeeklyIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start, long firstInstance)
-	{
-		super(null, calendarMetrics, firstInstance);
-
-		mInterval = rule.getInterval();
-
-		mStart = start;
-		mNextInstance = firstInstance;
-
-		mYear = Instance.year(firstInstance);
-		mYearDay = calendarMetrics.getDayOfYear(mYear, Instance.month(firstInstance), Instance.dayOfMonth(firstInstance));
-
-		Integer max = rule.getCount();
-		mInstanceLimit = max == null ? -1 : max;
-	}
+  /**
+   * The number of instances already iterated.
+   */
+  private int mCount;
 
 
-	/**
-	 * Get an instance of a {@link FastWeeklyIterator} for the given rule.
-	 * 
-	 * @param rule
-	 *            The {@link RecurrenceRule} to iterate.
-	 * @param calendarMetrics
-	 *            The {@link CalendarMetrics} to use.
-	 * @param start
-	 *            The first instance.
-	 * @return A {@link FastBirthdayIterator} instance or <code>null</code> if the rule is not suitable for this kind of optimization.
-	 */
-	public static FastWeeklyIterator getInstance(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
-	{
-		Freq freq = rule.getFreq();
-		if (freq != Freq.WEEKLY || rule.hasPart(Part.BYMONTH) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYWEEKNO)
-			|| rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE) || rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS)
-			|| rule.getSkip() != Skip.OMIT)
-		{
-			return null;
-		}
+  /**
+   * Create a new WeeklyTypeIterator for the given rule, start date and first instance.
+   * 
+   * @param rule
+   *            The rule to iterate.
+   * @param calendarMetrics
+   *            The {@link CalendarMetrics} to use.
+   * @param start
+   *            The first instance to iterate.
+   * @param firstInstance
+   *            The first instance of the rule. If start is not synchronized with the rule, this is the first instance after start. It equals start otherwise.
+   */
+  private FastWeeklyIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start, long firstInstance)
+  {
+    super(null, calendarMetrics, firstInstance);
 
-		List<WeekdayNum> weekdays = rule.getByDayPart();
+    mInterval = rule.getInterval();
 
-		if (weekdays == null || weekdays.size() == 1)
-		{
-			long instance = start;
-			if (weekdays != null)
-			{
-				int weekday = weekdays.get(0).weekday.ordinal();
-				int year = Instance.year(instance);
-				int yearDay = calendarMetrics.getDayOfYear(year, Instance.month(instance), Instance.dayOfMonth(instance));
-				int currentWeekDay = calendarMetrics.getDayOfWeek(year, yearDay);
+    mStart = start;
+    mNextInstance = firstInstance;
 
-				if (currentWeekDay != weekday)
-				{
-					// start is not synchronized with the rule, calculate the first instance of the actual rule
-					yearDay += (weekday - currentWeekDay + 7) % 7;
+    mYear = Instance.year(firstInstance);
+    mYearDay = calendarMetrics.getDayOfYear(mYear, Instance.month(firstInstance), Instance.dayOfMonth(firstInstance));
 
-					int daysPerYear = calendarMetrics.getDaysPerYear(Instance.year(instance));
-
-					if (yearDay > daysPerYear)
-					{
-						year++;
-						yearDay -= daysPerYear;
-					}
-
-					int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-
-					instance = Instance.setMonthAndDayOfMonth(Instance.setYear(instance, year), CalendarMetrics.packedMonth(monthAndDay),
-						CalendarMetrics.dayOfMonth(monthAndDay));
-				}
-			}
-
-			return new FastWeeklyIterator(rule, calendarMetrics, start, instance);
-		}
-		return null;
-	}
+    Integer max = rule.getCount();
+    mInstanceLimit = max == null ? -1 : max;
+  }
 
 
-	@Override
-	public long next()
-	{
-		if (mCount++ == 0 && mStart != mNextInstance)
-		{
-			// be sure we iterate start first
-			return mStart;
-		}
+  /**
+   * Get an instance of a {@link FastWeeklyIterator} for the given rule.
+   * 
+   * @param rule
+   *            The {@link RecurrenceRule} to iterate.
+   * @param calendarMetrics
+   *            The {@link CalendarMetrics} to use.
+   * @param start
+   *            The first instance.
+   * @return A {@link FastBirthdayIterator} instance or <code>null</code> if the rule is not suitable for this kind of optimization.
+   */
+  public static FastWeeklyIterator getInstance(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
+  {
+    Freq freq = rule.getFreq();
+    if (freq != Freq.WEEKLY || rule.hasPart(Part.BYMONTH) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYWEEKNO)
+      || rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE) || rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS)
+      || rule.getSkip() != Skip.OMIT)
+    {
+      return null;
+    }
 
-		if (mInstanceLimit > 0 && mCount > mInstanceLimit)
-		{
-			return mNextInstance = Long.MIN_VALUE;
-		}
+    List<WeekdayNum> weekdays = rule.getByDayPart();
 
-		long result = mNextInstance;
+    if (weekdays == null || weekdays.size() == 1)
+    {
+      long instance = start;
+      if (weekdays != null)
+      {
+        int weekday = weekdays.get(0).weekday.ordinal();
+        int year = Instance.year(instance);
+        int yearDay = calendarMetrics.getDayOfYear(year, Instance.month(instance), Instance.dayOfMonth(instance));
+        int currentWeekDay = calendarMetrics.getDayOfWeek(year, yearDay);
 
-		int daysPerYear = mCalendarMetrics.getDaysPerYear(mYear);
+        if (currentWeekDay != weekday)
+        {
+          // start is not synchronized with the rule, calculate the first instance of the actual rule
+          yearDay += (weekday - currentWeekDay + 7) % 7;
 
-		mYearDay += 7 * mInterval;
+          int daysPerYear = calendarMetrics.getDaysPerYear(Instance.year(instance));
 
-		while (mYearDay > daysPerYear)
-		{
-			// roll over to next year
-			mYear++;
-			mYearDay -= daysPerYear;
-			daysPerYear = mCalendarMetrics.getDaysPerYear(mYear);
-		}
+          if (yearDay > daysPerYear)
+          {
+            year++;
+            yearDay -= daysPerYear;
+          }
 
-		int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(mYear, mYearDay);
+          int monthAndDay = calendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
 
-		mNextInstance = Instance.setMonthAndDayOfMonth(Instance.setYear(mNextInstance, mYear), CalendarMetrics.packedMonth(monthAndDay),
-			CalendarMetrics.dayOfMonth(monthAndDay));
+          instance = Instance.setMonthAndDayOfMonth(Instance.setYear(instance, year), CalendarMetrics.packedMonth(monthAndDay),
+            CalendarMetrics.dayOfMonth(monthAndDay));
+        }
+      }
 
-		return result;
-	}
-
-
-	@Override
-	LongArray nextSet()
-	{
-		mResultSet.clear();
-		mResultSet.add(next());
-		return mResultSet;
-	}
-
-
-	@Override
-	void expand(long instance, long start)
-	{
-		// we don't need that.
-	}
+      return new FastWeeklyIterator(rule, calendarMetrics, start, instance);
+    }
+    return null;
+  }
 
 
-	@Override
-	void fastForward(long untilInstance)
-	{
-		int untilYear = Instance.year(untilInstance);
-		int untilMonth = Instance.month(untilInstance);
-		int monthsOfPrevYear = mCalendarMetrics.getMonthsPerYear(untilYear - 1);
-		int nextMonth = Instance.month(mNextInstance);
+  @Override
+  public long next()
+  {
+    if (mCount++ == 0 && mStart != mNextInstance)
+    {
+      // be sure we iterate start first
+      return mStart;
+    }
 
-		// FIXME: make sure that untilMonth = 0 works with leap months or change it accordingly.
-		/* we have to ensure we iterate the correct week, so we just stop one month before */
-		while ((mYear < untilYear - 1 || mYear == untilYear - 1 && untilMonth == 0 && nextMonth < monthsOfPrevYear - 1 || mYear == untilYear
-			&& nextMonth < untilMonth)
-			&& mNextInstance > Long.MIN_VALUE)
-		{
-			nextMonth = Instance.month(next());
-		}
-	}
+    if (mInstanceLimit > 0 && mCount > mInstanceLimit)
+    {
+      return mNextInstance = Long.MIN_VALUE;
+    }
+
+    long result = mNextInstance;
+
+    int daysPerYear = mCalendarMetrics.getDaysPerYear(mYear);
+
+    mYearDay += 7 * mInterval;
+
+    while (mYearDay > daysPerYear)
+    {
+      // roll over to next year
+      mYear++;
+      mYearDay -= daysPerYear;
+      daysPerYear = mCalendarMetrics.getDaysPerYear(mYear);
+    }
+
+    int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(mYear, mYearDay);
+
+    mNextInstance = Instance.setMonthAndDayOfMonth(Instance.setYear(mNextInstance, mYear), CalendarMetrics.packedMonth(monthAndDay),
+      CalendarMetrics.dayOfMonth(monthAndDay));
+
+    return result;
+  }
+
+
+  @Override
+  LongArray nextSet()
+  {
+    mResultSet.clear();
+    mResultSet.add(next());
+    return mResultSet;
+  }
+
+
+  @Override
+  void expand(long instance, long start)
+  {
+    // we don't need that.
+  }
+
+
+  @Override
+  void fastForward(long untilInstance)
+  {
+    int untilYear = Instance.year(untilInstance);
+    int untilMonth = Instance.month(untilInstance);
+    int monthsOfPrevYear = mCalendarMetrics.getMonthsPerYear(untilYear - 1);
+    int nextMonth = Instance.month(mNextInstance);
+
+    // FIXME: make sure that untilMonth = 0 works with leap months or change it accordingly.
+    /* we have to ensure we iterate the correct week, so we just stop one month before */
+    while ((mYear < untilYear - 1 || mYear == untilYear - 1 && untilMonth == 0 && nextMonth < monthsOfPrevYear - 1 || mYear == untilYear
+      && nextMonth < untilMonth)
+      && mNextInstance > Long.MIN_VALUE)
+    {
+      nextMonth = Instance.month(next());
+    }
+  }
 }

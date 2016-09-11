@@ -29,24 +29,24 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 class BySecondFilter extends ByFilter
 {
-	/**
-	 * The list of minutes from the recurrence rule.
-	 */
-	private final int[] mSeconds;
+  /**
+   * The list of minutes from the recurrence rule.
+   */
+  private final int[] mSeconds;
 
 
-	public BySecondFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
-	{
-		super(calendarTools);
-		mSeconds = StaticUtils.ListToArray(rule.getByPart(Part.BYSECOND));
-	}
+  public BySecondFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
+  {
+    super(calendarTools);
+    mSeconds = StaticUtils.ListToArray(rule.getByPart(Part.BYSECOND));
+  }
 
 
-	@Override
-	boolean filter(long instance)
-	{
-		// filter all minutes not in the list
-		return StaticUtils.linearSearch(mSeconds, Instance.second(instance)) < 0;
-	}
+  @Override
+  boolean filter(long instance)
+  {
+    // filter all minutes not in the list
+    return StaticUtils.linearSearch(mSeconds, Instance.second(instance)) < 0;
+  }
 
 }

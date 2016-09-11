@@ -29,107 +29,107 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
  */
 final class ByMonthSkipFilter extends RuleIterator
 {
-	/**
-	 * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered
-	 * or nothing was expanded.
-	 */
-	private final static int MAX_EMPTY_SETS = 1000;
+  /**
+   * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered
+   * or nothing was expanded.
+   */
+  private final static int MAX_EMPTY_SETS = 1000;
 
-	private final CalendarMetrics mCalendarMetrics;
-	private final Skip mSkip;
+  private final CalendarMetrics mCalendarMetrics;
+  private final Skip mSkip;
 
-	/**
-	 * The set we work on. This comes from the previous instance.
-	 */
-	private LongArray mWorkingSet = null;
+  /**
+   * The set we work on. This comes from the previous instance.
+   */
+  private LongArray mWorkingSet = null;
 
-	/**
-	 * The set we return.
-	 */
-	private final LongArray mResultSet = new LongArray();
-
-
-	public ByMonthSkipFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start)
-	{
-		super(previous);
-		mCalendarMetrics = calendarMetrics;
-		mSkip = rule.getSkip();
-	}
+  /**
+   * The set we return.
+   */
+  private final LongArray mResultSet = new LongArray();
 
 
-	@Override
-	public long next()
-	{
-		LongArray workingSet = mWorkingSet;
-		if (workingSet == null || !workingSet.hasNext())
-		{
-			mWorkingSet = workingSet = nextSet();
-		}
-		return workingSet.next();
-	}
+  public ByMonthSkipFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start)
+  {
+    super(previous);
+    mCalendarMetrics = calendarMetrics;
+    mSkip = rule.getSkip();
+  }
 
 
-	@Override
-	LongArray nextSet()
-	{
-		LongArray resultSet = mResultSet;
-		CalendarMetrics calendarMetrics = mCalendarMetrics;
-		resultSet.clear();
+  @Override
+  public long next()
+  {
+    LongArray workingSet = mWorkingSet;
+    if (workingSet == null || !workingSet.hasNext())
+    {
+      mWorkingSet = workingSet = nextSet();
+    }
+    return workingSet.next();
+  }
 
-		int counter = 0;
-		do
-		{
-			if (counter == MAX_EMPTY_SETS)
-			{
-				throw new IllegalArgumentException("too many empty recurrence sets");
-			}
-			counter++;
 
-			LongArray prev = mPrevious.nextSet();
-			while (prev.hasNext())
-			{
-				long next = Instance.maskWeekday(prev.next());
+  @Override
+  LongArray nextSet()
+  {
+    LongArray resultSet = mResultSet;
+    CalendarMetrics calendarMetrics = mCalendarMetrics;
+    resultSet.clear();
 
-				if (!calendarMetrics.validate(next))
-				{
-					// this date is not valid, there are two possible reasons:
-					// 1) we're on a non-existing day (but the month is ok)
-					// 2) we're on a non-existing month
+    int counter = 0;
+    do
+    {
+      if (counter == MAX_EMPTY_SETS)
+      {
+        throw new IllegalArgumentException("too many empty recurrence sets");
+      }
+      counter++;
 
-					// check if the month is valid be validating the first of this month (which should be valid in that case)
-					if (calendarMetrics.validate(Instance.setDayOfMonth(next, 1)))
-					{
-						// the month is valid, so skip the day
-						if (mSkip == Skip.BACKWARD)
-						{
-							next = calendarMetrics.prevDay(next);
-						}
-						else
-						// mSkip == Skip.FORWARD
-						{
-							next = calendarMetrics.nextDay(next);
-						}
-					}
-					else
-					{
-						// the month doesn't seem to exist, so skip the month
-						if (mSkip == Skip.BACKWARD)
-						{
-							next = calendarMetrics.prevMonth(next);
-						}
-						else
-						// mSkip == Skip.FORWARD
-						{
-							next = calendarMetrics.nextMonth(next);
-						}
-					}
-				}
-				resultSet.add(next);
-			}
-		} while (!resultSet.hasNext());
+      LongArray prev = mPrevious.nextSet();
+      while (prev.hasNext())
+      {
+        long next = Instance.maskWeekday(prev.next());
 
-		// no need to sort, because there is always a SkipBuffer when this part is in the iterator chain
+        if (!calendarMetrics.validate(next))
+        {
+          // this date is not valid, there are two possible reasons:
+          // 1) we're on a non-existing day (but the month is ok)
+          // 2) we're on a non-existing month
 
-		return resultSet;
-	}
+          // check if the month is valid be validating the first of this month (which should be valid in that case)
+          if (calendarMetrics.validate(Instance.setDayOfMonth(next, 1)))
+          {
+            // the month is valid, so skip the day
+            if (mSkip == Skip.BACKWARD)
+            {
+              next = calendarMetrics.prevDay(next);
+            }
+            else
+            // mSkip == Skip.FORWARD
+            {
+              next = calendarMetrics.nextDay(next);
+            }
+          }
+          else
+          {
+            // the month doesn't seem to exist, so skip the month
+            if (mSkip == Skip.BACKWARD)
+            {
+              next = calendarMetrics.prevMonth(next);
+            }
+            else
+            // mSkip == Skip.FORWARD
+            {
+              next = calendarMetrics.nextMonth(next);
+            }
+          }
+        }
+        resultSet.add(next);
+      }
+    } while (!resultSet.hasNext());
+
+    // no need to sort, because there is always a SkipBuffer when this part is in the iterator chain
+
+    return resultSet;
+  }
 }

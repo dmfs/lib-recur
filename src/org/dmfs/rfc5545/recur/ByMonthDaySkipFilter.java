@@ -29,82 +29,82 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
  */
 final class ByMonthDaySkipFilter extends RuleIterator
 {
-	/**
-	 * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered
-	 * or nothing was expanded.
-	 */
-	private final static int MAX_EMPTY_SETS = 1000;
+  /**
+   * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered
+   * or nothing was expanded.
+   */
+  private final static int MAX_EMPTY_SETS = 1000;
 
-	private final CalendarMetrics mCalendarMetrics;
-	private final Skip mSkip;
+  private final CalendarMetrics mCalendarMetrics;
+  private final Skip mSkip;
 
-	/**
-	 * The set we work on. This comes from the previous instance.
-	 */
-	private LongArray mWorkingSet = null;
+  /**
+   * The set we work on. This comes from the previous instance.
+   */
+  private LongArray mWorkingSet = null;
 
-	/**
-	 * The set we return.
-	 */
-	private final LongArray mResultSet = new LongArray();
-
-
-	public ByMonthDaySkipFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start)
-	{
-		super(previous);
-		mCalendarMetrics = calendarMetrics;
-		mSkip = rule.getSkip();
-	}
+  /**
+   * The set we return.
+   */
+  private final LongArray mResultSet = new LongArray();
 
 
-	@Override
-	public long next()
-	{
-		LongArray workingSet = mWorkingSet;
-		if (workingSet == null || !workingSet.hasNext())
-		{
-			mWorkingSet = workingSet = nextSet();
-		}
-		return workingSet.next();
-	}
+  public ByMonthDaySkipFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start)
+  {
+    super(previous);
+    mCalendarMetrics = calendarMetrics;
+    mSkip = rule.getSkip();
+  }
 
 
-	@Override
-	LongArray nextSet()
-	{
-		LongArray resultSet = mResultSet;
-		CalendarMetrics calendarMetrics = mCalendarMetrics;
+  @Override
+  public long next()
+  {
+    LongArray workingSet = mWorkingSet;
+    if (workingSet == null || !workingSet.hasNext())
+    {
+      mWorkingSet = workingSet = nextSet();
+    }
+    return workingSet.next();
+  }
 
-		int counter = 0;
-		do
-		{
-			if (counter == MAX_EMPTY_SETS)
-			{
-				throw new IllegalArgumentException("too many empty recurrence sets");
-			}
-			counter++;
 
-			LongArray prev = mPrevious.nextSet();
-			while (prev.hasNext())
-			{
-				long next = Instance.maskWeekday(prev.next());
+  @Override
+  LongArray nextSet()
+  {
+    LongArray resultSet = mResultSet;
+    CalendarMetrics calendarMetrics = mCalendarMetrics;
 
-				if (!calendarMetrics.validate(next))
-				{
-					if (mSkip == Skip.BACKWARD)
-					{
-						next = calendarMetrics.prevDay(next);
-					}
-					else
-					// mSkip == Skip.FORWARD
-					{
-						next = calendarMetrics.nextDay(next);
-					}
-				}
-				resultSet.add(next);
-			}
-		} while (!resultSet.hasNext());
+    int counter = 0;
+    do
+    {
+      if (counter == MAX_EMPTY_SETS)
+      {
+        throw new IllegalArgumentException("too many empty recurrence sets");
+      }
+      counter++;
 
-		return resultSet;
-	}
+      LongArray prev = mPrevious.nextSet();
+      while (prev.hasNext())
+      {
+        long next = Instance.maskWeekday(prev.next());
+
+        if (!calendarMetrics.validate(next))
+        {
+          if (mSkip == Skip.BACKWARD)
+          {
+            next = calendarMetrics.prevDay(next);
+          }
+          else
+          // mSkip == Skip.FORWARD
+          {
+            next = calendarMetrics.nextDay(next);
+          }
+        }
+        resultSet.add(next);
+      }
+    } while (!resultSet.hasNext());
+
+    return resultSet;
+  }
 }

@@ -31,101 +31,101 @@ import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
 public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 {
 
-	class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
-	{
-		private final RecurrenceRuleIterator mIterator;
+  class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
+  {
+    private final RecurrenceRuleIterator mIterator;
 
 
-		public InstanceIterator(RecurrenceRuleIterator iterator)
-		{
-			mIterator = iterator;
-		}
+    public InstanceIterator(RecurrenceRuleIterator iterator)
+    {
+      mIterator = iterator;
+    }
 
 
-		@Override
-		public boolean hasNext()
-		{
-			return mIterator.hasNext();
-		}
+    @Override
+    public boolean hasNext()
+    {
+      return mIterator.hasNext();
+    }
 
 
-		@Override
-		public long next()
-		{
-			return mIterator.nextMillis();
-		}
+    @Override
+    public long next()
+    {
+      return mIterator.nextMillis();
+    }
 
 
-		@Override
-		public long peek()
-		{
-			return mIterator.peekMillis();
-		}
+    @Override
+    public long peek()
+    {
+      return mIterator.peekMillis();
+    }
 
 
-		@Override
-		public void skip(int count)
-		{
-			mIterator.skip(count);
-		}
+    @Override
+    public void skip(int count)
+    {
+      mIterator.skip(count);
+    }
 
 
-		@Override
-		public void fastForward(long until)
-		{
-			mIterator.fastForward(until);
-		}
+    @Override
+    public void fastForward(long until)
+    {
+      mIterator.fastForward(until);
+    }
 
-	}
+  }
 
-	/**
-	 * The recurrence rule.
-	 */
-	private final RecurrenceRule mRrule;
-
-
-	/**
-	 * Create a new adapter for the given rule and start.
-	 * 
-	 * @param rule
-	 *            The recurrence rule to adapt to.
-	 */
-	public RecurrenceRuleAdapter(RecurrenceRule rule)
-	{
-		mRrule = rule;
-	}
+  /**
+   * The recurrence rule.
+   */
+  private final RecurrenceRule mRrule;
 
 
-	@Override
-	AbstractRecurrenceAdapter.InstanceIterator getIterator(TimeZone timezone, long start)
-	{
-		return new InstanceIterator(mRrule.iterator(start, timezone));
-	}
+  /**
+   * Create a new adapter for the given rule and start.
+   * 
+   * @param rule
+   *            The recurrence rule to adapt to.
+   */
+  public RecurrenceRuleAdapter(RecurrenceRule rule)
+  {
+    mRrule = rule;
+  }
 
 
-	@Override
-	boolean isInfinite()
-	{
-		return mRrule.isInfinite();
-	}
+  @Override
+  AbstractRecurrenceAdapter.InstanceIterator getIterator(TimeZone timezone, long start)
+  {
+    return new InstanceIterator(mRrule.iterator(start, timezone));
+  }
 
 
-	@Override
-	long getLastInstance(TimeZone timezone, long start)
-	{
-		if (isInfinite())
-		{
-			return Long.MAX_VALUE;
-		}
+  @Override
+  boolean isInfinite()
+  {
+    return mRrule.isInfinite();
+  }
 
-		RecurrenceRuleIterator iterator = mRrule.iterator(start, timezone);
-		iterator.skipAllButLast();
 
-		long lastInstance = Long.MIN_VALUE;
-		if (iterator.hasNext())
-		{
-			lastInstance = iterator.nextMillis();
-		}
-		return lastInstance;
-	}
+  @Override
+  long getLastInstance(TimeZone timezone, long start)
+  {
+    if (isInfinite())
+    {
+      return Long.MAX_VALUE;
+    }
+
+    RecurrenceRuleIterator iterator = mRrule.iterator(start, timezone);
+    iterator.skipAllButLast();
+
+    long lastInstance = Long.MIN_VALUE;
+    if (iterator.hasNext())
+    {
+      lastInstance = iterator.nextMillis();
+    }
+    return lastInstance;
+  }
 }

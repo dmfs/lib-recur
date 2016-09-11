@@ -29,33 +29,33 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class ByMonthExpander extends ByExpander
 {
-	/**
-	 * The list of months to expand.
-	 */
-	private final int[] mMonths;
+  /**
+   * The list of months to expand.
+   */
+  private final int[] mMonths;
 
 
-	public ByMonthExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
-	{
-		super(previous, calendarTools, start);
-		// sort array to iterate the months in the right order, that saves an additional sorting of each interval
-		mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
-	}
+  public ByMonthExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
+  {
+    super(previous, calendarTools, start);
+    // sort array to iterate the months in the right order, that saves an additional sorting of each interval
+    mMonths = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMONTH));
+  }
 
 
-	@Override
-	void expand(long instance, long start)
-	{
-		for (int month : mMonths)
-		{
-			long newInstance = Instance.setMonth(instance, month);
-			if (newInstance < start)
-			{
-				// instance is before start, nothing to do here
-				continue;
-			}
+  @Override
+  void expand(long instance, long start)
+  {
+    for (int month : mMonths)
+    {
+      long newInstance = Instance.setMonth(instance, month);
+      if (newInstance < start)
+      {
+        // instance is before start, nothing to do here
+        continue;
+      }
 
-			addInstance(newInstance);
-		}
-	}
+      addInstance(newInstance);
+    }
+  }
 }

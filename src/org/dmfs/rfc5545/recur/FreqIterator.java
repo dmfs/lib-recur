@@ -29,104 +29,104 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
  */
 public final class FreqIterator extends ByExpander
 {
-	/**
-	 * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered.
-	 */
-	private final static int MAX_EMPTY_SETS = 1000;
+  /**
+   * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered.
+   */
+  private final static int MAX_EMPTY_SETS = 1000;
 
-	/**
-	 * The base frequency of the rule.
-	 */
-	private final Freq mFreq;
+  /**
+   * The base frequency of the rule.
+   */
+  private final Freq mFreq;
 
-	/**
-	 * The interval of the rule.
-	 */
-	private final int mInterval;
+  /**
+   * The interval of the rule.
+   */
+  private final int mInterval;
 
-	/**
-	 * A {@link LongArray} to hold the instances of the current interval.
-	 */
-	private final LongArray mResultSet = new LongArray(1);
+  /**
+   * A {@link LongArray} to hold the instances of the current interval.
+   */
+  private final LongArray mResultSet = new LongArray(1);
 
-	/**
-	 * A helper to perform calendar calculations.
-	 */
-	private final CalendarMetrics mCalendarMetrics;
+  /**
+   * A helper to perform calendar calculations.
+   */
+  private final CalendarMetrics mCalendarMetrics;
 
-	/**
-	 * The next instance to iterate.
-	 */
-	private long mNextInstance;
-
-
-	/**
-	 * Create a new FreqIterator for the given rule and start date.
-	 * 
-	 * @param rule
-	 *            The rule to iterate.
-	 * @param start
-	 *            The first instance to iterate.
-	 */
-	public FreqIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
-	{
-		super(null, calendarMetrics, start);
-		mFreq = rule.getFreq();
-		mInterval = rule.getInterval();
-		mCalendarMetrics = calendarMetrics;
-
-		int year = Instance.year(start);
-		int month = Instance.month(start);
-		int dayOfMonth = Instance.dayOfMonth(start);
-		int dayOfYear = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
-
-		// don't rely on the day of week field being set properly
-		mNextInstance = Instance.setDayOfWeek(start, mCalendarMetrics.getDayOfWeek(year, dayOfYear));
-	}
+  /**
+   * The next instance to iterate.
+   */
+  private long mNextInstance;
 
 
-	@Override
-	public long next()
-	{
-		final CalendarMetrics calendarMetrics = mCalendarMetrics;
+  /**
+   * Create a new FreqIterator for the given rule and start date.
+   * 
+   * @param rule
+   *            The rule to iterate.
+   * @param start
+   *            The first instance to iterate.
+   */
+  public FreqIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
+  {
+    super(null, calendarMetrics, start);
+    mFreq = rule.getFreq();
+    mInterval = rule.getInterval();
+    mCalendarMetrics = calendarMetrics;
 
-		long result;
-		int errorCountdown = MAX_EMPTY_SETS;
-		do
-		{
-			// ensure we're not trapped in an infinite loop
-			if (--errorCountdown < 0)
-			{
-				throw new IllegalArgumentException("too many empty recurrence sets");
-			}
+    int year = Instance.year(start);
+    int month = Instance.month(start);
+    int dayOfMonth = Instance.dayOfMonth(start);
+    int dayOfYear = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
 
-			result = mNextInstance;
-			mNextInstance = mFreq.next(calendarMetrics, result, mInterval);
-		} while (mFilterCount > 0 && filter(result));
-
-		return result;
-	}
-
-
-	@Override
-	LongArray nextSet()
-	{
-		mResultSet.clear();
-		mResultSet.add(next());
-		return mResultSet;
-	}
+    // don't rely on the day of week field being set properly
+    mNextInstance = Instance.setDayOfWeek(start, mCalendarMetrics.getDayOfWeek(year, dayOfYear));
+  }
 
 
-	@Override
-	void expand(long instance, long start)
-	{
-		// we don't need that.
-	}
+  @Override
+  public long next()
+  {
+    final CalendarMetrics calendarMetrics = mCalendarMetrics;
+
+    long result;
+    int errorCountdown = MAX_EMPTY_SETS;
+    do
+    {
+      // ensure we're not trapped in an infinite loop
+      if (--errorCountdown < 0)
+      {
+        throw new IllegalArgumentException("too many empty recurrence sets");
+      }
+
+      result = mNextInstance;
+      mNextInstance = mFreq.next(calendarMetrics, result, mInterval);
+    } while (mFilterCount > 0 && filter(result));
+
+    return result;
+  }
 
 
-	@Override
-	void fastForward(long untilInstance)
-	{
-		mNextInstance = mFreq.next(mCalendarMetrics, mNextInstance, mInterval, untilInstance);
-	}
+  @Override
+  LongArray nextSet()
+  {
+    mResultSet.clear();
+    mResultSet.add(next());
+    return mResultSet;
+  }
+
+
+  @Override
+  void expand(long instance, long start)
+  {
+    // we don't need that.
+  }
+
+
+  @Override
+  void fastForward(long untilInstance)
+  {
+    mNextInstance = mFreq.next(mCalendarMetrics, mNextInstance, mInterval, untilInstance);
+  }
 }

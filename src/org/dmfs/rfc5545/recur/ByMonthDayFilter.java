@@ -33,29 +33,29 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class ByMonthDayFilter extends ByFilter
 {
-	/**
-	 * A list of days of month to let pass.
-	 */
-	private final int[] mMonthDays;
+  /**
+   * A list of days of month to let pass.
+   */
+  private final int[] mMonthDays;
 
 
-	public ByMonthDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
-	{
-		super(calendarMetrics);
+  public ByMonthDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
+  {
+    super(calendarMetrics);
 
-		// get a list of the month days
-		mMonthDays = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTHDAY));
+    // get a list of the month days
+    mMonthDays = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTHDAY));
 
-	}
+  }
 
 
-	@Override
-	boolean filter(long instance)
-	{
-		int monthDays = mCalendarMetrics.getDaysPerPackedMonth(Instance.year(instance), Instance.month(instance));
-		int dayOfMonth = Instance.dayOfMonth(instance);
-		return (StaticUtils.linearSearch(mMonthDays, dayOfMonth) < 0 && StaticUtils.linearSearch(mMonthDays, dayOfMonth - 1 - monthDays) < 0)
-			|| dayOfMonth > monthDays;
-	}
+  @Override
+  boolean filter(long instance)
+  {
+    int monthDays = mCalendarMetrics.getDaysPerPackedMonth(Instance.year(instance), Instance.month(instance));
+    int dayOfMonth = Instance.dayOfMonth(instance);
+    return (StaticUtils.linearSearch(mMonthDays, dayOfMonth) < 0 && StaticUtils.linearSearch(mMonthDays, dayOfMonth - 1 - monthDays) < 0)
+      || dayOfMonth > monthDays;
+  }
 
 }

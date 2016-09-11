@@ -33,62 +33,62 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class ByMonthFilter extends ByFilter
 {
-	/**
-	 * The list of months to let pass.
-	 */
-	private final int[] mMonths;
+  /**
+   * The list of months to let pass.
+   */
+  private final int[] mMonths;
 
-	/**
-	 * Whether to allow weeks that overlap one of the months in {@link #mMonths} to pass. This is important if the rule is weekly and a BY*DAY filter is
-	 * present.
-	 */
-	private final boolean mAllowOverlappingWeeks;
-
-
-	public ByMonthFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
-	{
-		super(calendarMetrics);
-		mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
-
-		/*
-		 * If we expand day-wise in a weekly interval we'll have to keep overlapping weeks, otherwise we may loose instances.
-		 * 
-		 * The day filters will remove the invalid instances later.
-		 */
-		mAllowOverlappingWeeks = rule.getFreq() == Freq.WEEKLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
-	}
+  /**
+   * Whether to allow weeks that overlap one of the months in {@link #mMonths} to pass. This is important if the rule is weekly and a BY*DAY filter is
+   * present.
+   */
+  private final boolean mAllowOverlappingWeeks;
 
 
-	@Override
-	boolean filter(long instance)
-	{
-		final int month = Instance.month(instance);
-		if (!mAllowOverlappingWeeks)
-		{
-			return StaticUtils.linearSearch(mMonths, month) < 0;
-		}
-		else
-		{
-			int[] months = mMonths;
-			CalendarMetrics calendarMetrics = mCalendarMetrics;
+  public ByMonthFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
+  {
+    super(calendarMetrics);
+    mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
 
-			if (StaticUtils.linearSearch(months, month) >= 0)
-			{
-				return false;
-			}
+    /*
+     * If we expand day-wise in a weekly interval we'll have to keep overlapping weeks, otherwise we may loose instances.
+     * 
+     * The day filters will remove the invalid instances later.
+     */
+    mAllowOverlappingWeeks = rule.getFreq() == Freq.WEEKLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
+  }
 
-			long startOfWeek = calendarMetrics.startOfWeek(instance);
 
-			// check if the month of the week start is in mMonths
-			if (StaticUtils.linearSearch(months, Instance.month(startOfWeek)) >= 0)
-			{
-				return false;
-			}
+  @Override
+  boolean filter(long instance)
+  {
+    final int month = Instance.month(instance);
+    if (!mAllowOverlappingWeeks)
+    {
+      return StaticUtils.linearSearch(mMonths, month) < 0;
+    }
+    else
+    {
+      int[] months = mMonths;
+      CalendarMetrics calendarMetrics = mCalendarMetrics;
 
-			long endOfWeek = calendarMetrics.nextDay(startOfWeek, 6);
+      if (StaticUtils.linearSearch(months, month) >= 0)
+      {
+        return false;
+      }
 
-			// check if the month of the week end is in mMonths
-			return StaticUtils.linearSearch(months, Instance.month(endOfWeek)) < 0;
-		}
-	}
+      long startOfWeek = calendarMetrics.startOfWeek(instance);
+
+      // check if the month of the week start is in mMonths
+      if (StaticUtils.linearSearch(months, Instance.month(startOfWeek)) >= 0)
+      {
+        return false;
+      }
+
+      long endOfWeek = calendarMetrics.nextDay(startOfWeek, 6);
+
+      // check if the month of the week end is in mMonths
+      return StaticUtils.linearSearch(months, Instance.month(endOfWeek)) < 0;
+    }
+  }
 }

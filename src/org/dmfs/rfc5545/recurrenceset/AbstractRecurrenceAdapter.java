@@ -29,86 +29,86 @@ import java.util.TimeZone;
 public abstract class AbstractRecurrenceAdapter
 {
 
-	interface InstanceIterator
-	{
+  interface InstanceIterator
+  {
 
-		/**
-		 * Check if there is at least one more instance to iterate.
-		 * 
-		 * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> otherwise.
-		 */
-		abstract boolean hasNext();
-
-
-		/**
-		 * Get the next instance of this set. Do not call this if {@link #hasNext()} returns <code>false</code>.
-		 * 
-		 * @return The time in milliseconds since the epoch of the next instance.
-		 * @throws ArrayIndexOutOfBoundsException
-		 *             if there are no more instances.
-		 */
-		abstract long next();
+    /**
+     * Check if there is at least one more instance to iterate.
+     * 
+     * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> otherwise.
+     */
+    abstract boolean hasNext();
 
 
-		/**
-		 * Peek at the upcoming instance without actually iterating it. Use {@link #hasNext()} to check if there are any more instances before calling this
-		 * method.
-		 * 
-		 * @return The next instance of this set of instances.
-		 * @throws ArrayIndexOutOfBoundsException
-		 *             if there are no more instances.
-		 */
-		abstract long peek();
+    /**
+     * Get the next instance of this set. Do not call this if {@link #hasNext()} returns <code>false</code>.
+     * 
+     * @return The time in milliseconds since the epoch of the next instance.
+     * @throws ArrayIndexOutOfBoundsException
+     *             if there are no more instances.
+     */
+    abstract long next();
 
 
-		/**
-		 * Skip the given number of instances.
-		 * 
-		 * @param count
-		 *            The number of instances to skip.
-		 */
-		abstract void skip(int count);
+    /**
+     * Peek at the upcoming instance without actually iterating it. Use {@link #hasNext()} to check if there are any more instances before calling this
+     * method.
+     * 
+     * @return The next instance of this set of instances.
+     * @throws ArrayIndexOutOfBoundsException
+     *             if there are no more instances.
+     */
+    abstract long peek();
 
 
-		/**
-		 * Skip all instances till <code>until</code>. If <code>until</code> is an instance itself it will be the next iterated instance. If the rule doesn't
-		 * recur till that date the next call to {@link #hasNext()} will return <code>false</code>.
-		 * 
-		 * @param until
-		 *            A time stamp of the date to fast forward to.
-		 */
-		abstract void fastForward(long until);
-
-	}
+    /**
+     * Skip the given number of instances.
+     * 
+     * @param count
+     *            The number of instances to skip.
+     */
+    abstract void skip(int count);
 
 
-	/**
-	 * Get an iterator for this adapter.
-	 * 
-	 * @param timezone
-	 *            The {@link TimeZone} of the first instance.
-	 * @param start
-	 *            The start date in milliseconds since the epoch.
-	 */
-	abstract InstanceIterator getIterator(TimeZone timezone, long start);
+    /**
+     * Skip all instances till <code>until</code>. If <code>until</code> is an instance itself it will be the next iterated instance. If the rule doesn't
+     * recur till that date the next call to {@link #hasNext()} will return <code>false</code>.
+     * 
+     * @param until
+     *            A time stamp of the date to fast forward to.
+     */
+    abstract void fastForward(long until);
+
+  }
 
 
-	/**
-	 * Returns whether this adapter iterates an infinite number of instances.
-	 * 
-	 * @return <code>true</code> if the instances in this adapter are not limited, <code>false</code> otherwise.
-	 */
-	abstract boolean isInfinite();
+  /**
+   * Get an iterator for this adapter.
+   * 
+   * @param timezone
+   *            The {@link TimeZone} of the first instance.
+   * @param start
+   *            The start date in milliseconds since the epoch.
+   */
+  abstract InstanceIterator getIterator(TimeZone timezone, long start);
 
 
-	/**
-	 * Returns the last instance this adapter will iterate or {@link Long#MAX_VALUE} if {@link #isInfinite()} returns <code>true</code>.
-	 * 
-	 * @param timezone
-	 *            The {@link TimeZone} of the first instance.
-	 * @param start
-	 *            The start date in milliseconds since the epoch.
-	 * @return The last instance in milliseconds since the epoch.
-	 */
-	abstract long getLastInstance(TimeZone timezone, long start);
+  /**
+   * Returns whether this adapter iterates an infinite number of instances.
+   * 
+   * @return <code>true</code> if the instances in this adapter are not limited, <code>false</code> otherwise.
+   */
+  abstract boolean isInfinite();
+
+
+  /**
+   * Returns the last instance this adapter will iterate or {@link Long#MAX_VALUE} if {@link #isInfinite()} returns <code>true</code>.
+   * 
+   * @param timezone
+   *            The {@link TimeZone} of the first instance.
+   * @param start
+   *            The start date in milliseconds since the epoch.
+   * @return The last instance in milliseconds since the epoch.
+   */
+  abstract long getLastInstance(TimeZone timezone, long start);
 }

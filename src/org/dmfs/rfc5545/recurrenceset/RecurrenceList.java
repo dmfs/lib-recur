@@ -31,160 +31,160 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
  */
 public final class RecurrenceList extends AbstractRecurrenceAdapter
 {
-	class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
-	{
-		private int mNext;
+  class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
+  {
+    private int mNext;
 
 
-		public InstanceIterator(long start)
-		{
-			fastForward(start);
-		}
+    public InstanceIterator(long start)
+    {
+      fastForward(start);
+    }
 
 
-		@Override
-		public boolean hasNext()
-		{
-			return mNext < mCount;
-		}
+    @Override
+    public boolean hasNext()
+    {
+      return mNext < mCount;
+    }
 
 
-		@Override
-		public long next()
-		{
-			if (mNext >= mCount)
-			{
-				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-			}
-			return mInstances[mNext++];
-		}
+    @Override
+    public long next()
+    {
+      if (mNext >= mCount)
+      {
+        throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+      }
+      return mInstances[mNext++];
+    }
 
 
-		@Override
-		public long peek()
-		{
-			if (mNext >= mCount)
-			{
-				throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-			}
-			return mInstances[mNext];
-		}
+    @Override
+    public long peek()
+    {
+      if (mNext >= mCount)
+      {
+        throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
+      }
+      return mInstances[mNext];
+    }
 
 
-		@Override
-		public void skip(int count)
-		{
-			mNext += count;
-		}
+    @Override
+    public void skip(int count)
+    {
+      mNext += count;
+    }
 
 
-		@Override
-		public void fastForward(long until)
-		{
-			int count = mCount;
-			int next = mNext;
-			long[] instances = mInstances;
-			while (next < count && instances[next] < until)
-			{
-				++next;
-			}
-			mNext = next;
-		}
-	}
+    @Override
+    public void fastForward(long until)
+    {
+      int count = mCount;
+      int next = mNext;
+      long[] instances = mInstances;
+      while (next < count && instances[next] < until)
+      {
+        ++next;
+      }
+      mNext = next;
+    }
+  }
 
-	/**
-	 * The instances to iterate.
-	 */
-	private final long[] mInstances;
+  /**
+   * The instances to iterate.
+   */
+  private final long[] mInstances;
 
-	/**
-	 * The number of instances in {@link #mInstances}.
-	 */
-	private final int mCount;
-
-
-	/**
-	 * Create an adapter for the instances in <code>list</code>.
-	 * 
-	 * @param list
-	 *            A comma separated list of instances using the date-time format as defined in RFC 5545.
-	 * @param timeZone
-	 *            The time zone to apply to the instances.
-	 */
-	public RecurrenceList(String list, TimeZone timeZone)
-	{
-		this(DateTime.GREGORIAN_CALENDAR_SCALE, list, timeZone);
-	}
+  /**
+   * The number of instances in {@link #mInstances}.
+   */
+  private final int mCount;
 
 
-	/**
-	 * Create an adapter for the instances in <code>list</code>.
-	 * 
-	 * @param calendarMetrics
-	 *            The calendar scale to use.
-	 * @param list
-	 *            A comma separated list of instances using the date-time format as defined in RFC 5545.
-	 * @param timeZone
-	 *            The time zone to apply to the instances.
-	 */
-	public RecurrenceList(CalendarMetrics calendarMetrics, String list, TimeZone timeZone)
-	{
-		if (list == null || list.length() == 0)
-		{
-			mInstances = null;
-			mCount = 0;
-			return;
-		}
-
-		String[] instances = list.split(",");
-		mInstances = new long[instances.length];
-		int count = 0;
-
-		for (String instanceString : instances)
-		{
-			DateTime instance = DateTime.parse(calendarMetrics, timeZone, instanceString);
-			mInstances[count] = instance.getTimestamp();
-			++count;
-		}
-		mCount = count;
-		Arrays.sort(mInstances);
-	}
+  /**
+   * Create an adapter for the instances in <code>list</code>.
+   * 
+   * @param list
+   *            A comma separated list of instances using the date-time format as defined in RFC 5545.
+   * @param timeZone
+   *            The time zone to apply to the instances.
+   */
+  public RecurrenceList(String list, TimeZone timeZone)
+  {
+    this(DateTime.GREGORIAN_CALENDAR_SCALE, list, timeZone);
+  }
 
 
-	/**
-	 * Create an adapter for the instances in <code>list</code>.
-	 * 
-	 * @param instances
-	 *            An array of instance time stamps in milliseconds.
-	 */
-	public RecurrenceList(long[] instances)
-	{
-		mInstances = new long[instances.length];
-		System.arraycopy(instances, 0, mInstances, 0, instances.length);
-		mCount = instances.length;
-		Arrays.sort(mInstances);
-	}
+  /**
+   * Create an adapter for the instances in <code>list</code>.
+   * 
+   * @param calendarMetrics
+   *            The calendar scale to use.
+   * @param list
+   *            A comma separated list of instances using the date-time format as defined in RFC 5545.
+   * @param timeZone
+   *            The time zone to apply to the instances.
+   */
+  public RecurrenceList(CalendarMetrics calendarMetrics, String list, TimeZone timeZone)
+  {
+    if (list == null || list.length() == 0)
+    {
+      mInstances = null;
+      mCount = 0;
+      return;
+    }
+
+    String[] instances = list.split(",");
+    mInstances = new long[instances.length];
+    int count = 0;
+
+    for (String instanceString : instances)
+    {
+      DateTime instance = DateTime.parse(calendarMetrics, timeZone, instanceString);
+      mInstances[count] = instance.getTimestamp();
+      ++count;
+    }
+    mCount = count;
+    Arrays.sort(mInstances);
+  }
 
 
-	@Override
-	InstanceIterator getIterator(TimeZone timezone, long start)
-	{
-		return new InstanceIterator(start);
-	}
+  /**
+   * Create an adapter for the instances in <code>list</code>.
+   * 
+   * @param instances
+   *            An array of instance time stamps in milliseconds.
+   */
+  public RecurrenceList(long[] instances)
+  {
+    mInstances = new long[instances.length];
+    System.arraycopy(instances, 0, mInstances, 0, instances.length);
+    mCount = instances.length;
+    Arrays.sort(mInstances);
+  }
 
 
-	@Override
-	boolean isInfinite()
-	{
-		// the given lists are always finite
-		return false;
-	}
+  @Override
+  InstanceIterator getIterator(TimeZone timezone, long start)
+  {
+    return new InstanceIterator(start);
+  }
 
 
-	@Override
-	long getLastInstance(TimeZone timezone, long start)
-	{
-		long[] instances = mInstances;
-		return instances[instances.length - 1];
-	}
+  @Override
+  boolean isInfinite()
+  {
+    // the given lists are always finite
+    return false;
+  }
+
+
+  @Override
+  long getLastInstance(TimeZone timezone, long start)
+  {
+    long[] instances = mInstances;
+    return instances[instances.length - 1];
+  }
 }

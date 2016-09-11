@@ -29,26 +29,26 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class ByMinuteExpander extends ByExpander
 {
-	/**
-	 * The list of minutes from the recurrence rule.
-	 */
-	private final int[] mMinutes;
+  /**
+   * The list of minutes from the recurrence rule.
+   */
+  private final int[] mMinutes;
 
 
-	public ByMinuteExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
-	{
-		super(previous, calendarTools, start);
-		mMinutes = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMINUTE));
-	}
+  public ByMinuteExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
+  {
+    super(previous, calendarTools, start);
+    mMinutes = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYMINUTE));
+  }
 
 
-	@Override
-	void expand(long instance, long start)
-	{
-		// add a new instance for every minute value in the list
-		for (int minute : mMinutes)
-		{
-			addInstance(Instance.setMinute(instance, minute));
-		}
-	}
+  @Override
+  void expand(long instance, long start)
+  {
+    // add a new instance for every minute value in the list
+    for (int minute : mMinutes)
+    {
+      addInstance(Instance.setMinute(instance, minute));
+    }
+  }
 }

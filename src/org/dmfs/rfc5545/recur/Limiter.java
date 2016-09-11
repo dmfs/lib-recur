@@ -25,40 +25,40 @@ package org.dmfs.rfc5545.recur;
  */
 abstract class Limiter extends RuleIterator
 {
-	/**
-	 * Constructor for Limiter that just passes through the <code>previous</code> parameter.
-	 * 
-	 * @param previous
-	 *            The previous iterator instance.
-	 */
-	Limiter(RuleIterator previous)
-	{
-		super(previous);
-	}
+  /**
+   * Constructor for Limiter that just passes through the <code>previous</code> parameter.
+   * 
+   * @param previous
+   *            The previous iterator instance.
+   */
+  Limiter(RuleIterator previous)
+  {
+    super(previous);
+  }
 
 
-	@Override
-	public long next()
-	{
-		long instance = mPrevious.next();
-		return stop(instance) ? Long.MIN_VALUE : instance;
-	}
+  @Override
+  public long next()
+  {
+    long instance = mPrevious.next();
+    return stop(instance) ? Long.MIN_VALUE : instance;
+  }
 
 
-	@Override
-	LongArray nextSet()
-	{
-		throw new UnsupportedOperationException("nextSet is not implemented for Limiters, since it should never be called");
-	}
+  @Override
+  LongArray nextSet()
+  {
+    throw new UnsupportedOperationException("nextSet is not implemented for Limiters, since it should never be called");
+  }
 
 
-	/**
-	 * Returns true if the last instance has been iterated.
-	 * 
-	 * @param instance
-	 *            The instance to check.
-	 * @return <code>true</code> if the limit of the recurrence set has been reached and no more instances should be iterated.
-	 */
-	abstract boolean stop(long instance);
+  /**
+   * Returns true if the last instance has been iterated.
+   * 
+   * @param instance
+   *            The instance to check.
+   * @return <code>true</code> if the limit of the recurrence set has been reached and no more instances should be iterated.
+   */
+  abstract boolean stop(long instance);
 
 }

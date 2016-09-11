@@ -36,131 +36,131 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
  */
 public final class FastBirthdayIterator extends ByExpander
 {
-	/**
-	 * The interval of the rule.
-	 */
-	private final int mInterval;
+  /**
+   * The interval of the rule.
+   */
+  private final int mInterval;
 
-	/**
-	 * A {@link LongArray} to hold the instances of the current interval.
-	 */
-	private final LongArray mResultSet = new LongArray(1);
+  /**
+   * A {@link LongArray} to hold the instances of the current interval.
+   */
+  private final LongArray mResultSet = new LongArray(1);
 
-	/**
-	 * The next instance to iterate.
-	 */
-	private long mNextInstance;
-
-
-	/**
-	 * Create a new BirthdayTypeIterator for the given rule and start date.
-	 * 
-	 * @param rule
-	 *            The rule to iterate.
-	 * @param calendarMetrics
-	 *            The {@link CalendarMetrics} to use.
-	 * @param start
-	 *            The first instance to iterate.
-	 */
-	private FastBirthdayIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long firstInstance)
-	{
-		super(null, calendarMetrics, firstInstance);
-
-		int interval = rule.getInterval();
-
-		mInterval = rule.getFreq() == Freq.MONTHLY ? interval > 12 ? interval / 12 : 1 : interval;
-
-		mNextInstance = firstInstance;
-	}
+  /**
+   * The next instance to iterate.
+   */
+  private long mNextInstance;
 
 
-	/**
-	 * Get an instance of a {@link FastBirthdayIterator} for the given rule.
-	 * 
-	 * @param rule
-	 *            The {@link RecurrenceRule} to iterate.
-	 * @param calendarMetrics
-	 *            The {@link CalendarMetrics} to use.
-	 * @param start
-	 *            The first instance.
-	 * @return A {@link FastBirthdayIterator} instance or <code>null</code> if the rule is not suitable for this kind of optimization.
-	 */
-	public static FastBirthdayIterator getInstance(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
-	{
-		if (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYWEEKNO) || rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE)
-			|| rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS) || rule.getSkip() != Skip.OMIT)
-		{
-			return null;
-		}
+  /**
+   * Create a new BirthdayTypeIterator for the given rule and start date.
+   * 
+   * @param rule
+   *            The rule to iterate.
+   * @param calendarMetrics
+   *            The {@link CalendarMetrics} to use.
+   * @param start
+   *            The first instance to iterate.
+   */
+  private FastBirthdayIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long firstInstance)
+  {
+    super(null, calendarMetrics, firstInstance);
 
-		Freq freq = rule.getFreq();
-		List<Integer> months = rule.getByPart(Part.BYMONTH);
-		List<Integer> days = rule.getByPart(Part.BYMONTHDAY);
+    int interval = rule.getInterval();
 
-		if (freq == Freq.MONTHLY)
-		{
-			int interval = rule.getInterval();
-			if (interval == 5 || interval > 6 && interval % 12 != 0)
-			{
-				// monthly interval is not a divider or a multiple of 12 (a full year).
-				return null;
-			}
-		}
+    mInterval = rule.getFreq() == Freq.MONTHLY ? interval > 12 ? interval / 12 : 1 : interval;
 
-		if (months != null
-			&& months.size() == 1
-			&& (days == null && (freq == Freq.MONTHLY || freq == Freq.YEARLY) || (days != null && days.size() == 1 && days.get(0) > 0 && (freq == Freq.MONTHLY
-				|| freq == Freq.YEARLY || freq == Freq.DAILY))) || (freq == Freq.YEARLY && months == null && days == null))
-		{
-
-			// adjust month if given
-			if (months != null)
-			{
-				start = Instance.setMonth(start, months.get(0));
-			}
-
-			// adjust day of month if given
-			if (days != null)
-			{
-				start = Instance.setDayOfMonth(start, days.get(0));
-			}
-
-			return new FastBirthdayIterator(rule, calendarMetrics, start);
-		}
-		return null;
-	}
+    mNextInstance = firstInstance;
+  }
 
 
-	@Override
-	public long next()
-	{
-		long result = mNextInstance;
-		mNextInstance = Instance.setYear(mNextInstance, Instance.year(mNextInstance) + mInterval);
-		return result;
-	}
+  /**
+   * Get an instance of a {@link FastBirthdayIterator} for the given rule.
+   * 
+   * @param rule
+   *            The {@link RecurrenceRule} to iterate.
+   * @param calendarMetrics
+   *            The {@link CalendarMetrics} to use.
+   * @param start
+   *            The first instance.
+   * @return A {@link FastBirthdayIterator} instance or <code>null</code> if the rule is not suitable for this kind of optimization.
+   */
+  public static FastBirthdayIterator getInstance(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start)
+  {
+    if (rule.hasPart(Part.BYDAY) || rule.hasPart(Part.BYYEARDAY) || rule.hasPart(Part.BYWEEKNO) || rule.hasPart(Part.BYHOUR) || rule.hasPart(Part.BYMINUTE)
+      || rule.hasPart(Part.BYSECOND) || rule.hasPart(Part.BYSETPOS) || rule.getSkip() != Skip.OMIT)
+    {
+      return null;
+    }
+
+    Freq freq = rule.getFreq();
+    List<Integer> months = rule.getByPart(Part.BYMONTH);
+    List<Integer> days = rule.getByPart(Part.BYMONTHDAY);
+
+    if (freq == Freq.MONTHLY)
+    {
+      int interval = rule.getInterval();
+      if (interval == 5 || interval > 6 && interval % 12 != 0)
+      {
+        // monthly interval is not a divider or a multiple of 12 (a full year).
+        return null;
+      }
+    }
+
+    if (months != null
+      && months.size() == 1
+      && (days == null && (freq == Freq.MONTHLY || freq == Freq.YEARLY) || (days != null && days.size() == 1 && days.get(0) > 0 && (freq == Freq.MONTHLY
+        || freq == Freq.YEARLY || freq == Freq.DAILY))) || (freq == Freq.YEARLY && months == null && days == null))
+    {
+
+      // adjust month if given
+      if (months != null)
+      {
+        start = Instance.setMonth(start, months.get(0));
+      }
+
+      // adjust day of month if given
+      if (days != null)
+      {
+        start = Instance.setDayOfMonth(start, days.get(0));
+      }
+
+      return new FastBirthdayIterator(rule, calendarMetrics, start);
+    }
+    return null;
+  }
 
 
-	@Override
-	LongArray nextSet()
-	{
-		mResultSet.clear();
-		mResultSet.add(next());
-		return mResultSet;
-	}
+  @Override
+  public long next()
+  {
+    long result = mNextInstance;
+    mNextInstance = Instance.setYear(mNextInstance, Instance.year(mNextInstance) + mInterval);
+    return result;
+  }
 
 
-	@Override
-	void expand(long instance, long start)
-	{
-		// we don't need that.
-	}
+  @Override
+  LongArray nextSet()
+  {
+    mResultSet.clear();
+    mResultSet.add(next());
+    return mResultSet;
+  }
 
 
-	@Override
-	void fastForward(long untilInstance)
-	{
-		int untilYear = Instance.year(untilInstance);
-		int nextYear = Instance.year(mNextInstance);
-		mNextInstance = Instance.setYear(mNextInstance, nextYear + (Math.max(0, untilYear - nextYear) % mInterval) * mInterval);
-	}
+  @Override
+  void expand(long instance, long start)
+  {
+    // we don't need that.
+  }
+
+
+  @Override
+  void fastForward(long untilInstance)
+  {
+    int untilYear = Instance.year(untilInstance);
+    int nextYear = Instance.year(mNextInstance);
+    mNextInstance = Instance.setYear(mNextInstance, nextYear + (Math.max(0, untilYear - nextYear) % mInterval) * mInterval);
+  }
 }

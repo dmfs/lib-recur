@@ -29,26 +29,26 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class ByHourExpander extends ByExpander
 {
-	/**
-	 * The hour list from the rule.
-	 */
-	private final int[] mHours;
+  /**
+   * The hour list from the rule.
+   */
+  private final int[] mHours;
 
 
-	public ByHourExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
-	{
-		super(previous, calendarTools, start);
-		mHours = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYHOUR));
-	}
+  public ByHourExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
+  {
+    super(previous, calendarTools, start);
+    mHours = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYHOUR));
+  }
 
 
-	@Override
-	void expand(long instance, long start)
-	{
-		// add a new instance for every hour in mHours
-		for (int hour : mHours)
-		{
-			addInstance(Instance.setHour(instance, hour));
-		}
-	}
+  @Override
+  void expand(long instance, long start)
+  {
+    // add a new instance for every hour in mHours
+    for (int hour : mHours)
+    {
+      addInstance(Instance.setHour(instance, hour));
+    }
+  }
 }

@@ -34,26 +34,26 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class ByYearDayFilter extends ByFilter
 {
-	/**
-	 * The year days to let pass.
-	 */
-	private final int[] mYearDays;
+  /**
+   * The year days to let pass.
+   */
+  private final int[] mYearDays;
 
 
-	public ByYearDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
-	{
-		super(calendarMetrics);
+  public ByYearDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
+  {
+    super(calendarMetrics);
 
-		mYearDays = StaticUtils.ListToArray(rule.getByPart(Part.BYYEARDAY));
-	}
+    mYearDays = StaticUtils.ListToArray(rule.getByPart(Part.BYYEARDAY));
+  }
 
 
-	@Override
-	boolean filter(long instance)
-	{
-		int year = Instance.year(instance);
-		int yearDays = mCalendarMetrics.getDaysPerYear(year);
-		int dayOfYear = mCalendarMetrics.getDayOfYear(year, Instance.month(instance), Instance.dayOfMonth(instance));
-		return StaticUtils.linearSearch(mYearDays, dayOfYear) < 0 && StaticUtils.linearSearch(mYearDays, dayOfYear - yearDays) < 0 || dayOfYear > yearDays;
-	}
+  @Override
+  boolean filter(long instance)
+  {
+    int year = Instance.year(instance);
+    int yearDays = mCalendarMetrics.getDaysPerYear(year);
+    int dayOfYear = mCalendarMetrics.getDayOfYear(year, Instance.month(instance), Instance.dayOfMonth(instance));
+    return StaticUtils.linearSearch(mYearDays, dayOfYear) < 0 && StaticUtils.linearSearch(mYearDays, dayOfYear - yearDays) < 0 || dayOfYear > yearDays;
+  }
 }

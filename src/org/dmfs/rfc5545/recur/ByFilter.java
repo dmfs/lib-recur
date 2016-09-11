@@ -28,24 +28,24 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 abstract class ByFilter
 {
 
-	/**
-	 * The {@link CalendarMetrics} to use.
-	 */
-	final CalendarMetrics mCalendarMetrics;
+  /**
+   * The {@link CalendarMetrics} to use.
+   */
+  final CalendarMetrics mCalendarMetrics;
 
 
-	public ByFilter(CalendarMetrics calendarMetrics)
-	{
-		mCalendarMetrics = calendarMetrics;
-	}
+  public ByFilter(CalendarMetrics calendarMetrics)
+  {
+    mCalendarMetrics = calendarMetrics;
+  }
 
 
-	/**
-	 * Filter an instance. This method determines if a given {@link Instance} should be removed from the result set or not.
-	 * 
-	 * @param instance
-	 *            The instance to filter.
-	 * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
-	 */
-	abstract boolean filter(long instance);
+  /**
+   * Filter an instance. This method determines if a given {@link Instance} should be removed from the result set or not.
+   * 
+   * @param instance
+   *            The instance to filter.
+   * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
+   */
+  abstract boolean filter(long instance);
 }

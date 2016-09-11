@@ -30,94 +30,94 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  */
 final class BySetPosFilter extends RuleIterator
 {
-	/**
-	 * Max. number of empty sets to pass before throwing an exception.
-	 */
-	private final static int MAX_EMPTY_SETS = 1000;
+  /**
+   * Max. number of empty sets to pass before throwing an exception.
+   */
+  private final static int MAX_EMPTY_SETS = 1000;
 
-	/**
-	 * The positions in the set to filter by.
-	 */
-	private final int[] mSetPositions;
+  /**
+   * The positions in the set to filter by.
+   */
+  private final int[] mSetPositions;
 
-	/**
-	 * An {@link Iterator} to iterate over the elements in the resulting set. This is used by {@link #next()}.
-	 */
-	private LongArray mSetIterator;
+  /**
+   * An {@link Iterator} to iterate over the elements in the resulting set. This is used by {@link #next()}.
+   */
+  private LongArray mSetIterator;
 
-	/**
-	 * This indicates that the next instance to return is the first instance.
-	 */
-	private boolean mFirst = true;
+  /**
+   * This indicates that the next instance to return is the first instance.
+   */
+  private boolean mFirst = true;
 
-	/**
-	 * The set we return to subsequent filters.
-	 */
-	private final LongArray mResultSet = new LongArray();
+  /**
+   * The set we return to subsequent filters.
+   */
+  private final LongArray mResultSet = new LongArray();
 
-	private final long mStart;
-
-
-	public BySetPosFilter(RecurrenceRule rule, RuleIterator previous, long start)
-	{
-		super(previous);
-		mSetPositions = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSETPOS));
-		mStart = start;
-	}
+  private final long mStart;
 
 
-	@Override
-	public long next()
-	{
-		if (mSetIterator == null || !mSetIterator.hasNext())
-		{
-			mSetIterator = nextSet();
-		}
-		return mSetIterator.next();
-	}
+  public BySetPosFilter(RecurrenceRule rule, RuleIterator previous, long start)
+  {
+    super(previous);
+    mSetPositions = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSETPOS));
+    mStart = start;
+  }
 
 
-	@Override
-	LongArray nextSet()
-	{
-		final LongArray resultSet = mResultSet;
-		final int[] setPositions = mSetPositions;
-		resultSet.clear();
+  @Override
+  public long next()
+  {
+    if (mSetIterator == null || !mSetIterator.hasNext())
+    {
+      mSetIterator = nextSet();
+    }
+    return mSetIterator.next();
+  }
 
-		if (mFirst)
-		{
-			resultSet.add(mStart);
-			mFirst = false;
-		}
 
-		boolean done = false;
-		int counter = -1;
-		do
-		{
-			if (++counter == MAX_EMPTY_SETS)
-			{
-				throw new IllegalStateException("too many empty recurrence sets");
-			}
+  @Override
+  LongArray nextSet()
+  {
+    final LongArray resultSet = mResultSet;
+    final int[] setPositions = mSetPositions;
+    resultSet.clear();
 
-			LongArray nextSet = mPrevious.nextSet();
+    if (mFirst)
+    {
+      resultSet.add(mStart);
+      mFirst = false;
+    }
 
-			int limit = nextSet.size() + 1;
-			int pos = 1;
+    boolean done = false;
+    int counter = -1;
+    do
+    {
+      if (++counter == MAX_EMPTY_SETS)
+      {
+        throw new IllegalStateException("too many empty recurrence sets");
+      }
 
-			// iterate over all instances and check if their position is in setPositions
-			while (nextSet.hasNext())
-			{
-				long d = nextSet.next();
+      LongArray nextSet = mPrevious.nextSet();
 
-				if ((StaticUtils.linearSearch(setPositions, pos) >= 0 || pos < limit && StaticUtils.linearSearch(setPositions, pos - limit) >= 0)
-					&& mStart < Instance.maskWeekday(d))
-				{
-					resultSet.add(d);
-					done = true;
-				}
-				++pos;
-			}
-		} while (!done);
-		return resultSet;
-	}
+      int limit = nextSet.size() + 1;
+      int pos = 1;
+
+      // iterate over all instances and check if their position is in setPositions
+      while (nextSet.hasNext())
+      {
+        long d = nextSet.next();
+
+        if ((StaticUtils.linearSearch(setPositions, pos) >= 0 || pos < limit && StaticUtils.linearSearch(setPositions, pos - limit) >= 0)
+          && mStart < Instance.maskWeekday(d))
+        {
+          resultSet.add(d);
+          done = true;
+        }
+        ++pos;
+      }
+    } while (!done);
+    return resultSet;
+  }
 }

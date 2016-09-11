@@ -31,37 +31,37 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
  */
 final class UntilLimiter extends Limiter
 {
-	/**
-	 * The latest allowed instance start date.
-	 */
-	private final long mUntil;
+  /**
+   * The latest allowed instance start date.
+   */
+  private final long mUntil;
 
 
-	/**
-	 * Create a new limiter for the UNTIL part.
-	 * 
-	 * @param rule
-	 *            The {@link RecurrenceRule} to filter.
-	 * @param previous
-	 *            The previous filter instance.
-	 * @param start
-	 *            The first instance. This is used to determine if the iterated instances are floating or not.
-	 */
-	public UntilLimiter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, TimeZone startTimezone)
-	{
-		super(previous);
-		DateTime until = rule.getUntil();
-		if (!until.isFloating())
-		{
-			until = until.shiftTimeZone(startTimezone);
-		}
-		mUntil = until.getInstance();
-	}
+  /**
+   * Create a new limiter for the UNTIL part.
+   * 
+   * @param rule
+   *            The {@link RecurrenceRule} to filter.
+   * @param previous
+   *            The previous filter instance.
+   * @param start
+   *            The first instance. This is used to determine if the iterated instances are floating or not.
+   */
+  public UntilLimiter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, TimeZone startTimezone)
+  {
+    super(previous);
+    DateTime until = rule.getUntil();
+    if (!until.isFloating())
+    {
+      until = until.shiftTimeZone(startTimezone);
+    }
+    mUntil = until.getInstance();
+  }
 
 
-	@Override
-	boolean stop(long instance)
-	{
-		return mUntil < Instance.maskWeekday(instance);
-	}
+  @Override
+  boolean stop(long instance)
+  {
+    return mUntil < Instance.maskWeekday(instance);
+  }
 }
