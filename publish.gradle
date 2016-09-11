@@ -1,0 +1,137 @@
+if (project.hasProperty('SONATYPE_USERNAME') && project.hasProperty('SONATYPE_PASSWORD')) {
+
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
+    task sourceJar(type: Jar) {
+        classifier "sources"
+        from sourceSets.main.allJava
+    }
+
+    ext {
+        pomFilePath = "${project.projectDir}/pom.xml"
+        pomFile = file(pomFilePath)
+    }
+
+    artifacts {
+        archives jar
+        archives sourceJar
+        archives javadocJar
+        if (pomFile.exists()) {
+            pom pomFile
+        }
+    }
+
+    task signJars(type: Sign, dependsOn: [jar, javadocJar, sourceJar]) {
+        sign configurations.archives
+    }
+
+    task signPom(type: Sign) {
+        sign configurations.pom
+    }
+
+    if (project.ext.pomFile.exists()) {
+        task preparePublication(dependsOn: [signJars, signPom])
+    } else {
+        task preparePublication(dependsOn: signJars)
+    }
+
+    def getSignatureFiles = {
+        def allFiles = project.tasks.signJars.signatureFiles.collect { it }
+        def signedSources = allFiles.find { it.name.contains('-sources') }
+        def signedJavadoc = allFiles.find { it.name.contains('-javadoc') }
+        def signedJar = (allFiles - [signedSources, signedJavadoc])[0]
+        return [
+                [archive: signedSources, classifier: 'sources', extension: 'jar.asc'],
+                [archive: signedJavadoc, classifier: 'javadoc', extension: 'jar.asc'],
+                [archive: signedJar, classifier: null, extension: 'jar.asc']
+        ]
+    }
+
+    def getPomSignature = {
+        return project.tasks.signPom.signatureFiles.collect { it }[0]
+    }
+    publishing {
+        repositories {
+            maven {
+                name 'release'
+                url RELEASE_REPOSITORY
+                credentials {
+                    username SONATYPE_USERNAME
+                    password SONATYPE_PASSWORD
+                }
+            }
+        }
+
+        publications {
+            jar(MavenPublication) {
+                from components.java
+                artifact sourceJar
+                artifact javadocJar
+
+                // fix scope, see https://discuss.gradle.org/t/maven-publish-plugin-generated-pom-making-dependency-scope-runtime/7494
+                pom.withXml {
+                    asNode().dependencies.'*'.findAll() {
+                        it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                            dep.name == it.artifactId.text()
+                        }
+                    }.each() {
+                        it.scope*.value = 'compile'
+                    }
+
+                    asNode().children().last() + {
+                        resolveStrategy = Closure.DELEGATE_FIRST
+                        name project.name
+                        description POM_DESCRIPTION
+                        url POM_PROJECT_URL
+                        scm {
+                            url POM_SCM_URL
+                            connection POM_SCM_CONNECTION
+                            developerConnection POM_SCM_DEVELOPER_CONNECTION
+                        }
+                        licenses {
+                            license {
+                                name POM_LICENSE
+                                url POM_LICENSE_URL
+                            }
+                        }
+                        developers {
+                            developer {
+                                id POM_DEVELOPER_ID
+                                name POM_DEVELOPER_NAME
+                                email POM_DEVELOPER_EMAIL
+                                organization POM_DEVELOPER_ORGANIZATION
+                                organizationUrl POM_DEVELOPER_ORGANIZATION_URL
+                            }
+                        }
+                    }
+                    if (!project.ext.pomFile.exists()) {
+                        writeTo(project.ext.pomFile)
+                    }
+                }
+            }
+
+            if (project.ext.pomFile.exists()) {
+                gpgPom(MavenPublication) {
+                    artifact(getPomSignature()) {
+                        classifier = null
+                        extension = 'pom.asc'
+                    }
+                }
+            }
+            gpgJars(MavenPublication) {
+                getSignatureFiles().each { signature ->
+                    artifact(signature.archive) {
+                        classifier = signature.classifier
+                        extension = signature.extension
+                    }
+                }
+            }
+        }
+    }
+}

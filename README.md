@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dmfs/lib-recur.svg?branch=master)](https://travis-ci.org/dmfs/lib-recur)
+
 # lib-recur
 
 __A recurrence processor for Java__
