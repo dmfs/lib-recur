@@ -29,24 +29,25 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class ByYearDayFilter extends ByFilter
+final class ByYearDayFilter implements ByFilter
 {
     /**
      * The year days to let pass.
      */
     private final int[] mYearDays;
 
+    private final CalendarMetrics mCalendarMetrics;
+
 
     public ByYearDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
     {
-        super(calendarMetrics);
-
+        mCalendarMetrics = calendarMetrics;
         mYearDays = StaticUtils.ListToArray(rule.getByPart(Part.BYYEARDAY));
     }
 
 
     @Override
-    boolean filter(long instance)
+    public boolean filter(long instance)
     {
         int year = Instance.year(instance);
         int yearDays = mCalendarMetrics.getDaysPerYear(year);

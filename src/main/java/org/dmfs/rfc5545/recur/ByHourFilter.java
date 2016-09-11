@@ -18,7 +18,6 @@
 package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.Instance;
-import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
@@ -27,7 +26,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class ByHourFilter extends ByFilter
+final class ByHourFilter implements ByFilter
 {
     /**
      * The hour list from the rule.
@@ -35,15 +34,14 @@ final class ByHourFilter extends ByFilter
     private final int[] mHours;
 
 
-    public ByHourFilter(RecurrenceRule rule, CalendarMetrics calendarTools)
+    public ByHourFilter(RecurrenceRule rule)
     {
-        super(calendarTools);
         mHours = StaticUtils.ListToArray(rule.getByPart(Part.BYHOUR));
     }
 
 
     @Override
-    boolean filter(long instance)
+    public boolean filter(long instance)
     {
         // check that the hour of the instance is in mHours
         return StaticUtils.linearSearch(mHours, Instance.hour(instance)) < 0;

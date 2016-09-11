@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 Marten Gajda <marten@dmfs.org>
+ * Copyright 2016 Marten Gajda <marten@dmfs.org>
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,7 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
  */
 
 package org.dmfs.rfc5545.recur;
@@ -22,29 +22,27 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
- * A filter that limits recurrence rules by seconds.
+ * A trivial "ByMonth" filter that doesn't support overlapping weeks.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-class BySecondFilter implements ByFilter
+final class TrivialByMonthFilter implements ByFilter
 {
     /**
-     * The list of minutes from the recurrence rule.
+     * The list of months to let pass.
      */
-    private final int[] mSeconds;
+    private final int[] mMonths;
 
 
-    public BySecondFilter(RecurrenceRule rule)
+    public TrivialByMonthFilter(RecurrenceRule rule)
     {
-        mSeconds = StaticUtils.ListToArray(rule.getByPart(Part.BYSECOND));
+        mMonths = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTH));
     }
 
 
     @Override
     public boolean filter(long instance)
     {
-        // filter all minutes not in the list
-        return StaticUtils.linearSearch(mSeconds, Instance.second(instance)) < 0;
+        return StaticUtils.linearSearch(mMonths, Instance.month(instance)) < 0;
     }
-
 }

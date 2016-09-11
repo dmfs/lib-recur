@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class ByDayFilter extends ByFilter
+final class ByDayFilter implements ByFilter
 {
     /**
      * The scope of this rule.
@@ -95,9 +95,15 @@ final class ByDayFilter extends ByFilter
     }
 
 
+    /**
+     * The {@link CalendarMetrics} to use.
+     */
+    final CalendarMetrics mCalendarMetrics;
+
+
     public ByDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
     {
-        super(calendarMetrics);
+        mCalendarMetrics = calendarMetrics;
         List<WeekdayNum> byDay = rule.getByDayPart();
 
         boolean hasByMonth = rule.hasPart(Part.BYMONTH);
@@ -126,7 +132,7 @@ final class ByDayFilter extends ByFilter
 
 
     @Override
-    boolean filter(long instance)
+    public boolean filter(long instance)
     {
         // this is called if FREQ is <= DAILY or any of BYMONTHDAY or BYYEARDAY is present, so we don't have to filter by month here
         int year = Instance.year(instance);
@@ -175,5 +181,4 @@ final class ByDayFilter extends ByFilter
             }
         }
     }
-
 }

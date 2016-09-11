@@ -18,28 +18,15 @@
 package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.Instance;
-import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 
 
 /**
- * An abstract by-part filter.
+ * The interface of a "BY*"-part filter.
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-abstract class ByFilter
+interface ByFilter
 {
-
-    /**
-     * The {@link CalendarMetrics} to use.
-     */
-    final CalendarMetrics mCalendarMetrics;
-
-
-    public ByFilter(CalendarMetrics calendarMetrics)
-    {
-        mCalendarMetrics = calendarMetrics;
-    }
-
 
     /**
      * Filter an instance. This method determines if a given {@link Instance} should be removed from the result set or not.
@@ -49,5 +36,5 @@ abstract class ByFilter
      *
      * @return <code>true</code> to remove the instance from the result set, <code>false</code> to include it.
      */
-    abstract boolean filter(long instance);
+    boolean filter(long instance);
 }

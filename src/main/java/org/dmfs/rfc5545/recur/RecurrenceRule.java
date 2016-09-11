@@ -232,7 +232,13 @@ public final class RecurrenceRule
                     @Override
                     ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
                     {
-                        return new ByMonthFilter(rule, calendarMetrics);
+                        if (rule.getFreq() == Freq.WEEKLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
+                                Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY)))
+                        {
+                            // the rule has a weekly scope and "By*day" filters, so we have to retain weeks that overlap this month
+                            return new ByMonthFilter(rule, calendarMetrics);
+                        }
+                        return new TrivialByMonthFilter(rule);
                     }
 
 
@@ -437,7 +443,7 @@ public final class RecurrenceRule
                     @Override
                     ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
                     {
-                        return new ByHourFilter(rule, calendarMetrics);
+                        return new ByHourFilter(rule);
                     }
 
 
@@ -465,7 +471,7 @@ public final class RecurrenceRule
                     @Override
                     ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
                     {
-                        return new ByMinuteFilter(rule, calendarMetrics);
+                        return new ByMinuteFilter(rule);
                     }
 
 
@@ -493,7 +499,7 @@ public final class RecurrenceRule
                     @Override
                     ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
                     {
-                        return new BySecondFilter(rule, calendarMetrics);
+                        return new BySecondFilter(rule);
                     }
 
 

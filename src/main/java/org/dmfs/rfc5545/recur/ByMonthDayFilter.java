@@ -28,17 +28,19 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-final class ByMonthDayFilter extends ByFilter
+final class ByMonthDayFilter implements ByFilter
 {
     /**
      * A list of days of month to let pass.
      */
     private final int[] mMonthDays;
 
+    private final CalendarMetrics mCalendarMetrics;
+
 
     public ByMonthDayFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics)
     {
-        super(calendarMetrics);
+        mCalendarMetrics = calendarMetrics;
 
         // get a list of the month days
         mMonthDays = StaticUtils.ListToArray(rule.getByPart(Part.BYMONTHDAY));
@@ -47,7 +49,7 @@ final class ByMonthDayFilter extends ByFilter
 
 
     @Override
-    boolean filter(long instance)
+    public boolean filter(long instance)
     {
         int monthDays = mCalendarMetrics.getDaysPerPackedMonth(Instance.year(instance), Instance.month(instance));
         int dayOfMonth = Instance.dayOfMonth(instance);
