@@ -125,7 +125,6 @@ final class ByDayFilter implements ByFilter
             }
             mPackedDays[count] = packWeekday(w.pos, w.weekday.ordinal());
             ++count;
-
         }
         mHasPositions = hasPositions;
     }

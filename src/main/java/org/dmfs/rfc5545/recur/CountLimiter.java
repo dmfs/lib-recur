@@ -22,7 +22,7 @@ package org.dmfs.rfc5545.recur;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-class CountLimiter extends Limiter
+final class CountLimiter extends Limiter
 {
     /**
      * The number of instances to let pass.

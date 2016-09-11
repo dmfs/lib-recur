@@ -27,7 +27,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-class BySecondExpander extends ByExpander
+final class BySecondExpander extends ByExpander
 {
     /**
      * The list of minutes from the recurrence rule.

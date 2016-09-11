@@ -26,7 +26,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-class BySecondFilter implements ByFilter
+final class BySecondFilter implements ByFilter
 {
     /**
      * The list of minutes from the recurrence rule.

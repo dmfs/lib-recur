@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @author Marten Gajda <marten@dmfs.org>
  */
-public abstract class StaticUtils
+public final class StaticUtils
 {
 
     /**
