@@ -27,7 +27,7 @@ import java.util.TimeZone;
 /**
  * A {@link Limiter} that filters all instances after a certain date (the one specified in the UNTIL part).
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class UntilLimiter extends Limiter
 {

@@ -25,7 +25,7 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
  * The base frequency iterator for recurrence rules. On every call to {@link #next()} or {@link #nextSet()} it returns a new date according to the frequency and
  * interval specified in a recurrence rule.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class FreqIterator extends ByExpander
 {

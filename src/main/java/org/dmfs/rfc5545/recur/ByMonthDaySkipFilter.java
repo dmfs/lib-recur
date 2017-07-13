@@ -25,7 +25,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
 /**
  * A filter that ensures invalid day of month numbers are skipped.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByMonthDaySkipFilter extends RuleIterator
 {

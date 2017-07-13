@@ -31,7 +31,7 @@ import java.util.List;
  * won't iterate invalid dates and takes care of adding unsynchronized start dates. <p> This class also stops iterating after the right number of instances if a
  * <code>COUNT</code> part is present, but you still need to add an {@link UntilLimiter} if an <code>UNTIL</code> part is present. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class FastWeeklyIterator extends ByExpander
 {

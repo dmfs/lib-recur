@@ -26,7 +26,7 @@ import java.util.TimeZone;
 /**
  * Implements {@link AbstractRecurrenceAdapter} for a {@link RecurrenceRule}.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 {

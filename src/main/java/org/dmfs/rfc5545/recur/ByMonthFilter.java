@@ -27,7 +27,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * weeks that overlap the month to pass. This ensures the by day filters can expand all relevant instances. The expanding by-day filter will take care of
  * filtering days not belonging to this month.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByMonthFilter implements ByFilter
 {

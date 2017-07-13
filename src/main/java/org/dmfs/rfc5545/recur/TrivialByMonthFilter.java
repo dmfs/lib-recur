@@ -24,7 +24,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 /**
  * A trivial "ByMonth" filter that doesn't support overlapping weeks.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class TrivialByMonthFilter implements ByFilter
 {

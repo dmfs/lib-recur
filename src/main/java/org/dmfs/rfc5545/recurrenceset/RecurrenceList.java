@@ -27,7 +27,7 @@ import java.util.TimeZone;
 /**
  * A concrete {@link AbstractRecurrenceAdapter} for lists of instances. You can provide the instances in a String or in an array of longs.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class RecurrenceList extends AbstractRecurrenceAdapter
 {

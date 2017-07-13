@@ -36,7 +36,7 @@ import java.util.Map.Entry;
  * validator and a validator log. </p> <p> TODO: Add proper implementation of the {@link #equals(Object)} method. </p> <p> TODO: Add support for jCal rules.
  * </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class RecurrenceRule
 {

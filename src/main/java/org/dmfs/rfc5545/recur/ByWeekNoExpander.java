@@ -27,7 +27,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * filter also expands weeks that overlap the expanded month. That means two subsequent interval sets can include the same week. The BY*DAY filters will take
  * care of filtering those. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByWeekNoExpander extends ByExpander
 {

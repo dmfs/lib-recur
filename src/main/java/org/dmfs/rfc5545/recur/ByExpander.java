@@ -24,7 +24,7 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 /**
  * An abstract by-part expander.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 abstract class ByExpander extends RuleIterator
 {

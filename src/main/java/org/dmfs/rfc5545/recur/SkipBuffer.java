@@ -25,7 +25,7 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
  * This iterator buffers instances that belong to the next interval. When the rule contains SKIP=FORWARD, instances may be rolled forward to the next interval.
  * To ensure we iterate them in the correct order we buffer such instances.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class SkipBuffer extends RuleIterator
 {

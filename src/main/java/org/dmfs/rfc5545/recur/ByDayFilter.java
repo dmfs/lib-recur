@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * A filter that limits recurrence rules by day of week.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByDayFilter implements ByFilter
 {

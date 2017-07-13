@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * An expander that expands recurrence rules by day of week.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByDayExpander extends ByExpander
 {

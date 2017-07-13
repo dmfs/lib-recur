@@ -28,7 +28,7 @@ import java.util.Iterator;
  * <strong>Note:</strong> Some rules may recur forever, so be sure to add some limitation to your code that stops iterating after a certain number of instances
  * or at a certain date. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 abstract class RuleIterator
 {

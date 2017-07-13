@@ -27,7 +27,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * Doesn't allow BYYEARDAY to be used with DAILY, WEEKLY and MONTHLY rules, but RFC 2445 does. This filter tries to return a reasonable result for these cases.
  * In particular that means we expand MONTHLY and WEEKLY rules and filter DAILY rules. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByYearDayFilter implements ByFilter
 {

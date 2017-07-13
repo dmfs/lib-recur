@@ -20,7 +20,7 @@ package org.dmfs.rfc5545.recur;
 /**
  * An Exception that indicates an error in a recurrence rule.
  *
- * @author Marten Gajda <marte@dmfs.org>
+ * @author Marten Gajda
  */
 public class InvalidRecurrenceRuleException extends Exception
 {

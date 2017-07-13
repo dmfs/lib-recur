@@ -26,7 +26,7 @@ import java.util.Iterator;
 /**
  * A filter that limits instances of recurrence rules by their position in the interval.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class BySetPosFilter extends RuleIterator
 {

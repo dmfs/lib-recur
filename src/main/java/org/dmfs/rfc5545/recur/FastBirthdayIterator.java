@@ -30,7 +30,7 @@ import java.util.List;
  * this to filter invalid dates like Feb 29th in non-leap years and to inject the start date if it's not synchronized with the rule. Also you'll have to add a
  * {@link CountLimiter} or {@link UntilLimiter} if needed. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class FastBirthdayIterator extends ByExpander
 {

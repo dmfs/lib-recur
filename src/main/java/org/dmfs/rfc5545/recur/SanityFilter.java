@@ -26,7 +26,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * This filter ensures we don't return any instance that is ahead of start. It also ensures that the start date is always returned as first result and that the
  * result contains no invalid instances.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class SanityFilter extends RuleIterator
 {

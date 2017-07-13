@@ -23,7 +23,7 @@ import org.dmfs.rfc5545.Instance;
 /**
  * The interface of a "BY*"-part filter.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 interface ByFilter
 {

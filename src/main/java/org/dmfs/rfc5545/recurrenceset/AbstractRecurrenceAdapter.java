@@ -24,7 +24,7 @@ import java.util.TimeZone;
  * An abstract adapter for recurrence instance sets. This represents the instances of a specific instance set (e.g. an rrule, an exrule, a list of rdates or
  * exdates)
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public abstract class AbstractRecurrenceAdapter
 {

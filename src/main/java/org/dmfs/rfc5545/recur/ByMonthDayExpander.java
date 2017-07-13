@@ -28,7 +28,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
  * reasonable solution seems to be to expand if BYYEARDAY is not specified, but expand only days that are in the same week. The same approach is taken for
  * YEARLY rules if BYWEEKNO is present. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class ByMonthDayExpander extends ByExpander
 {

@@ -31,7 +31,7 @@ import java.util.List;
  * {@link InstanceIterator} always returns an {@link Object}, so instead of a primitive <code>long</code> we would have to return a {@link Long}. That is an
  * additional object which doesn't have any advantage.</li> </ul>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public class RecurrenceSetIterator
 {

@@ -20,7 +20,7 @@ package org.dmfs.rfc5545.recur;
 /**
  * A {@link Limiter} that limits by the number of iterated instances.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class CountLimiter extends Limiter
 {

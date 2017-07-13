@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * A collection of static methods.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public final class StaticUtils
 {

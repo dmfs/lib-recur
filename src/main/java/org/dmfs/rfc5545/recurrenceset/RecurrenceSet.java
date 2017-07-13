@@ -30,7 +30,7 @@ import java.util.TimeZone;
  * instances are defined by exceptions rules or lists of exception instances. <p> This class allows you to add any number of recurrence rules, recurrence
  * instances, exception rules and exception instance. It returns an {@link Iterator} that iterates all resulting instances. </p>
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 public class RecurrenceSet
 {

@@ -25,7 +25,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 /**
  * A filter that expands recurrence rules by seconds.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class BySecondExpander extends ByExpander
 {

@@ -24,7 +24,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 /**
  * A filter that limits recurrence rules by seconds.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class BySecondFilter implements ByFilter
 {

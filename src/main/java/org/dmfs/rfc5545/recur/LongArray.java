@@ -23,7 +23,7 @@ import java.util.Arrays;
 /**
  * Maintains a list of <code>long</code> values.
  *
- * @author Marten Gajda <marten@dmfs.org>
+ * @author Marten Gajda
  */
 final class LongArray
 {
