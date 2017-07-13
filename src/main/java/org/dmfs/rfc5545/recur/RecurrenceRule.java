@@ -23,8 +23,16 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics.CalendarMetricsFactory;
 import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 
 /**
@@ -104,7 +112,8 @@ public final class RecurrenceRule
      * Enumeration of valid recurrence rule parts. Each of these parts may occur once in a rule. {@link #FREQ} is the only mandatory part. <p> Each part has a
      * {@link ValueConverter} that knows how to parse and serialize the values the part can have. Also each part has a factory method to return a {@link
      * RuleIterator} for this part. {@link #FREQ}, {@link #INTERVAL}, {@link #WKST} and {@link #RSCALE} don't support iteration nor expansion and will throw an
-     * {@link UnsupportedOperationException} when calling {@link Part#getRuleIterator(RecurrenceRule, RuleIterator)}. </p>
+     * {@link UnsupportedOperationException} when calling {@link Part#getExpander(RecurrenceRule, RuleIterator, CalendarMetrics, long, TimeZone)} or Part{@link
+     * #getFilter(RecurrenceRule, CalendarMetrics)}. </p>
      */
     public enum Part
     {
@@ -790,7 +799,7 @@ public final class RecurrenceRule
 
 
         /**
-         * Parse a weekdaynum String as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545<a> (this definition equals the
+         * Parse a weekdaynum String as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> (this definition equals the
          * definition in RFC 2445).
          *
          * @param value
@@ -831,7 +840,7 @@ public final class RecurrenceRule
 
 
         /**
-         * Parse a weekdaynum String as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545<a> (this definition equals the
+         * Parse a weekdaynum String as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> (this definition equals the
          * definition in RFC 2445). In contrast to {@link #valueOf(String, boolean)} this method is always strict and throws on every invalid value.
          *
          * @param value
