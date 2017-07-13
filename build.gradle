@@ -1,6 +1,3 @@
-group 'org.dmfs'
-version '0.9.7'
-
 apply plugin: 'java'
 
 def gitVersion = { ->
@@ -13,7 +10,7 @@ def gitVersion = { ->
 }
 
 group 'org.dmfs'
-version '1.0'//gitVersion()
+version gitVersion()
 
 sourceCompatibility = 1.7
 
