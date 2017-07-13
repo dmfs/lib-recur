@@ -39,7 +39,7 @@ public class RecurrenceIteratorTest
 	public final static int MAX_ITERATIONS = 10000;
 	private final static int MAX_BUFFER = 10;
 
-	private final static String[] FF_DATES = { "19850501T133912", "19850502T133912", "19950101", "20050101T210002", "20080229T000000" };
+	private final static String[] FF_DATES = { "19850501T133912", "19850502T133912", "19950101", "20050101T210002", "20080229T000000", "19850807T000000" };
 
 	private final static DateTime FLOATING_TEST_START_DATE = DateTime.parse("19850501T133912");
 	private final static DateTime ABSOLUTE_TEST_START_DATE = DateTime.parse("19850501T133912Z");

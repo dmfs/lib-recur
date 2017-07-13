@@ -238,7 +238,8 @@ public final class FastWeeklyIterator extends ByExpander
                 && nextMonth < untilMonth)
                 && mNextInstance > Long.MIN_VALUE)
         {
-            nextMonth = Instance.month(next());
+            next();
+            nextMonth = Instance.month(mNextInstance);
         }
     }
 }
