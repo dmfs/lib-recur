@@ -100,7 +100,7 @@ public class RecurrenceSetIterator
     /**
      * The index of the last exception we've found. This is an optimization to reduce the number of exceptions to scan.
      */
-    private int mLastExceptionIndex;
+    private int mLastExceptionIndex = -1;
 
     private long mIterateEnd = Long.MAX_VALUE;
 
@@ -120,6 +120,10 @@ public class RecurrenceSetIterator
             {
                 long diff = o1.peek() - o2.peek();
                 return diff < 0 ? -1 : diff > 0 ? 1 : 0;
+            }
+            else if (!hasNext1 && !hasNext2)
+            {
+                return 0;
             }
             else
             {
@@ -149,7 +153,7 @@ public class RecurrenceSetIterator
         }
         else
         {
-            mExceptions = null;
+            mExceptions = new InstanceIterator[0];
         }
     }
 
@@ -243,7 +247,7 @@ public class RecurrenceSetIterator
             instances.fastForward(until);
         }
 
-        if (mExceptions != null)
+        if (mExceptions.length > 0)
         {
             // fast forward exceptions
             // there is no need to clear the exception cache, this will happen automatically
@@ -385,7 +389,7 @@ public class RecurrenceSetIterator
      */
     private boolean isException(long instance)
     {
-        if (mExceptions == null)
+        if (mExceptions.length == 0)
         {
             // no exceptions: this will handle most of the cases
             return false;
@@ -434,11 +438,11 @@ public class RecurrenceSetIterator
      */
     private void fillExceptionCache()
     {
-        mLastExceptionIndex = 0;
+        mLastExceptionIndex = -1;
 
         // recycle exception cache, if any
         long[] exceptionCache = mExceptionCache;
-        if (exceptionCache == null)
+        if (exceptionCache == null || exceptionCache.length == 0)
         {
             exceptionCache = mExceptionCache = new long[EXCEPTION_CACHE_SIZE];
         }
@@ -459,80 +463,34 @@ public class RecurrenceSetIterator
             if (!ra.hasNext())
             {
                 // no exceptions
-                mExceptions = null;
                 mExceptionsInCache = count;
                 return;
             }
 
             while (ra.hasNext() && count < EXCEPTION_CACHE_SIZE)
             {
-                try
+                long next = exceptionCache[count] = ra.next();
+                if (next > iterateEnd)
                 {
-                    long next = exceptionCache[count] = ra.next();
-                    if (next > iterateEnd)
-                    {
-                        break;
-                    }
-                    ++count;
+                    break;
                 }
-                catch (IllegalArgumentException e)
-                {
-                    exceptions = mExceptions = null;
-                }
+                ++count;
             }
         }
         else
         {
-            while (exceptions.length > 0 && count < EXCEPTION_CACHE_SIZE)
+            while (exceptions[0].hasNext() && count < EXCEPTION_CACHE_SIZE)
             {
                 InstanceIterator ra = exceptions[0];
-                try
+                long next = exceptionCache[count] = ra.next();
+                if (next > iterateEnd)
                 {
-                    if (ra.hasNext())
-                    {
-                        long next = exceptionCache[count] = ra.next();
-                        if (next > iterateEnd)
-                        {
-                            break;
-                        }
-
-                        ++count;
-
-                        Arrays.sort(exceptions, mAdapterComparator);
-                    }
-                    else
-                    {
-                        /*
-						 * The first adapter has no more exceptions, remove it.
-						 * 
-						 * Since the rest of the list is already sorted we don't have to sort again.
-						 */
-                        if (exceptions.length > 1)
-                        {
-                            InstanceIterator[] tempExceptions = new InstanceIterator[exceptions.length - 1];
-                            System.arraycopy(exceptions, 1, tempExceptions, 0, tempExceptions.length);
-                            exceptions = mExceptions = tempExceptions;
-                        }
-                        else
-                        {
-                            exceptions = mExceptions = null;
-                        }
-                    }
+                    break;
                 }
-                catch (IllegalArgumentException e)
-                {
-                    // remove ra from the array
-                    if (exceptions.length > 1)
-                    {
-                        InstanceIterator[] tempExceptions = new InstanceIterator[exceptions.length - 1];
-                        System.arraycopy(exceptions, 1, tempExceptions, 0, tempExceptions.length);
-                        exceptions = mExceptions = tempExceptions;
-                    }
-                    else
-                    {
-                        exceptions = mExceptions = null;
-                    }
-                }
+
+                ++count;
+
+                Arrays.sort(exceptions, mAdapterComparator);
             }
         }
         mExceptionsInCache = count;
