@@ -47,7 +47,7 @@ final class SkipBuffer extends RuleIterator
     private final boolean mIsYearly;
 
 
-    public SkipBuffer(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start)
+    public SkipBuffer(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics)
     {
         super(previous);
         mIsYearly = rule.getFreq() == Freq.YEARLY;

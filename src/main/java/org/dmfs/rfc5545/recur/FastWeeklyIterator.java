@@ -46,11 +46,6 @@ public final class FastWeeklyIterator extends ByExpander
     private final LongArray mResultSet = new LongArray(1);
 
     /**
-     * The first instance to iterate.
-     */
-    private final long mStart;
-
-    /**
      * The next instance to iterate.
      */
     private long mNextInstance;
@@ -78,23 +73,18 @@ public final class FastWeeklyIterator extends ByExpander
 
     /**
      * Create a new WeeklyTypeIterator for the given rule, start date and first instance.
-     *
-     * @param rule
+     *  @param rule
      *         The rule to iterate.
      * @param calendarMetrics
      *         The {@link CalendarMetrics} to use.
-     * @param start
-     *         The first instance to iterate.
      * @param firstInstance
-     *         The first instance of the rule. If start is not synchronized with the rule, this is the first instance after start. It equals start otherwise.
      */
-    private FastWeeklyIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long start, long firstInstance)
+    private FastWeeklyIterator(RecurrenceRule rule, CalendarMetrics calendarMetrics, long firstInstance)
     {
         super(null, calendarMetrics, firstInstance);
 
         mInterval = rule.getInterval();
 
-        mStart = start;
         mNextInstance = firstInstance;
 
         mYear = Instance.year(firstInstance);
@@ -164,7 +154,7 @@ public final class FastWeeklyIterator extends ByExpander
                 }
             }
 
-            return new FastWeeklyIterator(rule, calendarMetrics, start, instance);
+            return new FastWeeklyIterator(rule, calendarMetrics, instance);
         }
         return null;
     }
@@ -173,13 +163,7 @@ public final class FastWeeklyIterator extends ByExpander
     @Override
     public long next()
     {
-        if (mCount++ == 0 && mStart != mNextInstance)
-        {
-            // be sure we iterate start first
-            return mStart;
-        }
-
-        if (mInstanceLimit > 0 && mCount > mInstanceLimit)
+        if (mInstanceLimit > 0 && ++mCount > mInstanceLimit)
         {
             return mNextInstance = Long.MIN_VALUE;
         }

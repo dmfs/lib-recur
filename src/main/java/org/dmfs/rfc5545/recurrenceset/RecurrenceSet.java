@@ -113,6 +113,8 @@ public class RecurrenceSet
     public RecurrenceSetIterator iterator(TimeZone timezone, long start, long end)
     {
         List<InstanceIterator> instances = new ArrayList<InstanceIterator>(mInstances.size());
+        // make sure we add the start as the first instance
+        instances.add(new RecurrenceList(new long[] { start }).getIterator(timezone, start));
         for (AbstractRecurrenceAdapter adapter : mInstances)
         {
             instances.add(adapter.getIterator(timezone, start));

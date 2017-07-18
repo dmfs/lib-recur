@@ -46,11 +46,6 @@ final class BySetPosFilter extends RuleIterator
     private LongArray mSetIterator;
 
     /**
-     * This indicates that the next instance to return is the first instance.
-     */
-    private boolean mFirst = true;
-
-    /**
      * The set we return to subsequent filters.
      */
     private final LongArray mResultSet = new LongArray();
@@ -62,7 +57,7 @@ final class BySetPosFilter extends RuleIterator
     {
         super(previous);
         mSetPositions = StaticUtils.ListToSortedArray(rule.getByPart(Part.BYSETPOS));
-        mStart = start;
+        mStart = start - 1 /* subtract 1 to ensure start itself (but not a second before) will pass test */;
     }
 
 
@@ -83,12 +78,6 @@ final class BySetPosFilter extends RuleIterator
         final LongArray resultSet = mResultSet;
         final int[] setPositions = mSetPositions;
         resultSet.clear();
-
-        if (mFirst)
-        {
-            resultSet.add(mStart);
-            mFirst = false;
-        }
 
         boolean done = false;
         int counter = -1;

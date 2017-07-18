@@ -541,7 +541,7 @@ public final class RecurrenceRule
 				 */
                         if (rule.getFreq() == Freq.YEARLY && rule.getSkip() == Skip.FORWARD)
                         {
-                            return new SkipBuffer(rule, previous, calendarMetrics, start);
+                            return new SkipBuffer(rule, previous, calendarMetrics);
                         }
                         return null;
                     }
@@ -570,8 +570,8 @@ public final class RecurrenceRule
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                             throws UnsupportedOperationException
                     {
-                        // note: despite it's name the SanityFilter is implemented as an expander, because it may have to inject the start date.
-                        return new SanityFilter(rule, previous, calendarMetrics, start);
+                        // note: despite it's name the SanityFilter is implemented as an expander
+                        return new SanityFilter(previous, calendarMetrics, start);
                     }
 
 
@@ -1910,21 +1910,14 @@ public final class RecurrenceRule
 
         if (iterator != null)
         {
+            iterator = new SanityFilter(iterator, rScaleCalendarMetrics, startInstance);
             if (hasPart(Part.UNTIL))
             {
-                iterator = Part.UNTIL.getExpander(this,
-                        new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance), rScaleCalendarMetrics,
-                        startInstance, startTimeZone);
+                iterator = Part.UNTIL.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
             }
             else if (hasPart(Part.COUNT))
             {
-                iterator = Part.COUNT.getExpander(this,
-                        new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance), rScaleCalendarMetrics,
-                        startInstance, startTimeZone);
-            }
-            else
-            {
-                iterator = new SanityFilter(this, iterator, rScaleCalendarMetrics, startInstance);
+                iterator = Part.COUNT.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
             }
         }
         else if ((iterator = FastWeeklyIterator.getInstance(this, rScaleCalendarMetrics, startInstance)) != null)

@@ -1,6 +1,8 @@
 package org.dmfs.rfc5545.recur;
 
-import static org.junit.Assert.assertTrue;
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.dmfs.rfc5545.DateTime;
-import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -29,7 +29,7 @@ public class RecurrenceEquivalenceTest
 
 
 		/**
-		 * 
+		 *
 		 * @param rules
 		 *            {@link TestRule}s that should be compared
 		 */
@@ -49,7 +49,7 @@ public class RecurrenceEquivalenceTest
 
 		/**
 		 * Compares the instances of the given {@link TestRule}'s.
-		 * 
+		 *
 		 * @return <code>True</code> if the instances match, otherwise <code>false</code>.
 		 */
 		public boolean compareRules()
@@ -102,7 +102,7 @@ public class RecurrenceEquivalenceTest
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				throw new IllegalArgumentException("Invalid testrule: " + rule);
+				throw new IllegalArgumentException("Invalid testrule: " + rule.rule);
 			}
 		}
 
