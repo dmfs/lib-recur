@@ -19,7 +19,6 @@ package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
-import org.dmfs.rfc5545.recur.RecurrenceRule.Part;
 
 
 /**
@@ -42,16 +41,6 @@ final class SanityFilter extends RuleIterator
     private final static int MAX_FILTERED_INSTANCES = 1000;
 
     /**
-     * This indicates that the next instance to return is the first instance.
-     */
-    private boolean mFirst = true;
-
-    /**
-     * The first instance (i.e. DTSTART).
-     */
-    private final long mStart;
-
-    /**
      * A {@link LongArray} that contains the instances to return.
      */
     private final LongArray mResultSet = new LongArray();
@@ -60,11 +49,6 @@ final class SanityFilter extends RuleIterator
      * Helper for calendar calculations.
      */
     private final CalendarMetrics mCalendarMetrics;
-
-    /**
-     * Whether we have to filter the results by start date (i.e. remove all instances preceding the start date).
-     */
-    private final boolean mFilterStart;
 
     /**
      * The last result iterated by {@link #next()}.
@@ -81,13 +65,11 @@ final class SanityFilter extends RuleIterator
      * @param start
      *         The earliest date to let pass.
      */
-    SanityFilter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
+    SanityFilter(RuleIterator previous, CalendarMetrics calendarTools, long start)
     {
         super(previous);
-        mStart = start;
         mCalendarMetrics = calendarTools;
-        mFilterStart = !rule.hasPart(Part.BYSETPOS);
-        mLastResult = mFilterStart ? mStart : Long.MIN_VALUE;
+        mLastResult = start - 1 /* subtract 1 to ensure start itself (but not a second before) will pass test */;
     }
 
 
@@ -96,34 +78,25 @@ final class SanityFilter extends RuleIterator
     {
         CalendarMetrics calendarMetrics = mCalendarMetrics;
 
-        if (mFirst && mFilterStart)
+        int counter = -1;
+        long next;
+        long simpleInstance;
+        long last = mLastResult;
+        do
         {
-            // mStart is always the first result
-            mFirst = false;
-            return mStart;
-        }
-        else
-        {
-            int counter = -1;
-            long next;
-            long simpleInstance;
-            long last = mLastResult;
-            do
+            if (++counter == MAX_FILTERED_INSTANCES)
             {
-                if (++counter == MAX_FILTERED_INSTANCES)
-                {
-                    throw new IllegalArgumentException("too many filtered recurrence instances");
-                }
+                throw new IllegalArgumentException("too many filtered recurrence instances");
+            }
 
-                next = mPrevious.next();
-                simpleInstance = Instance.maskWeekday(next);
+            next = mPrevious.next();
+            simpleInstance = Instance.maskWeekday(next);
 
-            } while (last >= simpleInstance || !calendarMetrics.validate(simpleInstance));
+        } while (last >= simpleInstance || !calendarMetrics.validate(simpleInstance));
 
-            mLastResult = simpleInstance;
+        mLastResult = simpleInstance;
 
-            return next;
-        }
+        return next;
     }
 
 
@@ -135,14 +108,6 @@ final class SanityFilter extends RuleIterator
         CalendarMetrics calendarMetrics = mCalendarMetrics;
 
         resultSet.clear();
-        if (mFirst && mFilterStart)
-        {
-            // mStart is always the first result
-            mFirst = false;
-            last = mStart;
-            resultSet.add(last);
-        }
-
         int counter = 0;
         do
         {
