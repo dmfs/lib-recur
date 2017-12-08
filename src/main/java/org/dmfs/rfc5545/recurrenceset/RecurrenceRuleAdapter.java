@@ -100,7 +100,14 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
     @Override
     AbstractRecurrenceAdapter.InstanceIterator getIterator(TimeZone timezone, long start)
     {
-        return new InstanceIterator(mRrule.iterator(start, timezone));
+        AbstractRecurrenceAdapter.InstanceIterator iterator = new InstanceIterator(mRrule.iterator(start, timezone));
+        if (mRrule.getCount() != null && iterator.peek() != start)
+        {
+            // we have a count limited rule and an unsynched start date
+            // since the start date counts as the first element, the RRULE iterator should return one less element.
+            iterator = new CountLimitedRecurrenceRuleIterator(iterator, mRrule.getCount() - 1);
+        }
+        return iterator;
     }
 
 
