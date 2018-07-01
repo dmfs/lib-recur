@@ -46,6 +46,8 @@ final class ByWeekNoExpander extends ByExpander
      */
     private final boolean mAllowOverlappingWeeks;
 
+    private final int mOriginalWeekDay;
+
 
     public ByWeekNoExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start)
     {
@@ -58,6 +60,9 @@ final class ByWeekNoExpander extends ByExpander
         // allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
         mAllowOverlappingWeeks = mScope == Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
                 Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
+
+        // BYWEEKNO expansion preserves the original day of week
+        mOriginalWeekDay = calendarTools.getDayOfWeek(Instance.year(start), Instance.month(start), Instance.dayOfMonth(start));
     }
 
 
@@ -69,7 +74,6 @@ final class ByWeekNoExpander extends ByExpander
         int hour = Instance.hour(instance);
         int minute = Instance.minute(instance);
         int second = Instance.second(instance);
-        int dayOfWeek = Instance.dayOfWeek(instance);
 
         // get the number of weeks in that year
         int yearWeeks = mCalendarMetrics.getWeeksPerYear(year);
@@ -92,7 +96,7 @@ final class ByWeekNoExpander extends ByExpander
                 /*
                  * Expand instances if the week intersects instance.month. The by-day expansion will filter any instances not in that month.
 				 */
-                int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
+                int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, mOriginalWeekDay);
                 int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
                 int newMonth = CalendarMetrics.packedMonth(monthAndDay);
                 if (newMonth == month)
@@ -117,7 +121,7 @@ final class ByWeekNoExpander extends ByExpander
                     if (newMonth2 == month)
                     {
                         // create a new instance and adjust day values
-                        int offset = (dayOfWeek - firstDayOfWeek + 7) % 7;
+                        int offset = (mOriginalWeekDay - firstDayOfWeek + 7) % 7;
                         addInstance(Instance.make(year, month, CalendarMetrics.dayOfMonth(monthAndDay2) + offset, hour,
                                 minute, second));
                     }
@@ -135,7 +139,7 @@ final class ByWeekNoExpander extends ByExpander
                         if (newMonth3 == month)
                         {
                             // create a new instance and adjust day values
-                            int offset = (dayOfWeek - firstDayOfWeek - 6) % 7;
+                            int offset = (mOriginalWeekDay - firstDayOfWeek - 6) % 7;
                             addInstance(
                                     Instance.make(year, month, CalendarMetrics.dayOfMonth(monthAndDay3) + offset, hour,
                                             minute, second));
@@ -146,9 +150,9 @@ final class ByWeekNoExpander extends ByExpander
             else if (mScope == Scope.MONTHLY)
             {
                 /*
-				 * Expand instances in this week and month.
+                 * Expand instances in this week and month.
 				 */
-                int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
+                int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, mOriginalWeekDay);
 
                 if (yearDay < 1 || yearDay > mCalendarMetrics.getDaysPerYear(year))
                 {
@@ -166,22 +170,23 @@ final class ByWeekNoExpander extends ByExpander
             }
             else
             {
-                int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, dayOfWeek);
+                int yearDay = mCalendarMetrics.getYearDayOfIsoYear(year, actualWeek, mOriginalWeekDay);
 
+                int yearOffset = 0;
                 if (yearDay < 1)
                 {
-                    year--;
+                    yearOffset = -1;
                     yearDay += mCalendarMetrics.getDaysPerYear(year);
                 }
                 else if (yearDay > mCalendarMetrics.getDaysPerYear(year))
                 {
                     yearDay -= mCalendarMetrics.getDaysPerYear(year);
-                    year++;
+                    yearOffset = 1;
                 }
 
                 final int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDay);
-                addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay),
-                        CalendarMetrics.dayOfMonth(monthAndDay)));
+                addInstance(Instance.setYear(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay),
+                        CalendarMetrics.dayOfMonth(monthAndDay)), year + yearOffset));
             }
         }
     }
