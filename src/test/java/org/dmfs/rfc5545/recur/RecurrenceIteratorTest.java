@@ -421,10 +421,13 @@ public class RecurrenceIteratorTest
     }
 
 
-    // @Test
+    //@Test
     public void testSpecial() throws InvalidRecurrenceRuleException
     {
-        TestRule rule = new TestRule("FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3").setCount(3);
+        TestRule rule = new TestRule("FREQ=YEARLY;BYWEEKNO=1").setStart("20180101")
+                .setMonths(12, 1)
+                .setMonthdays(29, 30, 31, 1, 2, 3, 4)
+                .setWeekdays(Calendar.MONDAY);
 
         DateTime lastInstance = null;
         try
@@ -1016,6 +1019,17 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=3;BYDAY=-1SU").setMonths(3).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=3;BYDAY=2SU").setMonths(3).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYDAY=1SU;BYMONTH=4").setMonths(4).setWeekdays(Calendar.SUNDAY));
+        mTestRules.add(
+                new TestRule("FREQ=YEARLY;BYWEEKNO=1").setStart("20180101").setMonths(12, 1).setMonthdays(29, 30, 31, 1, 2, 3, 4).setWeekdays(Calendar.MONDAY));
+        mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=1,10;BYMONTHDAY=3").setStart("20180101").setMonthdays(3).setMonths(1, 3));
+        mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=1,10;BYDAY=TU").setMonths(1, 3, 12).setWeekdays(Calendar.TUESDAY));
+        mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=1,10;BYDAY=TU;BYMONTHDAY=3").setStart("20180101")
+                .setMonths(1, 3)
+                .setMonthdays(3)
+                .setWeekdays(Calendar.TUESDAY));
+        mTestRules.add(new TestRule("FREQ=YEARLY;BYYEARDAY=1,100").setStart("20180101").setMonths(1, 4).setMonthdays(1, 9, 10));
+        mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,2").setStart("20180101").setMonths(1, 2).setMonthdays(1));
+        mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,2;BYWEEKNO=1,7,20").setStart("20180101").setMonths(1, 2).setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYDAY=MO,WE,FR;BYMONTH=4,5").setMonths(4, 5).setWeekdays(Calendar.MONDAY, Calendar.WEDNESDAY,
                 Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYMONTH=5;BYMONTHDAY=-1 ").setMonths(5).setMonthdays(31));
@@ -1029,7 +1043,7 @@ public class RecurrenceIteratorTest
                         .setMonthdays(1, 2, 3));
 
 		/*
-		 * Rules with a specific number of instances
+         * Rules with a specific number of instances
 		 */
 
         // first 9 mondays of 2016
@@ -1332,7 +1346,7 @@ public class RecurrenceIteratorTest
                 .setMonthdays(10).setLastInstance("20541010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=10;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
                 .setMonthdays(10).setLastInstance("20541010"));
-		
+
 		/* Test time zone related issues */
 
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "Europe/Berlin")

@@ -17,7 +17,6 @@
 
 package org.dmfs.rfc5545.recur;
 
-import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 
 
@@ -76,13 +75,7 @@ public final class FreqIterator extends ByExpander
         mInterval = rule.getInterval();
         mCalendarMetrics = calendarMetrics;
 
-        int year = Instance.year(start);
-        int month = Instance.month(start);
-        int dayOfMonth = Instance.dayOfMonth(start);
-        int dayOfYear = mCalendarMetrics.getDayOfYear(year, month, dayOfMonth);
-
-        // don't rely on the day of week field being set properly
-        mNextInstance = Instance.setDayOfWeek(start, mCalendarMetrics.getDayOfWeek(year, dayOfYear));
+        mNextInstance = start;
     }
 
 
