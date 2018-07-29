@@ -296,7 +296,25 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                     {
-                        return new ByWeekNoExpander(rule, previous, calendarTools, start);
+                        ByExpander.Scope scope = rule.hasPart(Part.BYMONTH) ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY;
+
+                        // allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
+                        boolean allowOverlappingWeeks = scope == ByExpander.Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
+                                Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
+
+                        switch (scope)
+                        {
+                            case MONTHLY:
+                                if (allowOverlappingWeeks)
+                                {
+                                    return new ByWeekNoMonthlyOverlapExpander(rule, previous, calendarTools, start);
+                                }
+                                return new ByWeekNoMonthlyExpander(rule, previous, calendarTools, start);
+                            case YEARLY:
+                                return new ByWeekNoYearlyExpander(rule, previous, calendarTools, start);
+                            default:
+                                throw new Error("Illegal scope");
+                        }
                     }
 
 
