@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recur;
@@ -415,7 +415,26 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                        return new ByDayExpander(rule, previous, calendarMetrics, start);
+                        boolean hasByMonth = rule.hasPart(Part.BYMONTH);
+                        Freq freq = rule.getFreq();
+
+                        ByExpander.Scope scope = rule.hasPart(
+                                Part.BYWEEKNO) || freq == Freq.WEEKLY ? (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY : ByExpander.Scope.WEEKLY)
+                                : (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY);
+
+                        switch (scope)
+                        {
+                            case WEEKLY:
+                                return new ByDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY_AND_MONTHLY:
+                                return new ByDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case MONTHLY:
+                                return new ByDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case YEARLY:
+                                return new ByDayYearlyExpander(rule, previous, calendarMetrics, start);
+                            default:
+                                throw new Error("Illegal scope");
+                        }
                     }
 
 
@@ -531,14 +550,14 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                /*
-                 * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
-				 * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
-				 * year.
-				 * 
-				 * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
-				 * SanityFilter.
-				 */
+                        /*
+                         * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
+                         * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
+                         * year.
+                         *
+                         * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
+                         * SanityFilter.
+                         */
                         if (rule.getFreq() == Freq.YEARLY && rule.getSkip() == Skip.FORWARD)
                         {
                             return new SkipBuffer(rule, previous, calendarMetrics);
@@ -1580,7 +1599,8 @@ public final class RecurrenceRule
 
     /**
      * Returns a specific by-rule. <code>part</code> may be one of {@link Part#BYSECOND}, {@link Part#BYMINUTE}, {@link Part#BYHOUR}, {@link Part#BYMONTHDAY},
-     * {@link Part#BYYEARDAY}, {@link Part#BYWEEKNO}, {@link Part#BYMONTH}, or {@link Part#BYSETPOS}. <p> To get {@link Part#BYDAY} use {@link #getByDayPart()}.
+     * {@link Part#BYYEARDAY}, {@link Part#BYWEEKNO}, {@link Part#BYMONTH}, or {@link Part#BYSETPOS}. <p> To get {@link Part#BYDAY} use {@link
+     * #getByDayPart()}.
      * </p>
      *
      * @param part
