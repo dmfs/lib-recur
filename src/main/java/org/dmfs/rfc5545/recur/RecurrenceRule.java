@@ -358,7 +358,22 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                        return new ByMonthDayExpander(rule, previous, calendarMetrics, start);
+                        ByExpander.Scope scope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(
+                                Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY
+                                : ByExpander.Scope.WEEKLY)
+                                : ByExpander.Scope.MONTHLY;
+
+                        switch (scope)
+                        {
+                            case MONTHLY:
+                                return new ByMonthDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY:
+                                return new ByMonthDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY_AND_MONTHLY:
+                                return new ByMonthDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                            default:
+                                throw new Error("Illegal Scope");
+                        }
                     }
 
 
