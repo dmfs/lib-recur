@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recur;
@@ -296,7 +296,25 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                     {
-                        return new ByWeekNoExpander(rule, previous, calendarTools, start);
+                        ByExpander.Scope scope = rule.hasPart(Part.BYMONTH) ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY;
+
+                        // allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
+                        boolean allowOverlappingWeeks = scope == ByExpander.Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
+                                Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
+
+                        switch (scope)
+                        {
+                            case MONTHLY:
+                                if (allowOverlappingWeeks)
+                                {
+                                    return new ByWeekNoMonthlyOverlapExpander(rule, previous, calendarTools, start);
+                                }
+                                return new ByWeekNoMonthlyExpander(rule, previous, calendarTools, start);
+                            case YEARLY:
+                                return new ByWeekNoYearlyExpander(rule, previous, calendarTools, start);
+                            default:
+                                throw new Error("Illegal scope");
+                        }
                     }
 
 
@@ -327,7 +345,24 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                        return new ByYearDayExpander(rule, previous, calendarMetrics, start);
+
+                        ByExpander.Scope scope = rule.getFreq() == Freq.WEEKLY || rule.hasPart(Part.BYWEEKNO) ? rule.hasPart(
+                                Part.BYMONTH) ? ByExpander.Scope.WEEKLY_AND_MONTHLY : ByExpander.Scope.WEEKLY : rule
+                                .getFreq() == Freq.YEARLY && !rule.hasPart(Part.BYMONTH) ? ByExpander.Scope.YEARLY : ByExpander.Scope.MONTHLY;
+
+                        switch (scope)
+                        {
+                            case WEEKLY:
+                                return new ByYearDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY_AND_MONTHLY:
+                                return new ByYearDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case MONTHLY:
+                                return new ByYearDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case YEARLY:
+                                return new ByYearDayYearlyExpander(rule, previous, calendarMetrics, start);
+                            default:
+                                throw new Error("Illegal scope");
+                        }
                     }
 
 
@@ -358,7 +393,22 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                        return new ByMonthDayExpander(rule, previous, calendarMetrics, start);
+                        ByExpander.Scope scope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(
+                                Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY
+                                : ByExpander.Scope.WEEKLY)
+                                : ByExpander.Scope.MONTHLY;
+
+                        switch (scope)
+                        {
+                            case MONTHLY:
+                                return new ByMonthDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY:
+                                return new ByMonthDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY_AND_MONTHLY:
+                                return new ByMonthDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                            default:
+                                throw new Error("Illegal Scope");
+                        }
                     }
 
 
@@ -415,7 +465,26 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                        return new ByDayExpander(rule, previous, calendarMetrics, start);
+                        boolean hasByMonth = rule.hasPart(Part.BYMONTH);
+                        Freq freq = rule.getFreq();
+
+                        ByExpander.Scope scope = rule.hasPart(
+                                Part.BYWEEKNO) || freq == Freq.WEEKLY ? (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY : ByExpander.Scope.WEEKLY)
+                                : (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY);
+
+                        switch (scope)
+                        {
+                            case WEEKLY:
+                                return new ByDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                            case WEEKLY_AND_MONTHLY:
+                                return new ByDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case MONTHLY:
+                                return new ByDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                            case YEARLY:
+                                return new ByDayYearlyExpander(rule, previous, calendarMetrics, start);
+                            default:
+                                throw new Error("Illegal scope");
+                        }
                     }
 
 
@@ -531,14 +600,14 @@ public final class RecurrenceRule
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-                /*
-                 * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
-				 * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
-				 * year.
-				 * 
-				 * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
-				 * SanityFilter.
-				 */
+                        /*
+                         * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
+                         * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
+                         * year.
+                         *
+                         * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
+                         * SanityFilter.
+                         */
                         if (rule.getFreq() == Freq.YEARLY && rule.getSkip() == Skip.FORWARD)
                         {
                             return new SkipBuffer(rule, previous, calendarMetrics);
@@ -1580,7 +1649,8 @@ public final class RecurrenceRule
 
     /**
      * Returns a specific by-rule. <code>part</code> may be one of {@link Part#BYSECOND}, {@link Part#BYMINUTE}, {@link Part#BYHOUR}, {@link Part#BYMONTHDAY},
-     * {@link Part#BYYEARDAY}, {@link Part#BYWEEKNO}, {@link Part#BYMONTH}, or {@link Part#BYSETPOS}. <p> To get {@link Part#BYDAY} use {@link #getByDayPart()}.
+     * {@link Part#BYYEARDAY}, {@link Part#BYWEEKNO}, {@link Part#BYMONTH}, or {@link Part#BYSETPOS}. <p> To get {@link Part#BYDAY} use {@link
+     * #getByDayPart()}.
      * </p>
      *
      * @param part
