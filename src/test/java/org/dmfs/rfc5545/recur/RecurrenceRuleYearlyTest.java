@@ -82,6 +82,12 @@ public final class RecurrenceRuleYearlyTest
                         instances(are(inMonth(1, 2), inWeekOfYear(1, 7), onWeekDay(MO) /* inherited weekday */)),
                         startingWith("20180101", "20180212", "20190211", "20200210", "20210104", "20210215", "20220103", "20220214"))));
 
+        assertThat(new RecurrenceRule("FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60"),
+                is(validRule(DateTime.parse("20180101"),
+                        walking(),
+                        instances(are(inMonth(12, 1, 2, 3), inWeekOfYear(1, 3, 4, 5, 8, 9), onDayOfYear(1, 14, 31, 60))),
+                        startingWith("20180101", "20180131", "20180301", "20190101", "20190114", "20190131", "20190301", "20200101", "20200114", "20200131"))));
+
         assertThat(new RecurrenceRule("FREQ=YEARLY;BYMONTH=1,3;BYYEARDAY=1,14,31,32,60,61"),
                 is(validRule(DateTime.parse("20100101"),
                         walking(),

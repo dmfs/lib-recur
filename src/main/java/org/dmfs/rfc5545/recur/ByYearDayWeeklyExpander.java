@@ -83,7 +83,7 @@ final class ByYearDayWeeklyExpander extends ByExpander
             if (0 < actualDay && actualDay <= yearDays && newWeek == oldWeek)
             {
                 int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
-                addInstance(Instance.setMonthAndDayOfMonth(year, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay)));
+                addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay)));
             }
             else if (0 < nextYearDay && nextYearDay <= nextYearDays && nextYearDay < 7)
             {

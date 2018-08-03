@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recur;
@@ -498,9 +498,9 @@ public class RecurrenceIteratorTest
     {
         /*
          * Add a number of recurrence rules taken from the internet.
-		 */
+         */
 
-		/* rules limited by COUNT */
+        /* rules limited by COUNT */
         mTestRules.add(new TestRule("FREQ=DAILY;COUNT=1").setCount(1));
         mTestRules.add(new TestRule("FREQ=DAILY;COUNT=10").setCount(10));
         mTestRules.add(new TestRule("FREQ=DAILY;COUNT=5").setCount(5));
@@ -572,7 +572,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;COUNT=4;INTERVAL=4").setCount(4));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;BYMONTH=1;BYMONTHDAY=1;COUNT=5;WKST=SU").setCount(5).setMonths(1).setMonthdays(1));
 
-		/* rules limited by UNTIL */
+        /* rules limited by UNTIL */
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=14;UNTIL=20130620T035959Z;WKST=SU").setUntil("20130620T035959Z"));
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR;UNTIL=20130928T065959Z;WKST=SU").setUntil("20130928T065959Z").setWeekdays(
                 Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
@@ -825,7 +825,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=21000613T000000Z;INTERVAL=1;BYMONTH=6").setUntil("21000613T000000Z").setMonths(6));
         mTestRules.add(new TestRule("UNTIL=20070721T000000Z;FREQ=DAILY").setUntil("20070721T000000Z"));
 
-		/* unlimited test rules */
+        /* unlimited test rules */
         mTestRules.add(new TestRule("FREQ=DAILY"));
         mTestRules.add(new TestRule("FREQ=DAILY;BYDAY=SU,MO,TU,WE,TH,FR,SA"));
         mTestRules.add(new TestRule("FREQ=DAILY;BYMINUTE=0,20,40;BYHOUR=9,10,11,12,13,14,15,16"));
@@ -1043,9 +1043,9 @@ public class RecurrenceIteratorTest
                         "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;BYSETPOS=1,2,3")
                         .setMonthdays(1, 2, 3));
 
-		/*
+        /*
          * Rules with a specific number of instances
-		 */
+         */
 
         // first 9 mondays of 2016
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO;BYMONTH=1,2;UNTIL=20161231").setStart("20160104").setUntil("20161231").setInstances(9)
@@ -1208,6 +1208,22 @@ public class RecurrenceIteratorTest
                 "FREQ=YEARLY;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=2TH;UNTIL=20171231")
                 .setStart("20130101").setUntil("20171231").setMonths(1).setWeekdays(Calendar.THURSDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14).setInstances(5));
 
+        mTestRules.add(new TestRule(
+                "FREQ=YEARLY;BYMONTH=1,3;BYYEARDAY=1,31,59,60,61,62;COUNT=30").setStart("20180101")
+                .setMonths(1, 3)
+                .setMonthdays(1, 31, 28, 29, 2, 3)
+                .setCount(30));
+        mTestRules.add(new TestRule(
+                "FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60;UNTIL=20181231").setStart("20180101")
+                .setMonths(1, 3)
+                .setMonthdays(1, 31)
+                .setInstances(3));
+        mTestRules.add(new TestRule(
+                "FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60;BYDAY=WE;UNTIL=20181231").setStart("20180101")
+                .setMonths(1)
+                .setMonthdays(31)
+                .setInstances(1));
+
         /**
          * Interval tests
          */
@@ -1293,7 +1309,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120731T000000;BYHOUR=12").setStart("20120707T000000").setInstances(1).setMonths(7).setMonthdays(7)
                 .setHours(12));
 
-		/* Tests for RSCALE */
+        /* Tests for RSCALE */
 
         mTestRules.add(new TestRule("FREQ=YEARLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
                 .setStart("20130301").setUntil("29171231").setMonths(2, 3).setMonthdays(1, 29).setInstances(904));
@@ -1318,12 +1334,12 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=48;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
                 .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28).setInstances(227));
 
-		/* Special rules for the skip all but last test */
+        /* Special rules for the skip all but last test */
 
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=3;COUNT=10;BYMONTHDAY=10,11,12,13,14,15").setStart("20090714").setCount(10)
                 .setMonthdays(10, 11, 12, 13, 14, 15).setLastInstance("20100111"));
 
-		/* Special test for fast birthday iterator */
+        /* Special test for fast birthday iterator */
 
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
                 .setMonthdays(10).setLastInstance("20181010"));
@@ -1348,7 +1364,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=10;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
                 .setMonthdays(10).setLastInstance("20541010"));
 
-		/* Test time zone related issues */
+        /* Test time zone related issues */
 
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "Europe/Berlin")
                 .setInstances(2)
