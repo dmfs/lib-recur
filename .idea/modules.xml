@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest.iml" group="lib-recur-hamcrest" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_main.iml" group="lib-recur-hamcrest" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_test.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_test.iml" group="lib-recur-hamcrest" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur_main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur_main.iml" group="lib-recur" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur_test.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur_test.iml" group="lib-recur" />
     </modules>
