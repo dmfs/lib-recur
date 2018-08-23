@@ -31,14 +31,14 @@ final class SanityFilter extends RuleIterator
 {
     /**
      * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been filtered
-     * or nothing was expanded.
+     * or nothing was expanded. 4320 is 3 days of minutes.
      */
-    private final static int MAX_EMPTY_SETS = 1000;
+    private final static int MAX_EMPTY_SETS = 4320;
 
     /**
      * The max number of filtered instances.
      */
-    private final static int MAX_FILTERED_INSTANCES = 1000;
+    private final static int MAX_FILTERED_INSTANCES = 4320;
 
     /**
      * A {@link LongArray} that contains the instances to return.
