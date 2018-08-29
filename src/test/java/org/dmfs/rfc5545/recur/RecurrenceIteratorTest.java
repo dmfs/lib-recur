@@ -835,6 +835,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=31"));
         mTestRules.add(new TestRule("FREQ=DAILY;WKST=MO;"));
         mTestRules.add(new TestRule("FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16").setStart("20120101T101010"));
+        mTestRules.add(new TestRule("FREQ=MINUTELY;BYDAY=MO,TU,WE,TH,FR;BYHOUR=21;BYMINUTE=0, 15;").setStart("20120101T101010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=2SA;INTERVAL=1"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=+2TH").setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13").setWeekdays(Calendar.FRIDAY).setMonthdays(13));

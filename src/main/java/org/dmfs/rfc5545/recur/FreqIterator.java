@@ -30,9 +30,9 @@ public final class FreqIterator extends ByExpander
 {
     /**
      * Stop iterating (throwing an exception) if this number of empty sets passed in a line, i.e. sets that contain no elements because they have been
-     * filtered.
+     * filtered. 4320 is 3 days of minutes.
      */
-    private final static int MAX_EMPTY_SETS = 1000;
+    private final static int MAX_EMPTY_SETS = 4320;
 
     /**
      * The base frequency of the rule.
