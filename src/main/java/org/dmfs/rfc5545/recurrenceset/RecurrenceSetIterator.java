@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recurrenceset;
@@ -127,10 +127,12 @@ public class RecurrenceSetIterator
             }
             else
             {
-                return hasNext1 ? -1 : 1;
+                return hasNext1 ? 1 : -1;
             }
         }
     };
+
+    public static final InstanceIterator[] EMPTY_INSTANCE_ITERATOR_ARRAY = new InstanceIterator[0];
 
 
     /**
@@ -143,17 +145,17 @@ public class RecurrenceSetIterator
      */
     RecurrenceSetIterator(List<InstanceIterator> instances, List<InstanceIterator> exceptions)
     {
-        mInstances = instances.toArray(new InstanceIterator[instances.size()]);
+        mInstances = instances.toArray(EMPTY_INSTANCE_ITERATOR_ARRAY);
         Arrays.sort(mInstances, mAdapterComparator);
 
         if (exceptions != null && exceptions.size() > 0)
         {
-            mExceptions = exceptions.toArray(new InstanceIterator[exceptions.size()]);
+            mExceptions = exceptions.toArray(EMPTY_INSTANCE_ITERATOR_ARRAY);
             Arrays.sort(mExceptions, mAdapterComparator);
         }
         else
         {
-            mExceptions = new InstanceIterator[0];
+            mExceptions = EMPTY_INSTANCE_ITERATOR_ARRAY;
         }
     }
 
@@ -355,9 +357,9 @@ public class RecurrenceSetIterator
                     {
                         /*
                          * The first adapter has no more instances, remove it.
-						 * 
-						 * Since the rest of the list already sorted we don't have to sort again.
-						 */
+                         *
+                         * Since the rest of the list already sorted we don't have to sort again.
+                         */
                         InstanceIterator[] tempInstances = new InstanceIterator[instances.length - 1];
                         System.arraycopy(instances, 1, tempInstances, 0, tempInstances.length);
                         instances = mInstances = tempInstances;
@@ -479,18 +481,26 @@ public class RecurrenceSetIterator
         }
         else
         {
-            while (exceptions[0].hasNext() && count < EXCEPTION_CACHE_SIZE)
+            while (exceptions.length > 0 && count < EXCEPTION_CACHE_SIZE)
             {
-                InstanceIterator ra = exceptions[0];
-                long next = exceptionCache[count] = ra.next();
-                if (next > iterateEnd)
+                InstanceIterator exceptionIterator = exceptions[0];
+                if (exceptionIterator.hasNext())
                 {
-                    break;
+                    long next = exceptionCache[count++] = exceptionIterator.next();
+                    if (next > iterateEnd)
+                    {
+                        break;
+                    }
+
+                    Arrays.sort(exceptions, mAdapterComparator);
                 }
-
-                ++count;
-
-                Arrays.sort(exceptions, mAdapterComparator);
+                else
+                {
+                    // remove first element from the array
+                    InstanceIterator[] tempExceptions = new InstanceIterator[exceptions.length - 1];
+                    System.arraycopy(exceptions, 1, tempExceptions, 0, tempExceptions.length);
+                    exceptions = mExceptions = tempExceptions;
+                }
             }
         }
         mExceptionsInCache = count;
