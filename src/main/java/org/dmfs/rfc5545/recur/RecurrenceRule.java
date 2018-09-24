@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 
@@ -340,29 +342,14 @@ public final class RecurrenceRule
          * <p>
          * TODO: validate year days
          */
-        BYYEARDAY(new ListValueConverter<Integer>(new IntegerConverter(-366, 366).noZero()))
+        BYYEARDAY(new ListValueConverter<>(new IntegerConverter(-366, 366).noZero()))
                 {
                     @Override
                     RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                     {
-
-                        ByExpander.Scope scope = rule.getFreq() == Freq.WEEKLY || rule.hasPart(Part.BYWEEKNO) ? rule.hasPart(
-                                Part.BYMONTH) ? ByExpander.Scope.WEEKLY_AND_MONTHLY : ByExpander.Scope.WEEKLY : rule
-                                .getFreq() == Freq.YEARLY && !rule.hasPart(Part.BYMONTH) ? ByExpander.Scope.YEARLY : ByExpander.Scope.MONTHLY;
-
-                        switch (scope)
-                        {
-                            case WEEKLY:
-                                return new ByYearDayWeeklyExpander(rule, previous, calendarMetrics, start);
-                            case WEEKLY_AND_MONTHLY:
-                                return new ByYearDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
-                            case MONTHLY:
-                                return new ByYearDayMonthlyExpander(rule, previous, calendarMetrics, start);
-                            case YEARLY:
-                                return new ByYearDayYearlyExpander(rule, previous, calendarMetrics, start);
-                            default:
-                                throw new Error("Illegal scope");
-                        }
+                        // RFC 5545 only allows BYYEARDAY expansion for YEARLY rules
+                        // We'll expand it the same way for WEEKLY and MONTHLY though and filter afterwards for other frequencies if allowed by the mode
+                        return new ByYearDayYearlyExpander(rule, previous, calendarMetrics, start);
                     }
 
 
@@ -503,6 +490,136 @@ public final class RecurrenceRule
                         return ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && !rule.hasPart(
                                 Part.BYYEARDAY) && !rule.hasPart(Part.BYMONTHDAY))
                                 || freq == Freq.WEEKLY;
+                    }
+                },
+
+        /**
+         * A special BYMONTH filter for expander rewriting
+         */
+        _BYMONTH_FILTER(new ListValueConverter<>(new MonthConverter()))
+                {
+                    @Override
+                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    {
+                        throw new Error("Unexpected expander request");
+                    }
+
+
+                    @Override
+                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                    {
+                        return new TrivialByMonthFilter(rule);
+                    }
+
+
+                    @Override
+                    boolean expands(RecurrenceRule rule)
+                    {
+                        return false;
+                    }
+                },
+
+        /**
+         * A special BYWEEKNO filter for expander rewriting
+         */
+        _BYWEEKNO_FILTER(new ListValueConverter<>(new IntegerConverter(-53, 53).noZero()))
+                {
+                    @Override
+                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
+                    {
+                        throw new Error("Unexpected Expansion request");
+                    }
+
+
+                    @Override
+                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                    {
+                        return new ByWeekNoFilter(rule, calendarMetrics);
+                    }
+
+
+                    @Override
+                    boolean expands(RecurrenceRule rule)
+                    {
+                        return false;
+                    }
+                },
+
+        /**
+         * A special BYYEARDAY filter for expander rewriting
+         */
+        _BYYEARDAY_FILTER(new ListValueConverter<>(new IntegerConverter(-366, 366).noZero()))
+                {
+                    @Override
+                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    {
+                        throw new Error("Unexpected expander request");
+                    }
+
+
+                    @Override
+                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                    {
+                        return new ByYearDayFilter(rule, calendarMetrics);
+                    }
+
+
+                    @Override
+                    boolean expands(RecurrenceRule rule)
+                    {
+                        return false;
+                    }
+                },
+
+        /**
+         * A special BYMONTHDAY filter for expander rewriting
+         */
+        _BYMONTHDAY_FILTER(new ListValueConverter<>(new IntegerConverter(-31, 31).noZero()))
+                {
+                    @Override
+                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    {
+                        throw new Error("This filter does not expand.");
+                    }
+
+
+                    @Override
+                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                    {
+                        return new ByMonthDayFilter(rule, calendarMetrics);
+                    }
+
+
+                    @Override
+                    boolean expands(RecurrenceRule rule)
+                    {
+                        return false;
+                    }
+                },
+
+        /**
+         * A special BYDAY filter for expander rewriting
+         */
+        _BYDAY_FILTER(new ListValueConverter<>(new WeekdayNumConverter()))
+                {
+                    @Override
+                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    {
+                        throw new Error("Unexpected expansion request");
+                    }
+
+
+                    @Override
+                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                    {
+                        return new ByDayFilter(rule, calendarMetrics);
+                    }
+
+
+                    @Override
+                    boolean expands(RecurrenceRule rule)
+                    {
+                        return false;
                     }
                 },
 
@@ -813,6 +930,45 @@ public final class RecurrenceRule
     }
 
 
+    private final static Set<Part> REWRITE_PARTS = EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY);
+
+    private final static Map<Set<Part>, Set<Part>> YEAR_REWRITE_MAP = new HashMap<>(32);
+
+    static
+    {
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYYEARDAY, Part.BYMONTHDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTHDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY, Part.BYMONTHDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYMONTHDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER));
+        YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
+                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+    }
+
+
     /**
      * This class represents the position of a {@link Weekday} in a specific range. It parses values like <code>-4SU</code> which means the fourth last Sunday
      * in the interval or <code>2MO</code> which means the second Monday in the interval. In addition this class accepts simple weekdays like <code>SU</code>
@@ -974,7 +1130,7 @@ public final class RecurrenceRule
     /**
      * The parts of this rule.
      */
-    private EnumMap<Part, Object> mParts = new EnumMap<Part, Object>(Part.class);
+    private EnumMap<Part, Object> mParts = new EnumMap<>(Part.class);
 
     /**
      * A map of x-parts. This is only used in RFC 2445 modes, RFC 5554 doesn't support X-parts.
@@ -2002,8 +2158,21 @@ public final class RecurrenceRule
             // add SanityFilet of not present yet
             mParts.put(Part._SANITY_FILTER, null);
 
+            Set<Part> parts = EnumSet.copyOf(mParts.keySet());
+
+            if (getFreq() == Freq.YEARLY)
+            {
+                Set<Part> rewritableParts = EnumSet.copyOf(parts);
+                rewritableParts.retainAll(REWRITE_PARTS);
+                if (YEAR_REWRITE_MAP.containsKey(rewritableParts))
+                {
+                    parts.removeAll(rewritableParts);
+                    parts.addAll(YEAR_REWRITE_MAP.get(rewritableParts));
+                }
+            }
+
             // since FREQ is the first part anyway we don't have to create it separately
-            for (Part p : mParts.keySet())
+            for (Part p : parts)
             {
                 // add a filter for each rule part
                 if (p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
