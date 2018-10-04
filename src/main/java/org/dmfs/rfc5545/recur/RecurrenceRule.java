@@ -2565,7 +2565,7 @@ public final class RecurrenceRule
                 // can not tolerate rscales we don't know
                 throw new InvalidRecurrenceRuleException("unknown calendar scale '" + value + "'");
             }
-            return result.getCalendarMetrics(Weekday.SU /* week start is not relevant for RSCALE */);
+            return result.getCalendarMetrics(calScale.weekStart);
         }
     }
 
