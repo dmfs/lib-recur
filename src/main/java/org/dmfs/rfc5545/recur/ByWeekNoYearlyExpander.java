@@ -68,6 +68,16 @@ final class ByWeekNoYearlyExpander extends ByExpander
 
             if (actualWeek <= 0 || actualWeek > yearWeeks)
             {
+                if (actualWeek <= 0)
+                {
+                    addInstance(Instance.setMonthAndDayOfMonth(instance, 0, 0));
+                }
+                else
+                {
+                    int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, mCalendarMetrics.getDaysPerYear(year));
+                    addInstance(
+                            Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay) + 1));
+                }
                 continue;
             }
 

@@ -65,6 +65,15 @@ final class ByYearDayYearlyExpander extends ByExpander
                 int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, actualDay);
                 addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay)));
             }
+            else if (actualDay <= 0)
+            {
+                addInstance(Instance.setMonthAndDayOfMonth(instance, 0, 0));
+            }
+            else if (actualDay > yearDays)
+            {
+                int monthAndDay = mCalendarMetrics.getMonthAndDayOfYearDay(year, yearDays);
+                addInstance(Instance.setMonthAndDayOfMonth(instance, CalendarMetrics.packedMonth(monthAndDay), CalendarMetrics.dayOfMonth(monthAndDay) + 1));
+            }
         }
     }
 }
