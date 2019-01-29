@@ -391,7 +391,7 @@ public class RecurrenceSetIterator
      */
     private boolean isException(long instance)
     {
-        if (mExceptions.length == 0)
+        if (mExceptions.length == 0 && mExceptionCache == null)
         {
             // no exceptions: this will handle most of the cases
             return false;
@@ -455,6 +455,7 @@ public class RecurrenceSetIterator
 
         if (exceptions.length == 0)
         {
+            mExceptionsInCache = 0;
             // common case #1: no exceptions
             return;
         }
