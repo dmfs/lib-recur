@@ -241,6 +241,8 @@ public class RecurrenceSetIterator
                 mNextInstance = next;
                 return;
             }
+            // all instances consumed
+            mInstancesInCache = 0;
         }
 
         // no (more) upcoming instances in cache, fast forward all adapters
@@ -248,6 +250,8 @@ public class RecurrenceSetIterator
         {
             instances.fastForward(until);
         }
+
+        Arrays.sort(mInstances, mAdapterComparator);
 
         if (mExceptions.length > 0)
         {
@@ -257,6 +261,7 @@ public class RecurrenceSetIterator
             {
                 exceptions.fastForward(until);
             }
+            Arrays.sort(mExceptions, mAdapterComparator);
         }
     }
 

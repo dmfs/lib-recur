@@ -19,11 +19,14 @@ package org.dmfs.rfc5545.recurrenceset;
 
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
+import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
+import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.junit.Test;
 
 import java.util.TimeZone;
 
 import static java.util.Arrays.asList;
+import static org.dmfs.jems.hamcrest.matchers.GeneratableMatcher.startsWith;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -132,5 +135,71 @@ public class RecurrenceSetIteratorTest
         assertThat(recurrenceSetIterator.next(), is(start.addDuration(new Duration(1, 3, 0)).getTimestamp()));
         assertThat(recurrenceSetIterator.hasNext(), is(false));
         assertThat(recurrenceSetIterator.hasNext(), is(false));
+    }
+
+
+    /**
+     * See https://github.com/dmfs/lib-recur/issues/61
+     */
+    @Test
+    public void testMultipleRules() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0);
+
+        // Combine all Recurrence Rules into a RecurrenceSet
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=HOURLY;INTERVAL=5")));
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;INTERVAL=1")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 1, 5, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 1, 10, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 1, 15, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 1, 20, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 1, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 6, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 11, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 16, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 21, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
+        ));
+    }
+
+
+    /**
+     * See https://github.com/dmfs/lib-recur/issues/61
+     */
+    @Test
+    public void testMultipleRulesWithFastForward() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0);
+
+        // Combine all Recurrence Rules into a RecurrenceSet
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=HOURLY;INTERVAL=5")));
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;INTERVAL=1")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        // Fast forward to the time of calculation (1/1/2019 at 10pm).
+        it.fastForward(new DateTime(DateTime.UTC, 2019, 1, 1, 22, 0, 0).getTimestamp());
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 1, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 6, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 11, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 16, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 21, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
+        ));
     }
 }
