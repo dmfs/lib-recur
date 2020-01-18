@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recurrenceset;
@@ -34,12 +34,6 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
     class InstanceIterator implements AbstractRecurrenceAdapter.InstanceIterator
     {
         private int mNext;
-
-
-        public InstanceIterator(long start)
-        {
-            fastForward(start);
-        }
 
 
         @Override
@@ -170,7 +164,7 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
     @Override
     InstanceIterator getIterator(TimeZone timezone, long start)
     {
-        return new InstanceIterator(start);
+        return new InstanceIterator();
     }
 
 
