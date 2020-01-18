@@ -1,11 +1,14 @@
 plugins {
-    id 'java'
+    id 'java-library'
 }
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'org.hamcrest:hamcrest-all:1.3'
-    compile 'org.dmfs:jems-testing:1.18'
-    compile 'org.dmfs:jems:1.18'
-    compile rootProject
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    api 'org.hamcrest:hamcrest-all:1.3'
+    api 'org.dmfs:jems-testing:1.33'
+    implementation 'org.dmfs:jems:1.33'
+    api rootProject
 }
