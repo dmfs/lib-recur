@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static org.dmfs.rfc5545.Weekday.MO;
 import static org.dmfs.rfc5545.Weekday.TH;
+import static org.dmfs.rfc5545.Weekday.TU;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.are;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.instances;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.results;
@@ -30,6 +31,7 @@ import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.validRule;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.walking;
 import static org.dmfs.rfc5545.hamcrest.datetime.BeforeMatcher.before;
 import static org.dmfs.rfc5545.hamcrest.datetime.DayOfMonthMatcher.onDayOfMonth;
+import static org.dmfs.rfc5545.hamcrest.datetime.MonthMatcher.inMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.WeekDayMatcher.onWeekDay;
 import static org.dmfs.rfc5545.hamcrest.datetime.YearMatcher.inYear;
 import static org.hamcrest.Matchers.is;
@@ -56,5 +58,13 @@ public final class RecurrenceRuleTest
                         instances(are(onWeekDay(TH), onDayOfMonth(15, 16, 17, 18, 19, 20, 21), inYear(2013), before("20140101T050000Z"))),
                         startingWith("20130117T050000Z", "20130221T050000Z", "20130321T050000Z"),
                         results(12))));
+
+        // see https://github.com/dmfs/lib-recur/issues/73
+        assertThat(new RecurrenceRule("FREQ=WEEKLY;INTERVAL=2;WKST=SU;BYDAY=TU;UNTIL=20200430T170000Z"),
+                is(validRule(DateTime.parse("20200404T100000Z"),
+                        walking(),
+                        instances(are(onWeekDay(TU), onDayOfMonth(14, 28), inMonth(4), inYear(2020), before("20200430T170000Z"))),
+                        startingWith("20200414T100000Z", "20200428T100000Z"),
+                        results(2))));
     }
 }

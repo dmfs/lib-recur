@@ -2131,63 +2131,41 @@ public final class RecurrenceRule
                 rScaleCalendarMetrics, start).getInstance() : start
                 .getInstance();
 
-        RuleIterator iterator = FastBirthdayIterator.getInstance(this, rScaleCalendarMetrics, startInstance);
+        RuleIterator iterator = null;
         TimeZone startTimeZone = start.isFloating() ? null : start.getTimeZone();
 
-        if (iterator != null)
+        // add SanityFilter if not present yet
+        mParts.put(Part._SANITY_FILTER, null);
+
+        Set<Part> parts = EnumSet.copyOf(mParts.keySet());
+
+        if (getFreq() == Freq.YEARLY)
         {
-            iterator = new SanityFilter(iterator, rScaleCalendarMetrics, startInstance);
-            if (hasPart(Part.UNTIL))
+            Set<Part> rewritableParts = EnumSet.copyOf(parts);
+            rewritableParts.retainAll(REWRITE_PARTS);
+            if (YEAR_REWRITE_MAP.containsKey(rewritableParts))
             {
-                iterator = Part.UNTIL.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
-            }
-            else if (hasPart(Part.COUNT))
-            {
-                iterator = Part.COUNT.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
+                parts.removeAll(rewritableParts);
+                parts.addAll(YEAR_REWRITE_MAP.get(rewritableParts));
             }
         }
-        else if ((iterator = FastWeeklyIterator.getInstance(this, rScaleCalendarMetrics, startInstance)) != null)
-        {
-            if (hasPart(Part.UNTIL))
-            {
-                iterator = Part.UNTIL.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
-            }
-        }
-        else
-        {
-            // add SanityFilet of not present yet
-            mParts.put(Part._SANITY_FILTER, null);
 
-            Set<Part> parts = EnumSet.copyOf(mParts.keySet());
-
-            if (getFreq() == Freq.YEARLY)
+        // since FREQ is the first part anyway we don't have to create it separately
+        for (Part p : parts)
+        {
+            // add a filter for each rule part
+            if (p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
             {
-                Set<Part> rewritableParts = EnumSet.copyOf(parts);
-                rewritableParts.retainAll(REWRITE_PARTS);
-                if (YEAR_REWRITE_MAP.containsKey(rewritableParts))
+                if (p.expands(this))
                 {
-                    parts.removeAll(rewritableParts);
-                    parts.addAll(YEAR_REWRITE_MAP.get(rewritableParts));
+                    // if a part returns null for the expander just skip it
+                    RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance,
+                            startTimeZone);
+                    iterator = newIterator == null ? iterator : newIterator;
                 }
-            }
-
-            // since FREQ is the first part anyway we don't have to create it separately
-            for (Part p : parts)
-            {
-                // add a filter for each rule part
-                if (p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
+                else
                 {
-                    if (p.expands(this))
-                    {
-                        // if a part returns null for the expander just skip it
-                        RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance,
-                                startTimeZone);
-                        iterator = newIterator == null ? iterator : newIterator;
-                    }
-                    else
-                    {
-                        ((ByExpander) iterator).addFilter(p.getFilter(this, rScaleCalendarMetrics));
-                    }
+                    ((ByExpander) iterator).addFilter(p.getFilter(this, rScaleCalendarMetrics));
                 }
             }
         }
