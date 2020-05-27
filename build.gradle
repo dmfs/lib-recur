@@ -27,7 +27,7 @@ allprojects {
 }
 
 dependencies {
-    api 'org.dmfs:rfc5545-datetime:0.2.4'
+    api 'org.dmfs:rfc5545-datetime:0.3'
     testImplementation group: 'junit', name: 'junit', version: '4.11'
     testImplementation project("lib-recur-hamcrest")
     testImplementation 'org.dmfs:jems-testing:1.33'

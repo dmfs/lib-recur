@@ -18,8 +18,10 @@
 package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.Weekday;
 import org.junit.Test;
 
+import static org.dmfs.jems.hamcrest.matchers.SingleMatcher.hasValue;
 import static org.dmfs.rfc5545.Weekday.MO;
 import static org.dmfs.rfc5545.Weekday.TH;
 import static org.dmfs.rfc5545.Weekday.TU;
@@ -34,6 +36,7 @@ import static org.dmfs.rfc5545.hamcrest.datetime.DayOfMonthMatcher.onDayOfMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.MonthMatcher.inMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.WeekDayMatcher.onWeekDay;
 import static org.dmfs.rfc5545.hamcrest.datetime.YearMatcher.inYear;
+import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -66,5 +69,18 @@ public final class RecurrenceRuleTest
                         instances(are(onWeekDay(TU), onDayOfMonth(14, 28), inMonth(4), inYear(2020), before("20200430T170000Z"))),
                         startingWith("20200414T100000Z", "20200428T100000Z"),
                         results(2))));
+
+        // see https://github.com/dmfs/lib-recur/issues/78
+        assertThat(
+                () -> {
+                    RecurrenceRule recurrenceRule = new RecurrenceRule(Freq.MONTHLY);
+                    recurrenceRule.setCount(5);
+                    recurrenceRule.setInterval(1);
+                    recurrenceRule.setSkip(RecurrenceRule.Skip.FORWARD);
+                    recurrenceRule.setWeekStart(Weekday.MO);
+                    return recurrenceRule;
+                },
+                hasValue(hasToString("FREQ=MONTHLY;RSCALE=GREGORIAN;SKIP=FORWARD;COUNT=5"))
+        );
     }
 }
