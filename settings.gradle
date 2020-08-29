@@ -1,3 +1,4 @@
 rootProject.name = 'lib-recur'
 include 'lib-recur-hamcrest'
+include 'benchmark'
 
