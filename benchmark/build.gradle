@@ -1,0 +1,17 @@
+plugins {
+    id 'java'
+    id "me.champeau.gradle.jmh" version "0.5.1"
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    jmh 'org.dmfs:jems:1.41'
+    jmh rootProject
+}
+
+jmh {
+    resultFormat = 'JSON'
+    resultsFile = project.file("${project.buildDir}/reports/jmh/results-${version}.json")
+}
