@@ -40,18 +40,12 @@ public class RecurrenceRuleAdapterTest
 
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
@@ -66,18 +60,12 @@ public class RecurrenceRuleAdapterTest
 
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(false));
         assertThat(iterator.hasNext(), is(false));
@@ -92,18 +80,12 @@ public class RecurrenceRuleAdapterTest
 
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170210T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170310T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(false));
         assertThat(iterator.hasNext(), is(false));
@@ -119,18 +101,12 @@ public class RecurrenceRuleAdapterTest
         // note the unsynced start is not a result, it's added separately by `RecurrenceSet`
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170311T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170311T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170311T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
@@ -146,13 +122,9 @@ public class RecurrenceRuleAdapterTest
         // note the unsynced start is not a result, it's added separately by `RecurrenceSet`
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(false));
         assertThat(iterator.hasNext(), is(false));
@@ -168,18 +140,12 @@ public class RecurrenceRuleAdapterTest
         // note the unsynced start is not a result, it's added separately by `RecurrenceSet`
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170111T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170211T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170311T113012").getTimestamp()));
-        assertThat(iterator.peek(), is(DateTime.parse("Europe/Berlin", "20170311T113012").getTimestamp()));
         assertThat(iterator.next(), is(DateTime.parse("Europe/Berlin", "20170311T113012").getTimestamp()));
         assertThat(iterator.hasNext(), is(false));
         assertThat(iterator.hasNext(), is(false));
