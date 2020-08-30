@@ -172,6 +172,80 @@ public class RecurrenceSetIteratorTest
     }
 
 
+    @Test
+    public void testMultipleRulesWithSameValues() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(2019, 1, 1);
+
+        // Combine all Recurrence Rules into a RecurrenceSet
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=MO,TU,WE")));
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=WE,TH,FR")));
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=WE,FR,SA")));
+        ruleSet.addExceptions(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=MO,TH")));
+        ruleSet.addExceptions(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=MO")));
+        ruleSet.addExceptions(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=TH,FR")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(2019, 1, 2).getTimestamp(), // SA
+                new DateTime(2019, 1, 5).getTimestamp(), // TU
+                new DateTime(2019, 1, 6).getTimestamp(), // WE
+                new DateTime(2019, 1, 9).getTimestamp(), // SA
+                new DateTime(2019, 1, 12).getTimestamp(), // TU
+                new DateTime(2019, 1, 13).getTimestamp(), // WE
+                new DateTime(2019, 1, 16).getTimestamp(), // SA
+                new DateTime(2019, 1, 19).getTimestamp(), // TU
+                new DateTime(2019, 1, 20).getTimestamp(), // WE
+                new DateTime(2019, 1, 23).getTimestamp(), // SA
+                new DateTime(2019, 1, 26).getTimestamp(), // TU
+                new DateTime(2019, 1, 27).getTimestamp(), // WE
+                new DateTime(2019, 2, 2).getTimestamp(), // SA
+                new DateTime(2019, 2, 5).getTimestamp() // TU
+        ));
+    }
+
+
+    @Test
+    public void testMultipleRulesWithSameValuesAndCount() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(2019, 1, 1);
+
+        // Combine all Recurrence Rules into a RecurrenceSet
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=MO,TU,WE")));
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=WE,TH,FR;COUNT=10")));
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=WE,FR,SA;COUNT=5")));
+        ruleSet.addExceptions(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=MO,TH;UNTIL=20190212")));
+        ruleSet.addExceptions(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=MO;COUNT=4")));
+        ruleSet.addExceptions(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;BYDAY=TH,FR")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(2019, 1, 2).getTimestamp(), // SA
+                new DateTime(2019, 1, 5).getTimestamp(), // TU
+                new DateTime(2019, 1, 6).getTimestamp(), // WE
+                new DateTime(2019, 1, 9).getTimestamp(), // SA
+                new DateTime(2019, 1, 12).getTimestamp(), // TU
+                new DateTime(2019, 1, 13).getTimestamp(), // WE
+                //new DateTime(2019, 1, 16).getTimestamp(), // SA
+                new DateTime(2019, 1, 19).getTimestamp(), // TU
+                new DateTime(2019, 1, 20).getTimestamp(), // WE
+                //new DateTime(2019, 1, 23).getTimestamp(), // SA
+                new DateTime(2019, 1, 25).getTimestamp(), // MO
+                new DateTime(2019, 1, 26).getTimestamp(), // TU
+                new DateTime(2019, 1, 27).getTimestamp(), // WE
+                //new DateTime(2019, 2, 2).getTimestamp(), // SA
+                new DateTime(2019, 2, 4).getTimestamp(), // MO
+                new DateTime(2019, 2, 5).getTimestamp() // TU
+        ));
+    }
+
+
     /**
      * See https://github.com/dmfs/lib-recur/issues/61
      */

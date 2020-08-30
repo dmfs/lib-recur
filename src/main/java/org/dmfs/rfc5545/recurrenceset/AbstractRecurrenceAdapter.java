@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recurrenceset;
@@ -48,25 +48,6 @@ public abstract class AbstractRecurrenceAdapter
          *         if there are no more instances.
          */
         abstract long next();
-
-        /**
-         * Peek at the upcoming instance without actually iterating it. Use {@link #hasNext()} to check if there are any more instances before calling this
-         * method.
-         *
-         * @return The next instance of this set of instances.
-         *
-         * @throws ArrayIndexOutOfBoundsException
-         *         if there are no more instances.
-         */
-        abstract long peek();
-
-        /**
-         * Skip the given number of instances.
-         *
-         * @param count
-         *         The number of instances to skip.
-         */
-        abstract void skip(int count);
 
         /**
          * Skip all instances till <code>until</code>. If <code>until</code> is an instance itself it will be the next iterated instance. If the rule doesn't

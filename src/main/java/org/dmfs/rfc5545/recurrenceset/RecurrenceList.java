@@ -55,24 +55,6 @@ public final class RecurrenceList extends AbstractRecurrenceAdapter
 
 
         @Override
-        public long peek()
-        {
-            if (mNext >= mCount)
-            {
-                throw new ArrayIndexOutOfBoundsException("No more instances to iterate.");
-            }
-            return mInstances[mNext];
-        }
-
-
-        @Override
-        public void skip(int count)
-        {
-            mNext += count;
-        }
-
-
-        @Override
         public void fastForward(long until)
         {
             int count = mCount;

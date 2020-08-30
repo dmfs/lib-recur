@@ -17,6 +17,8 @@
 
 package org.dmfs.rfc5545.recurrenceset;
 
+import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
+
 import java.util.NoSuchElementException;
 
 
@@ -27,11 +29,11 @@ import java.util.NoSuchElementException;
  */
 public final class CountLimitedRecurrenceRuleIterator implements AbstractRecurrenceAdapter.InstanceIterator
 {
-    private final AbstractRecurrenceAdapter.InstanceIterator mDelegate;
+    private final RecurrenceRuleIterator mDelegate;
     private int mRemaining;
 
 
-    public CountLimitedRecurrenceRuleIterator(AbstractRecurrenceAdapter.InstanceIterator delegate, int remaining)
+    public CountLimitedRecurrenceRuleIterator(RecurrenceRuleIterator delegate, int remaining)
     {
         mDelegate = delegate;
         mRemaining = remaining;
@@ -53,33 +55,14 @@ public final class CountLimitedRecurrenceRuleIterator implements AbstractRecurre
             throw new NoSuchElementException("No further elements to iterate");
         }
         mRemaining--;
-        return mDelegate.next();
-    }
-
-
-    @Override
-    public long peek()
-    {
-        if (!hasNext())
-        {
-            throw new NoSuchElementException("No further elements to iterate");
-        }
-        return mDelegate.peek();
-    }
-
-
-    @Override
-    public void skip(int count)
-    {
-        mRemaining -= count;
-        mDelegate.skip(count);
+        return mDelegate.nextMillis();
     }
 
 
     @Override
     public void fastForward(long until)
     {
-        while (hasNext() && peek() < until)
+        while (hasNext() && mDelegate.peekMillis() < until)
         {
             next();
         }

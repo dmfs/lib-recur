@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recurrenceset;
@@ -57,20 +57,6 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 
 
         @Override
-        public long peek()
-        {
-            return mIterator.peekMillis();
-        }
-
-
-        @Override
-        public void skip(int count)
-        {
-            mIterator.skip(count);
-        }
-
-
-        @Override
         public void fastForward(long until)
         {
             mIterator.fastForward(until);
@@ -100,12 +86,13 @@ public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
     @Override
     AbstractRecurrenceAdapter.InstanceIterator getIterator(TimeZone timezone, long start)
     {
-        AbstractRecurrenceAdapter.InstanceIterator iterator = new InstanceIterator(mRrule.iterator(start, timezone));
-        if (mRrule.getCount() != null && iterator.peek() != start)
+        RecurrenceRuleIterator ruleIterator = mRrule.iterator(start, timezone);
+        AbstractRecurrenceAdapter.InstanceIterator iterator = new InstanceIterator(ruleIterator);
+        if (mRrule.getCount() != null && ruleIterator.peekMillis() != start)
         {
             // we have a count limited rule and an unsynched start date
             // since the start date counts as the first element, the RRULE iterator should return one less element.
-            iterator = new CountLimitedRecurrenceRuleIterator(iterator, mRrule.getCount() - 1);
+            iterator = new CountLimitedRecurrenceRuleIterator(ruleIterator, mRrule.getCount() - 1);
         }
         return iterator;
     }
