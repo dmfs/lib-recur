@@ -25,6 +25,7 @@ import static org.dmfs.jems.hamcrest.matchers.SingleMatcher.hasValue;
 import static org.dmfs.rfc5545.Weekday.MO;
 import static org.dmfs.rfc5545.Weekday.TH;
 import static org.dmfs.rfc5545.Weekday.TU;
+import static org.dmfs.rfc5545.Weekday.WE;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.are;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.instances;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.results;
@@ -82,5 +83,11 @@ public final class RecurrenceRuleTest
                 },
                 hasValue(hasToString("FREQ=MONTHLY;RSCALE=GREGORIAN;SKIP=FORWARD;COUNT=5"))
         );
+
+        assertThat(new RecurrenceRule("FREQ=MONTHLY;BYDAY=1MO,-1MO,WE"),
+                is(validRule(DateTime.parse("20200902"),
+                        walking(),
+                        instances(are(onWeekDay(MO, WE))),
+                        startingWith("20200902", "20200907", "20200909", "20200916", "20200923", "20200928", "20200930", "20201005", "20201007"))));
     }
 }

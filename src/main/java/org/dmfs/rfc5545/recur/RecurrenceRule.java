@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -478,7 +479,50 @@ public final class RecurrenceRule
                     @Override
                     ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
                     {
-                        return new ByDayFilter(rule, calendarMetrics);
+                        Freq freq = rule.getFreq();
+                        // TODO: this method looks ugly and can use some improvement
+                        // TODO: consider doing this separation at parsing time
+                        Set<Weekday> nonPrefixed = EnumSet.noneOf(Weekday.class);
+                        Map<Weekday, Set<Integer>> prefixed = new EnumMap<>(Weekday.class);
+
+                        for (WeekdayNum wn : rule.getByDayPart())
+                        {
+                            if (wn.pos == 0)
+                            {
+                                nonPrefixed.add(wn.weekday);
+                            }
+                            else
+                            {
+                                Set<Integer> prefixes = prefixed.get(wn.weekday);
+                                if (prefixes == null) // TODO use java 8 API, check Android support first
+                                {
+                                    prefixes = new HashSet<>();
+                                    prefixed.put(wn.weekday, prefixes);
+                                }
+                                prefixes.add(wn.pos);
+                            }
+                        }
+
+                        if (prefixed.isEmpty()
+                                || freq != Freq.YEARLY && freq != Freq.MONTHLY
+                                || freq == Freq.YEARLY && rule.hasPart(BYWEEKNO))
+                        {
+                            return new ByDayFilter(calendarMetrics, nonPrefixed);
+                        }
+                        ByFilter baseFilter = new ByDayPrefixedFilter(
+                                calendarMetrics,
+                                prefixed,
+                                freq == Freq.YEARLY && rule.getByPart(BYMONTH) == null ?
+                                        ByDayPrefixedFilter.Scope.YEAR :
+                                        ByDayPrefixedFilter.Scope.MONTH);
+
+                        if (nonPrefixed.isEmpty())
+                        {
+                            return baseFilter;
+                        }
+
+                        ByFilter nonPrefixFilter = new ByDayFilter(calendarMetrics, nonPrefixed);
+                        return instance -> nonPrefixFilter.filter(instance) && baseFilter.filter(instance);
                     }
 
 
@@ -612,7 +656,7 @@ public final class RecurrenceRule
                     @Override
                     ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
                     {
-                        return new ByDayFilter(rule, calendarMetrics);
+                        return BYDAY.getFilter(rule, calendarMetrics);
                     }
 
 
