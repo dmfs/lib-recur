@@ -119,9 +119,12 @@ public class RecurrenceSetIterator
      */
     public void fastForward(long until)
     {
-        mInstances.fastForward(until);
-        mExceptions.fastForward(until);
-        pullNext();
+        if (mNextInstance < until)
+        {
+            mInstances.fastForward(until);
+            mExceptions.fastForward(until);
+            pullNext();
+        }
     }
 
 

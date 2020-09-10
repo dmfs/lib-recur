@@ -24,6 +24,7 @@ import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.junit.Test;
 
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
 import static org.dmfs.jems.hamcrest.matchers.GeneratableMatcher.startsWith;
@@ -276,4 +277,82 @@ public class RecurrenceSetIteratorTest
                 new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
         ));
     }
+
+
+    /**
+     * See https://github.com/dmfs/lib-recur/issues/85
+     * <p>
+     * Fast forward to the start date (i.e. not fast forwarding at all)
+     */
+    @Test
+    public void testFastForwardToStart() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0);
+
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;INTERVAL=1")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        // "Fast forward" to start.
+        it.fastForward(start.getTimestamp());
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp()
+        ));
+    }
+
+
+    @Test
+    public void testFastForwardToPast() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0);
+
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;INTERVAL=1")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        // "Fast forward" to 100 days in the past.
+        it.fastForward(start.getTimestamp() - TimeUnit.DAYS.toMillis(100));
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp()
+        ));
+    }
+
+
+    @Test
+    public void testFastForwardToNext() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0);
+
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=DAILY;INTERVAL=1")));
+
+        // Create an iterator using the RecurrenceSet
+        RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
+
+        // "Fast forward" to 1 millisecond after start (skipping the first instance only)
+        it.fastForward(start.getTimestamp() + 1);
+
+        assertThat(() -> it::next, startsWith(
+                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp(),
+                new DateTime(DateTime.UTC, 2019, 1, 6, 0, 0, 0).getTimestamp()
+        ));
+    }
+
 }
