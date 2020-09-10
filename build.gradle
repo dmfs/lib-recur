@@ -17,6 +17,7 @@ configurations {
 }
 
 apply from: 'publish.gradle'
+apply from: 'jacoco.gradle'
 
 allprojects {
     group 'org.dmfs'

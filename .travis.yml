@@ -1,2 +1,7 @@
 language: java
 
+script: ./gradlew check javadoc
+
+# upload JaCoCo report to codecov
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
