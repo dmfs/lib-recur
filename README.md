@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/dmfs/lib-recur.svg?branch=master)](https://travis-ci.org/dmfs/lib-recur)
+[![codecov](https://codecov.io/gh/dmfs/lib-recur/branch/master/graph/badge.svg)](https://codecov.io/gh/dmfs/lib-recur)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/dmfs/lib-recur.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/dmfs/lib-recur/context:java)
 
 # lib-recur
 
