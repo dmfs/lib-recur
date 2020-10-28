@@ -1653,6 +1653,16 @@ public class RecurrenceRule
         return (Freq) mParts.get(Part.FREQ);
     }
 
+    /**
+     * Set the base frequency of this recurrence rule. <p> TODO: check if the rule is still valid afterwards (honor the silent parameter) </p>
+     *
+     * @param freq
+     *         The new {@link Freq} value of this rule.
+     */
+    public void setFreq(Freq freq)
+    {
+        mParts.put(Part.FREQ, freq);
+    }
 
     /**
      * Set the base frequency of this recurrence rule. <p> TODO: check if the rule is still valid afterwards (honor the silent parameter) </p>
@@ -1665,7 +1675,7 @@ public class RecurrenceRule
      */
     public void setFreq(Freq freq, boolean silent)
     {
-        mParts.put(Part.FREQ, freq);
+        this.setFreq(freq);
 
         if (mode == RfcMode.RFC5545_STRICT || mode == RfcMode.RFC5545_LAX)
         {
