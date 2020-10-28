@@ -49,7 +49,7 @@ import java.util.TimeZone;
  *
  * @author Marten Gajda
  */
-public final class RecurrenceRule
+public class RecurrenceRule
 {
 
     /**
@@ -1187,6 +1187,14 @@ public final class RecurrenceRule
     private CalendarMetrics mCalendarMetrics = DEFAULT_CALENDAR_SCALE;
 
 
+     /**
+     * Create a new empty recurrence rule to allow JSON and XML Parsing when using RecurrenceRule in REST APIs.
+     */
+    public RecurrenceRule()
+    {
+        
+    }
+    
     /**
      * Create a new recurrence rule from String using the {@link RfcMode} {@link RfcMode#RFC5545_LAX}. The parser will be quite tolerant and skip any invalid
      * parts to produce a valid recurrence rule.
