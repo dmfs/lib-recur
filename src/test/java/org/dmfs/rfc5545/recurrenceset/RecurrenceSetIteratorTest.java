@@ -17,17 +17,20 @@
 
 package org.dmfs.rfc5545.recurrenceset;
 
+import org.dmfs.iterators.AbstractBaseIterator;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
 import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
 import static org.dmfs.jems.hamcrest.matchers.GeneratableMatcher.startsWith;
+import static org.dmfs.jems.hamcrest.matchers.iterator.IteratorMatcher.iteratorOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -48,8 +51,8 @@ public class RecurrenceSetIteratorTest
         TimeZone testZone = TimeZone.getTimeZone("UTC");
         DateTime start = DateTime.parse("20180101");
         RecurrenceSetIterator recurrenceSetIterator = new RecurrenceSetIterator(
-                asList(new RecurrenceList("20180101,20180102,20180103,20180104", testZone).getIterator(testZone, start.getTimestamp())),
-                asList(new RecurrenceList("20180102,20180103", testZone).getIterator(testZone, start.getTimestamp())));
+            asList(new RecurrenceList("20180101,20180102,20180103,20180104", testZone).getIterator(testZone, start.getTimestamp())),
+            asList(new RecurrenceList("20180102,20180103", testZone).getIterator(testZone, start.getTimestamp())));
 
         // note we call hasNext twice to ensure it's idempotent
         assertThat(recurrenceSetIterator.hasNext(), is(true));
@@ -72,9 +75,9 @@ public class RecurrenceSetIteratorTest
         TimeZone testZone = TimeZone.getTimeZone("UTC");
         DateTime start = DateTime.parse("20180101");
         RecurrenceSetIterator recurrenceSetIterator = new RecurrenceSetIterator(
-                asList(new RecurrenceList("20180101,20180102,20180103,20180104", testZone).getIterator(testZone, start.getTimestamp())),
-                asList(new RecurrenceList("20180103", testZone).getIterator(testZone, start.getTimestamp()),
-                        new RecurrenceList("20180102", testZone).getIterator(testZone, start.getTimestamp())));
+            asList(new RecurrenceList("20180101,20180102,20180103,20180104", testZone).getIterator(testZone, start.getTimestamp())),
+            asList(new RecurrenceList("20180103", testZone).getIterator(testZone, start.getTimestamp()),
+                new RecurrenceList("20180102", testZone).getIterator(testZone, start.getTimestamp())));
 
         // note we call hasNext twice to ensure it's idempotent
         assertThat(recurrenceSetIterator.hasNext(), is(true));
@@ -97,9 +100,9 @@ public class RecurrenceSetIteratorTest
         TimeZone testZone = TimeZone.getTimeZone("UTC");
         DateTime start = DateTime.parse("20180101T120000");
         RecurrenceSetIterator recurrenceSetIterator = new RecurrenceSetIterator(
-                asList(new RecurrenceList("20180101T120000,20180102T120000,20180103T120000,20180104T120000", testZone).getIterator(testZone,
-                        start.getTimestamp())),
-                asList(new RecurrenceList("20180102T120000,20180103T120000", testZone).getIterator(testZone, start.getTimestamp())));
+            asList(new RecurrenceList("20180101T120000,20180102T120000,20180103T120000,20180104T120000", testZone).getIterator(testZone,
+                start.getTimestamp())),
+            asList(new RecurrenceList("20180102T120000,20180103T120000", testZone).getIterator(testZone, start.getTimestamp())));
 
         // note we call hasNext twice to ensure it's idempotent
         assertThat(recurrenceSetIterator.hasNext(), is(true));
@@ -122,10 +125,10 @@ public class RecurrenceSetIteratorTest
         TimeZone testZone = TimeZone.getTimeZone("UTC");
         DateTime start = DateTime.parse("20180101T120000");
         RecurrenceSetIterator recurrenceSetIterator = new RecurrenceSetIterator(
-                asList(new RecurrenceList("20180101T120000,20180102T120000,20180103T120000,20180104T120000", testZone).getIterator(testZone,
-                        start.getTimestamp())),
-                asList(new RecurrenceList("20180103T120000", testZone).getIterator(testZone, start.getTimestamp()),
-                        new RecurrenceList("20180102T120000", testZone).getIterator(testZone, start.getTimestamp())));
+            asList(new RecurrenceList("20180101T120000,20180102T120000,20180103T120000,20180104T120000", testZone).getIterator(testZone,
+                start.getTimestamp())),
+            asList(new RecurrenceList("20180103T120000", testZone).getIterator(testZone, start.getTimestamp()),
+                new RecurrenceList("20180102T120000", testZone).getIterator(testZone, start.getTimestamp())));
 
         // note we call hasNext twice to ensure it's idempotent
         assertThat(recurrenceSetIterator.hasNext(), is(true));
@@ -156,19 +159,19 @@ public class RecurrenceSetIteratorTest
         RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 1, 5, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 1, 10, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 1, 15, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 1, 20, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 1, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 6, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 11, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 16, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 21, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
+            new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 1, 5, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 1, 10, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 1, 15, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 1, 20, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 1, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 6, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 11, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 16, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 21, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
         ));
     }
 
@@ -191,21 +194,42 @@ public class RecurrenceSetIteratorTest
         RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(2019, 1, 2).getTimestamp(), // SA
-                new DateTime(2019, 1, 5).getTimestamp(), // TU
-                new DateTime(2019, 1, 6).getTimestamp(), // WE
-                new DateTime(2019, 1, 9).getTimestamp(), // SA
-                new DateTime(2019, 1, 12).getTimestamp(), // TU
-                new DateTime(2019, 1, 13).getTimestamp(), // WE
-                new DateTime(2019, 1, 16).getTimestamp(), // SA
-                new DateTime(2019, 1, 19).getTimestamp(), // TU
-                new DateTime(2019, 1, 20).getTimestamp(), // WE
-                new DateTime(2019, 1, 23).getTimestamp(), // SA
-                new DateTime(2019, 1, 26).getTimestamp(), // TU
-                new DateTime(2019, 1, 27).getTimestamp(), // WE
-                new DateTime(2019, 2, 2).getTimestamp(), // SA
-                new DateTime(2019, 2, 5).getTimestamp() // TU
+            new DateTime(2019, 1, 2).getTimestamp(), // SA
+            new DateTime(2019, 1, 5).getTimestamp(), // TU
+            new DateTime(2019, 1, 6).getTimestamp(), // WE
+            new DateTime(2019, 1, 9).getTimestamp(), // SA
+            new DateTime(2019, 1, 12).getTimestamp(), // TU
+            new DateTime(2019, 1, 13).getTimestamp(), // WE
+            new DateTime(2019, 1, 16).getTimestamp(), // SA
+            new DateTime(2019, 1, 19).getTimestamp(), // TU
+            new DateTime(2019, 1, 20).getTimestamp(), // WE
+            new DateTime(2019, 1, 23).getTimestamp(), // SA
+            new DateTime(2019, 1, 26).getTimestamp(), // TU
+            new DateTime(2019, 1, 27).getTimestamp(), // WE
+            new DateTime(2019, 2, 2).getTimestamp(), // SA
+            new DateTime(2019, 2, 5).getTimestamp() // TU
         ));
+    }
+
+
+    /**
+     * See https://github.com/dmfs/lib-recur/issues/93
+     */
+    @Test
+    public void testGithubIssue93() throws InvalidRecurrenceRuleException
+    {
+        DateTime start = DateTime.parse("20200414T160000Z");
+
+        // Combine all Recurrence Rules into a RecurrenceSet
+        RecurrenceSet ruleSet = new RecurrenceSet();
+        ruleSet.addInstances(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=WEEKLY;UNTIL=20200511T000000Z;BYDAY=TU")));
+        ruleSet.addExceptions(new RecurrenceList("20200421T160000Z,20200505T160000Z", DateTime.UTC));
+
+        // Create an iterator using the RecurrenceSet
+        assertThat(() -> new RecurrenceAdapter(ruleSet.iterator(start.getTimeZone(), start.getTimestamp())),
+            iteratorOf(
+                DateTime.parse("20200414T160000Z").getTimestamp(),
+                DateTime.parse("20200428T160000Z").getTimestamp()));
     }
 
 
@@ -227,22 +251,22 @@ public class RecurrenceSetIteratorTest
         RecurrenceSetIterator it = ruleSet.iterator(start.getTimeZone(), start.getTimestamp());
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(2019, 1, 2).getTimestamp(), // SA
-                new DateTime(2019, 1, 5).getTimestamp(), // TU
-                new DateTime(2019, 1, 6).getTimestamp(), // WE
-                new DateTime(2019, 1, 9).getTimestamp(), // SA
-                new DateTime(2019, 1, 12).getTimestamp(), // TU
-                new DateTime(2019, 1, 13).getTimestamp(), // WE
-                //new DateTime(2019, 1, 16).getTimestamp(), // SA
-                new DateTime(2019, 1, 19).getTimestamp(), // TU
-                new DateTime(2019, 1, 20).getTimestamp(), // WE
-                //new DateTime(2019, 1, 23).getTimestamp(), // SA
-                new DateTime(2019, 1, 25).getTimestamp(), // MO
-                new DateTime(2019, 1, 26).getTimestamp(), // TU
-                new DateTime(2019, 1, 27).getTimestamp(), // WE
-                //new DateTime(2019, 2, 2).getTimestamp(), // SA
-                new DateTime(2019, 2, 4).getTimestamp(), // MO
-                new DateTime(2019, 2, 5).getTimestamp() // TU
+            new DateTime(2019, 1, 2).getTimestamp(), // SA
+            new DateTime(2019, 1, 5).getTimestamp(), // TU
+            new DateTime(2019, 1, 6).getTimestamp(), // WE
+            new DateTime(2019, 1, 9).getTimestamp(), // SA
+            new DateTime(2019, 1, 12).getTimestamp(), // TU
+            new DateTime(2019, 1, 13).getTimestamp(), // WE
+            //new DateTime(2019, 1, 16).getTimestamp(), // SA
+            new DateTime(2019, 1, 19).getTimestamp(), // TU
+            new DateTime(2019, 1, 20).getTimestamp(), // WE
+            //new DateTime(2019, 1, 23).getTimestamp(), // SA
+            new DateTime(2019, 1, 25).getTimestamp(), // MO
+            new DateTime(2019, 1, 26).getTimestamp(), // TU
+            new DateTime(2019, 1, 27).getTimestamp(), // WE
+            //new DateTime(2019, 2, 2).getTimestamp(), // SA
+            new DateTime(2019, 2, 4).getTimestamp(), // MO
+            new DateTime(2019, 2, 5).getTimestamp() // TU
         ));
     }
 
@@ -267,14 +291,14 @@ public class RecurrenceSetIteratorTest
         it.fastForward(new DateTime(DateTime.UTC, 2019, 1, 1, 22, 0, 0).getTimestamp());
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 1, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 6, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 11, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 16, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 21, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
+            new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 1, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 6, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 11, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 16, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 21, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 2, 0, 0).getTimestamp()
         ));
     }
 
@@ -299,11 +323,11 @@ public class RecurrenceSetIteratorTest
         it.fastForward(start.getTimestamp());
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp()
+            new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp()
         ));
     }
 
@@ -323,11 +347,11 @@ public class RecurrenceSetIteratorTest
         it.fastForward(start.getTimestamp() - TimeUnit.DAYS.toMillis(100));
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp()
+            new DateTime(DateTime.UTC, 2019, 1, 1, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp()
         ));
     }
 
@@ -347,12 +371,42 @@ public class RecurrenceSetIteratorTest
         it.fastForward(start.getTimestamp() + 1);
 
         assertThat(() -> it::next, startsWith(
-                new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp(),
-                new DateTime(DateTime.UTC, 2019, 1, 6, 0, 0, 0).getTimestamp()
+            new DateTime(DateTime.UTC, 2019, 1, 2, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 3, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 4, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 5, 0, 0, 0).getTimestamp(),
+            new DateTime(DateTime.UTC, 2019, 1, 6, 0, 0, 0).getTimestamp()
         ));
     }
 
+
+    private final static class RecurrenceAdapter extends AbstractBaseIterator<Long>
+    {
+
+        private final RecurrenceSetIterator mDelegate;
+
+
+        private RecurrenceAdapter(RecurrenceSetIterator delegate)
+        {
+            mDelegate = delegate;
+        }
+
+
+        @Override
+        public boolean hasNext()
+        {
+            return mDelegate.hasNext();
+        }
+
+
+        @Override
+        public Long next()
+        {
+            if (!hasNext())
+            {
+                throw new NoSuchElementException();
+            }
+            return mDelegate.next();
+        }
+    }
 }
