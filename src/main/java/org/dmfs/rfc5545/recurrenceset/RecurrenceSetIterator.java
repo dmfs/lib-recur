@@ -53,15 +53,15 @@ public class RecurrenceSetIterator
      * Create a new recurrence iterator for specific lists of instances and exceptions.
      *
      * @param instances
-     *         The instances, must not be <code>null</code> or empty.
+     *     The instances, must not be <code>null</code> or empty.
      * @param exceptions
-     *         The exceptions, may be null.
+     *     The exceptions, may be null.
      */
     RecurrenceSetIterator(List<InstanceIterator> instances, List<InstanceIterator> exceptions)
     {
         mInstances = instances.size() == 1 ? instances.get(0) : new CompositeIterator(instances);
         mExceptions = exceptions == null || exceptions.isEmpty() ? new EmptyIterator() :
-                exceptions.size() == 1 ? exceptions.get(0) : new CompositeIterator(exceptions);
+            exceptions.size() == 1 ? exceptions.get(0) : new CompositeIterator(exceptions);
         pullNext();
     }
 
@@ -71,7 +71,7 @@ public class RecurrenceSetIterator
      * be set before you start iterating, otherwise you may get wrong results.
      *
      * @param end
-     *         The date at which to stop the iteration in milliseconds since the epoch.
+     *     The date at which to stop the iteration in milliseconds since the epoch.
      */
     RecurrenceSetIterator setEnd(long end)
     {
@@ -97,7 +97,7 @@ public class RecurrenceSetIterator
      * @return The time in milliseconds since the epoch of the next instance.
      *
      * @throws ArrayIndexOutOfBoundsException
-     *         if there are no more instances.
+     *     if there are no more instances.
      */
     public long next()
     {
@@ -115,7 +115,7 @@ public class RecurrenceSetIterator
      * Fast forward to the next instance at or after the given date.
      *
      * @param until
-     *         The date to fast forward to in milliseconds since the epoch.
+     *     The date to fast forward to in milliseconds since the epoch.
      */
     public void fastForward(long until)
     {
@@ -148,6 +148,8 @@ public class RecurrenceSetIterator
             {
                 throw new RuntimeException(String.format(Locale.ENGLISH, "Skipped too many (%d) instances", MAX_SKIPPED_INSTANCES));
             }
+            // we've skipped the next instance, this might have bene the last one
+            next = Long.MAX_VALUE;
         }
         mNextInstance = next;
         mNextException = nextException;
