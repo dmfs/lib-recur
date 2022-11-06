@@ -17,8 +17,8 @@
 
 package org.dmfs.rfc5545.hamcrest.datetime;
 
-import org.dmfs.iterables.elementary.Seq;
-import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Weekday;
 import org.hamcrest.FeatureMatcher;
@@ -36,7 +36,7 @@ public final class WeekDayMatcher extends FeatureMatcher<DateTime, Weekday>
      * Constructor
      *
      * @param subMatcher
-     *         The matcher to apply to the feature
+     *     The matcher to apply to the feature
      */
     public WeekDayMatcher(Matcher<Weekday> subMatcher)
     {

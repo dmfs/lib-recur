@@ -19,12 +19,12 @@ package org.dmfs.rfc5545.recurrenceset;
 
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.TimeZone;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 
 /**
@@ -36,7 +36,7 @@ public class RecurrenceRuleAdapterTest
     public void testGetIteratorSyncedStartInfinite() throws Exception
     {
         AbstractRecurrenceAdapter.InstanceIterator iterator = new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY"))
-                .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
+            .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
 
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
@@ -56,7 +56,7 @@ public class RecurrenceRuleAdapterTest
     public void testGetIteratorSyncedStartWithCount() throws Exception
     {
         AbstractRecurrenceAdapter.InstanceIterator iterator = new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;COUNT=3"))
-                .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
+            .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
 
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
@@ -76,7 +76,7 @@ public class RecurrenceRuleAdapterTest
     public void testGetIteratorSyncedStartWithUntil() throws Exception
     {
         AbstractRecurrenceAdapter.InstanceIterator iterator = new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;UNTIL=20170312T113012Z"))
-                .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
+            .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
 
         assertThat(iterator.hasNext(), is(true));
         assertThat(iterator.hasNext(), is(true));
@@ -96,7 +96,7 @@ public class RecurrenceRuleAdapterTest
     public void testGetIteratorUnsyncedStartInfinite() throws Exception
     {
         AbstractRecurrenceAdapter.InstanceIterator iterator = new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;BYMONTHDAY=11"))
-                .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
+            .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
 
         // note the unsynced start is not a result, it's added separately by `RecurrenceSet`
         assertThat(iterator.hasNext(), is(true));
@@ -117,7 +117,7 @@ public class RecurrenceRuleAdapterTest
     public void testGetIteratorUnsyncedStartWithCount() throws Exception
     {
         AbstractRecurrenceAdapter.InstanceIterator iterator = new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;COUNT=3;BYMONTHDAY=11"))
-                .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
+            .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
 
         // note the unsynced start is not a result, it's added separately by `RecurrenceSet`
         assertThat(iterator.hasNext(), is(true));
@@ -135,7 +135,7 @@ public class RecurrenceRuleAdapterTest
     public void testGetIteratorUnsyncedStartWithUntil() throws Exception
     {
         AbstractRecurrenceAdapter.InstanceIterator iterator = new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;UNTIL=20170312T113012Z;BYMONTHDAY=11"))
-                .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
+            .getIterator(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp());
 
         // note the unsynced start is not a result, it's added separately by `RecurrenceSet`
         assertThat(iterator.hasNext(), is(true));
@@ -165,10 +165,10 @@ public class RecurrenceRuleAdapterTest
     public void testGetLastInstance() throws Exception
     {
         assertThat(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;COUNT=10"))
-                        .getLastInstance(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()),
-                is(DateTime.parse("Europe/Berlin", "20171010T113012").getTimestamp()));
+                .getLastInstance(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()),
+            is(DateTime.parse("Europe/Berlin", "20171010T113012").getTimestamp()));
         assertThat(new RecurrenceRuleAdapter(new RecurrenceRule("FREQ=MONTHLY;UNTIL=20171212T101010Z"))
-                        .getLastInstance(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()),
-                is(DateTime.parse("Europe/Berlin", "20171210T113012").getTimestamp()));
+                .getLastInstance(TimeZone.getTimeZone("Europe/Berlin"), DateTime.parse("Europe/Berlin", "20170110T113012").getTimestamp()),
+            is(DateTime.parse("Europe/Berlin", "20171210T113012").getTimestamp()));
     }
 }

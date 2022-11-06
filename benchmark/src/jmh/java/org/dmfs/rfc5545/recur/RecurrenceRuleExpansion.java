@@ -18,16 +18,7 @@
 package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.DateTime;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.TimeZone;
 
@@ -49,20 +40,20 @@ public class RecurrenceRuleExpansion
         int iterations;
 
         @Param({
-                "FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=24",
-                "FREQ=MONTHLY;BYMONTH=12;BYMONTHDAY=24",
-                "FREQ=YEARLY;BYDAY=-2SU,-3SU,-4SU,-5SU",
-                "FREQ=MONTHLY;INTERVAL=3;BYDAY=2WE",
-                "FREQ=YEARLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4",
-                "FREQ=MONTHLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4",
-                "FREQ=YEARLY;BYDAY=MO",
-                "FREQ=MONTHLY;BYDAY=MO",
-                "FREQ=WEEKLY;BYDAY=MO",
-                "FREQ=DAILY;BYDAY=MO",
-                "FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
-                "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
-                "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
-                "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
+            "FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=24",
+            "FREQ=MONTHLY;BYMONTH=12;BYMONTHDAY=24",
+            "FREQ=YEARLY;BYDAY=-2SU,-3SU,-4SU,-5SU",
+            "FREQ=MONTHLY;INTERVAL=3;BYDAY=2WE",
+            "FREQ=YEARLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4",
+            "FREQ=MONTHLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4",
+            "FREQ=YEARLY;BYDAY=MO",
+            "FREQ=MONTHLY;BYDAY=MO",
+            "FREQ=WEEKLY;BYDAY=MO",
+            "FREQ=DAILY;BYDAY=MO",
+            "FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
+            "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
+            "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
+            "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR,SA,SU",
         })
         String rule;
 

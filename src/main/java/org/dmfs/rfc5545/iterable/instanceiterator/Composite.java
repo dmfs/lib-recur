@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Marten Gajda <marten@dmfs.org>
+ * Copyright 2022 Marten Gajda <marten@dmfs.org>
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-package org.dmfs.rfc5545.recurrenceset;
+package org.dmfs.rfc5545.iterable.instanceiterator;
 
 import org.dmfs.jems2.comparator.By;
 import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
 import org.dmfs.jems2.iterable.Sieved;
 import org.dmfs.jems2.single.Collected;
+import org.dmfs.rfc5545.iterable.InstanceIterator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,23 +31,27 @@ import java.util.NoSuchElementException;
 
 
 /**
- * An {@link AbstractRecurrenceAdapter.InstanceIterator} which iterates the elements of other {@link AbstractRecurrenceAdapter.InstanceIterator} in sorted
- * order.
+ * An {@link InstanceIterator} which iterates the elements of other {@link InstanceIterator} in chronological order.
  */
-@Deprecated
-public final class CompositeIterator implements AbstractRecurrenceAdapter.InstanceIterator
+public final class Composite implements InstanceIterator
 {
     private List<Helper> mHelpers;
 
 
-    public CompositeIterator(Iterable<AbstractRecurrenceAdapter.InstanceIterator> delegates)
+    public Composite(InstanceIterator... delegates)
+    {
+        this(new Seq<>(delegates));
+    }
+
+
+    public Composite(Iterable<InstanceIterator> delegates)
     {
         mHelpers = new Collected<>(
             ArrayList::new,
             new Mapped<>(
                 Helper::new,
                 new Sieved<>(
-                    AbstractRecurrenceAdapter.InstanceIterator::hasNext,
+                    InstanceIterator::hasNext,
                     delegates))).value();
         Collections.sort(mHelpers, new By<>(helper -> helper.nextValue));
 
@@ -172,16 +178,16 @@ public final class CompositeIterator implements AbstractRecurrenceAdapter.Instan
     private final static class Helper
     {
         private long nextValue;
-        private final AbstractRecurrenceAdapter.InstanceIterator iterator;
+        private final InstanceIterator iterator;
 
 
-        private Helper(AbstractRecurrenceAdapter.InstanceIterator iterator)
+        private Helper(InstanceIterator iterator)
         {
             this(iterator.next(), iterator);
         }
 
 
-        private Helper(long nextValue, AbstractRecurrenceAdapter.InstanceIterator iterator)
+        private Helper(long nextValue, InstanceIterator iterator)
         {
             this.nextValue = nextValue;
             this.iterator = iterator;

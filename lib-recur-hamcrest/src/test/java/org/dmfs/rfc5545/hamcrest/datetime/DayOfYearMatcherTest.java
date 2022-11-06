@@ -22,9 +22,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.DayOfYearMatcher.onDayOfYear;
 import static org.junit.Assert.assertThat;
 
@@ -41,23 +39,23 @@ public class DayOfYearMatcherTest
     public void test() throws Exception
     {
         assertThat(onDayOfYear(10),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180110T010001Z")),
-                        mismatches(DateTime.parse("20180111T005959Z"), "day of year was <11>"),
-                        mismatches(DateTime.parse("20180109T010000Z"), "day of year was <9>"),
-                        describesAs("day of year (<10>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180110T010001Z")),
+                mismatches(DateTime.parse("20180111T005959Z"), "day of year was <11>"),
+                mismatches(DateTime.parse("20180109T010000Z"), "day of year was <9>"),
+                describesAs("day of year (<10>)")
+            ));
         assertThat(onDayOfYear(1, 8, 365),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180101T010001Z")),
-                        matches(DateTime.parse("20180108T010002Z")),
-                        matches(DateTime.parse("20181231T010003Z")),
-                        mismatches(DateTime.parse("20180102T005959Z"), "day of year was <2>"),
-                        mismatches(DateTime.parse("20180107T005959Z"), "day of year was <7>"),
-                        mismatches(DateTime.parse("20180109T005959Z"), "day of year was <9>"),
-                        mismatches(DateTime.parse("20180228T005958Z"), "day of year was <59>"),
-                        mismatches(DateTime.parse("20181230T005957Z"), "day of year was <364>"),
-                        describesAs("day of year (<1> or <8> or <365>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180101T010001Z")),
+                matches(DateTime.parse("20180108T010002Z")),
+                matches(DateTime.parse("20181231T010003Z")),
+                mismatches(DateTime.parse("20180102T005959Z"), "day of year was <2>"),
+                mismatches(DateTime.parse("20180107T005959Z"), "day of year was <7>"),
+                mismatches(DateTime.parse("20180109T005959Z"), "day of year was <9>"),
+                mismatches(DateTime.parse("20180228T005958Z"), "day of year was <59>"),
+                mismatches(DateTime.parse("20181230T005957Z"), "day of year was <364>"),
+                describesAs("day of year (<1> or <8> or <365>)")
+            ));
     }
 }

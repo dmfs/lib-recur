@@ -23,9 +23,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.ResultsMatcher.results;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
@@ -44,20 +42,20 @@ public class ResultsMatcherTest
     public void test() throws Exception
     {
         assertThat(results(DateTime.parse("20180101"), 10),
-                AllOf.<Matcher<RecurrenceRule>>allOf(
-                        matches(new RecurrenceRule("FREQ=DAILY;COUNT=10")),
-                        mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=9"), "number of instances was <9>"),
-                        mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=12"), "number of instances was <12>"),
-                        describesAs("number of instances is <10>")
-                ));
+            AllOf.<Matcher<RecurrenceRule>>allOf(
+                matches(new RecurrenceRule("FREQ=DAILY;COUNT=10")),
+                mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=9"), "number of instances was <9>"),
+                mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=12"), "number of instances was <12>"),
+                describesAs("number of instances is <10>")
+            ));
 
         assertThat(results(DateTime.parse("20180101"), lessThan(20)),
-                AllOf.<Matcher<RecurrenceRule>>allOf(
-                        matches(new RecurrenceRule("FREQ=DAILY;COUNT=1")),
-                        matches(new RecurrenceRule("FREQ=DAILY;COUNT=19")),
-                        mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=20"), "number of instances <20> was equal to <20>"),
-                        mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=21"), "number of instances <21> was greater than <20>"),
-                        describesAs("number of instances is a value less than <20>")
-                ));
+            AllOf.<Matcher<RecurrenceRule>>allOf(
+                matches(new RecurrenceRule("FREQ=DAILY;COUNT=1")),
+                matches(new RecurrenceRule("FREQ=DAILY;COUNT=19")),
+                mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=20"), "number of instances <20> was equal to <20>"),
+                mismatches(new RecurrenceRule("FREQ=DAILY;COUNT=21"), "number of instances <21> was greater than <20>"),
+                describesAs("number of instances is a value less than <20>")
+            ));
     }
 }

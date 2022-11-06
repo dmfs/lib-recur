@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Marten Gajda <marten@dmfs.org>
+ * Copyright 2022 Marten Gajda <marten@dmfs.org>
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.dmfs.rfc5545.recurrenceset;
+package org.dmfs.rfc5545.iterable.instanceiterator;
 
+import org.dmfs.rfc5545.iterable.InstanceIterator;
 import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
 
 import java.util.NoSuchElementException;
 
 
 /**
- * An {@link AbstractRecurrenceAdapter.InstanceIterator} which inserts a start instance.
- *
- * @author Marten Gajda
+ * An {@link InstanceIterator} which limits the number of iterated instances.
  */
-@Deprecated
-public final class CountLimitedRecurrenceRuleIterator implements AbstractRecurrenceAdapter.InstanceIterator
+public final class CountLimitedRecurrenceRuleIterator implements InstanceIterator
 {
     private final RecurrenceRuleIterator mDelegate;
     private int mRemaining;

@@ -1,13 +1,13 @@
 plugins {
     id 'java'
-    id "me.champeau.gradle.jmh" version "0.5.1"
+    id "me.champeau.jmh" version "0.6.8"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    jmh 'org.dmfs:jems:1.41'
+    jmh 'org.dmfs:jems2:2.11.1'
     jmh rootProject
 }
 

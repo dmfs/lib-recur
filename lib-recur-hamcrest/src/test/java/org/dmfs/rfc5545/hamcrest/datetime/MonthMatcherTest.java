@@ -22,9 +22,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.MonthMatcher.inMonth;
 import static org.junit.Assert.assertThat;
 
@@ -41,22 +39,22 @@ public class MonthMatcherTest
     public void test() throws Exception
     {
         assertThat(inMonth(10),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20181001T010001Z")),
-                        mismatches(DateTime.parse("20180901T005959Z"), "month was <9>"),
-                        mismatches(DateTime.parse("20181101T010000Z"), "month was <11>"),
-                        describesAs("month (<10>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20181001T010001Z")),
+                mismatches(DateTime.parse("20180901T005959Z"), "month was <9>"),
+                mismatches(DateTime.parse("20181101T010000Z"), "month was <11>"),
+                describesAs("month (<10>)")
+            ));
         assertThat(inMonth(6, 8, 10),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20181001T010001Z")),
-                        matches(DateTime.parse("20180801T010002Z")),
-                        matches(DateTime.parse("20180601T010003Z")),
-                        mismatches(DateTime.parse("20180501T005959Z"), "month was <5>"),
-                        mismatches(DateTime.parse("20180701T005958Z"), "month was <7>"),
-                        mismatches(DateTime.parse("20180901T005957Z"), "month was <9>"),
-                        mismatches(DateTime.parse("20181101T010000Z"), "month was <11>"),
-                        describesAs("month (<6> or <8> or <10>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20181001T010001Z")),
+                matches(DateTime.parse("20180801T010002Z")),
+                matches(DateTime.parse("20180601T010003Z")),
+                mismatches(DateTime.parse("20180501T005959Z"), "month was <5>"),
+                mismatches(DateTime.parse("20180701T005958Z"), "month was <7>"),
+                mismatches(DateTime.parse("20180901T005957Z"), "month was <9>"),
+                mismatches(DateTime.parse("20181101T010000Z"), "month was <11>"),
+                describesAs("month (<6> or <8> or <10>)")
+            ));
     }
 }

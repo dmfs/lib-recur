@@ -17,10 +17,10 @@
 
 package org.dmfs.rfc5545.hamcrest;
 
-import org.dmfs.iterables.elementary.Seq;
-import org.dmfs.jems.generatable.Generatable;
-import org.dmfs.jems.hamcrest.matchers.GeneratableMatcher;
-import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems2.Generatable;
+import org.dmfs.jems2.hamcrest.matchers.generatable.GeneratableMatcher;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.hamcrest.Description;

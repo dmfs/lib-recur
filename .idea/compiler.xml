@@ -4,8 +4,18 @@
     <bytecodeTargetLevel>
       <module name="lib-recur-hamcrest_main" target="1.8" />
       <module name="lib-recur-hamcrest_test" target="1.8" />
+      <module name="lib-recur.benchmark" target="1.8" />
+      <module name="lib-recur.benchmark.jmh" target="1.8" />
+      <module name="lib-recur.benchmark.main" target="1.8" />
+      <module name="lib-recur.benchmark.test" target="1.8" />
+      <module name="lib-recur.lib-recur-hamcrest" target="1.8" />
+      <module name="lib-recur.lib-recur-hamcrest.main" target="1.8" />
+      <module name="lib-recur.lib-recur-hamcrest.test" target="1.8" />
       <module name="lib-recur_main" target="1.8" />
       <module name="lib-recur_test" target="1.8" />
+      <module name="org.dmfs.lib-recur" target="1.8" />
+      <module name="org.dmfs.lib-recur.main" target="1.8" />
+      <module name="org.dmfs.lib-recur.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

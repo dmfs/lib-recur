@@ -19,27 +19,19 @@ package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Weekday;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.SingleMatcher.hasValue;
-import static org.dmfs.rfc5545.Weekday.MO;
-import static org.dmfs.rfc5545.Weekday.TH;
-import static org.dmfs.rfc5545.Weekday.TU;
-import static org.dmfs.rfc5545.Weekday.WE;
-import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.are;
-import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.instances;
-import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.results;
-import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.startingWith;
-import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.validRule;
-import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.walking;
+import static org.dmfs.jems2.hamcrest.matchers.single.SingleMatcher.hasValue;
+import static org.dmfs.rfc5545.Weekday.*;
+import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.BeforeMatcher.before;
 import static org.dmfs.rfc5545.hamcrest.datetime.DayOfMonthMatcher.onDayOfMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.MonthMatcher.inMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.WeekDayMatcher.onWeekDay;
 import static org.dmfs.rfc5545.hamcrest.datetime.YearMatcher.inYear;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 
 /**
@@ -51,43 +43,55 @@ public final class RecurrenceRuleTest
     public void test() throws InvalidRecurrenceRuleException
     {
         assertThat(new RecurrenceRule("FREQ=WEEKLY;COUNT=1000"),
-                is(validRule(DateTime.parse("20180101"),
-                        walking(),
-                        instances(are(onWeekDay(MO))),
-                        results(1000))));
+            is(validRule(DateTime.parse("20180101"),
+                walking(),
+                instances(are(onWeekDay(MO))),
+                results(1000))));
 
         assertThat(new RecurrenceRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3TH;UNTIL=20140101T045959Z;WKST=SU"),
-                is(validRule(DateTime.parse("20130101T050000Z"),
-                        walking(),
-                        instances(are(onWeekDay(TH), onDayOfMonth(15, 16, 17, 18, 19, 20, 21), inYear(2013), before("20140101T050000Z"))),
-                        startingWith("20130117T050000Z", "20130221T050000Z", "20130321T050000Z"),
-                        results(12))));
+            is(validRule(DateTime.parse("20130101T050000Z"),
+                walking(),
+                instances(are(onWeekDay(TH), onDayOfMonth(15, 16, 17, 18, 19, 20, 21), inYear(2013), before("20140101T050000Z"))),
+                startingWith("20130117T050000Z", "20130221T050000Z", "20130321T050000Z"),
+                results(12))));
 
         // see https://github.com/dmfs/lib-recur/issues/73
         assertThat(new RecurrenceRule("FREQ=WEEKLY;INTERVAL=2;WKST=SU;BYDAY=TU;UNTIL=20200430T170000Z"),
-                is(validRule(DateTime.parse("20200404T100000Z"),
-                        walking(),
-                        instances(are(onWeekDay(TU), onDayOfMonth(14, 28), inMonth(4), inYear(2020), before("20200430T170000Z"))),
-                        startingWith("20200414T100000Z", "20200428T100000Z"),
-                        results(2))));
+            is(validRule(DateTime.parse("20200404T100000Z"),
+                walking(),
+                instances(are(onWeekDay(TU), onDayOfMonth(14, 28), inMonth(4), inYear(2020), before("20200430T170000Z"))),
+                startingWith("20200414T100000Z", "20200428T100000Z"),
+                results(2))));
 
         // see https://github.com/dmfs/lib-recur/issues/78
         assertThat(
-                () -> {
-                    RecurrenceRule recurrenceRule = new RecurrenceRule(Freq.MONTHLY);
-                    recurrenceRule.setCount(5);
-                    recurrenceRule.setInterval(1);
-                    recurrenceRule.setSkip(RecurrenceRule.Skip.FORWARD);
-                    recurrenceRule.setWeekStart(Weekday.MO);
-                    return recurrenceRule;
-                },
-                hasValue(hasToString("FREQ=MONTHLY;RSCALE=GREGORIAN;SKIP=FORWARD;COUNT=5"))
+            () -> {
+                RecurrenceRule recurrenceRule = new RecurrenceRule(Freq.MONTHLY);
+                recurrenceRule.setCount(5);
+                recurrenceRule.setInterval(1);
+                recurrenceRule.setSkip(RecurrenceRule.Skip.FORWARD);
+                recurrenceRule.setWeekStart(Weekday.MO);
+                return recurrenceRule;
+            },
+            hasValue(hasToString("FREQ=MONTHLY;RSCALE=GREGORIAN;SKIP=FORWARD;COUNT=5"))
         );
 
         assertThat(new RecurrenceRule("FREQ=MONTHLY;BYDAY=1MO,-1MO,WE"),
-                is(validRule(DateTime.parse("20200902"),
-                        walking(),
-                        instances(are(onWeekDay(MO, WE))),
-                        startingWith("20200902", "20200907", "20200909", "20200916", "20200923", "20200928", "20200930", "20201005", "20201007"))));
+            is(validRule(DateTime.parse("20200902"),
+                walking(),
+                instances(are(onWeekDay(MO, WE))),
+                startingWith("20200902", "20200907", "20200909", "20200916", "20200923", "20200928", "20200930", "20201005", "20201007"))));
+
+        assertThat(new RecurrenceRule("FREQ=WEEKLY;INTERVAL=2;BYHOUR=13;BYDAY=MO;COUNT=2"),
+            is(validRule(DateTime.parse("20201230T000000"),
+                walking(),
+                instances(are(onWeekDay(MO))),
+                startingWith("20210111T130000", "20210125T130000"))));
+
+        String ruleToTest = "FREQ=WEEKLY;BYMONTH=11;COUNT=1";
+        RecurrenceRule rule = new RecurrenceRule(ruleToTest);
+        RecurrenceRuleIterator iterator = rule.iterator(DateTime.parse("20210701T120000Z"));
+        System.out.println(rule.getByPart(RecurrenceRule.Part.BYMONTH));
+        System.out.println(rule.toString());
     }
 }

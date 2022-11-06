@@ -22,9 +22,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.BeforeMatcher.before;
 import static org.junit.Assert.assertThat;
 
@@ -41,19 +39,19 @@ public class BeforeMatcherTest
     public void test() throws Exception
     {
         assertThat(before(DateTime.parse("20180101T010000Z")),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180101T000059Z")),
-                        mismatches(DateTime.parse("20180101T010001Z"), "not before 20180101T010000Z"),
-                        mismatches(DateTime.parse("20180101T010000Z"), "not before 20180101T010000Z"),
-                        describesAs("before 20180101T010000Z")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180101T000059Z")),
+                mismatches(DateTime.parse("20180101T010001Z"), "not before 20180101T010000Z"),
+                mismatches(DateTime.parse("20180101T010000Z"), "not before 20180101T010000Z"),
+                describesAs("before 20180101T010000Z")
+            ));
 
         assertThat(before("20180101T010000Z"),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180101T000059Z")),
-                        mismatches(DateTime.parse("20180101T010001Z"), "not before 20180101T010000Z"),
-                        mismatches(DateTime.parse("20180101T010000Z"), "not before 20180101T010000Z"),
-                        describesAs("before 20180101T010000Z")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180101T000059Z")),
+                mismatches(DateTime.parse("20180101T010001Z"), "not before 20180101T010000Z"),
+                mismatches(DateTime.parse("20180101T010000Z"), "not before 20180101T010000Z"),
+                describesAs("before 20180101T010000Z")
+            ));
     }
 }

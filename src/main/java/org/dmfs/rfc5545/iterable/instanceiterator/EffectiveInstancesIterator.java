@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2013 Marten Gajda <marten@dmfs.org>
+ * Copyright 2022 Marten Gajda <marten@dmfs.org>
+ *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,27 +13,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.dmfs.rfc5545.recurrenceset;
+package org.dmfs.rfc5545.iterable.instanceiterator;
 
-import org.dmfs.rfc5545.recurrenceset.AbstractRecurrenceAdapter.InstanceIterator;
+import org.dmfs.rfc5545.iterable.InstanceIterator;
 
-import java.util.List;
 import java.util.Locale;
 
 
 /**
- * An iterator for recurrence sets. It takes a number of {@link AbstractRecurrenceAdapter}s for instances and exceptions and iterates all resulting instances
- * (i.e. only the instances, not the exceptions). <p> This class doesn't implement the {@link InstanceIterator} interface for one reasons: </p> <ul> <li>An
- * {@link InstanceIterator} always returns an {@link Object}, so instead of a primitive <code>long</code> we would have to return a {@link Long}. That is an
- * additional object which doesn't have any advantage.</li> </ul>
- *
- * @author Marten Gajda
+ * An iterator for recurrence sets. It takes a number of {@link InstanceIterator}s for instances and exceptions and iterates all resulting instances
+ * (i.e. only the instances, not the exceptions).
  */
-@Deprecated
-public class RecurrenceSetIterator
+public final class EffectiveInstancesIterator implements InstanceIterator
 {
     /**
      * Throw if we skipped this many instances in a line, because they were exceptions.
@@ -42,8 +36,6 @@ public class RecurrenceSetIterator
     private final InstanceIterator mInstances;
 
     private final InstanceIterator mExceptions;
-
-    private long mIterateEnd = Long.MAX_VALUE;
 
     private long mNextInstance = Long.MIN_VALUE;
 
@@ -58,26 +50,11 @@ public class RecurrenceSetIterator
      * @param exceptions
      *     The exceptions, may be null.
      */
-    RecurrenceSetIterator(List<InstanceIterator> instances, List<InstanceIterator> exceptions)
+    public EffectiveInstancesIterator(InstanceIterator instances, InstanceIterator exceptions)
     {
-        mInstances = instances.size() == 1 ? instances.get(0) : new CompositeIterator(instances);
-        mExceptions = exceptions == null || exceptions.isEmpty() ? new EmptyIterator() :
-            exceptions.size() == 1 ? exceptions.get(0) : new CompositeIterator(exceptions);
+        mInstances = instances;
+        mExceptions = exceptions;
         pullNext();
-    }
-
-
-    /**
-     * Set the iteration end. The iterator will stop if the next instance is after the given date, no matter how many instances are still to come. This needs to
-     * be set before you start iterating, otherwise you may get wrong results.
-     *
-     * @param end
-     *     The date at which to stop the iteration in milliseconds since the epoch.
-     */
-    RecurrenceSetIterator setEnd(long end)
-    {
-        mIterateEnd = end;
-        return this;
     }
 
 
@@ -86,9 +63,10 @@ public class RecurrenceSetIterator
      *
      * @return <code>true</code> if the next call to {@link #next()} will return another instance, <code>false</code> otherwise.
      */
+    @Override
     public boolean hasNext()
     {
-        return mNextInstance < mIterateEnd;
+        return mNextInstance < Long.MAX_VALUE;
     }
 
 
@@ -100,6 +78,7 @@ public class RecurrenceSetIterator
      * @throws ArrayIndexOutOfBoundsException
      *     if there are no more instances.
      */
+    @Override
     public long next()
     {
         if (!hasNext())
@@ -113,11 +92,12 @@ public class RecurrenceSetIterator
 
 
     /**
-     * Fast forward to the next instance at or after the given date.
+     * Fast-forward to the next instance at or after the given date.
      *
      * @param until
-     *     The date to fast forward to in milliseconds since the epoch.
+     *     The date to fast-forward to in milliseconds since the epoch.
      */
+    @Override
     public void fastForward(long until)
     {
         if (mNextInstance < until)
@@ -149,7 +129,7 @@ public class RecurrenceSetIterator
             {
                 throw new RuntimeException(String.format(Locale.ENGLISH, "Skipped too many (%d) instances", MAX_SKIPPED_INSTANCES));
             }
-            // we've skipped the next instance, this might have bene the last one
+            // we've skipped the next instance, this might have been the last one
             next = Long.MAX_VALUE;
         }
         mNextInstance = next;

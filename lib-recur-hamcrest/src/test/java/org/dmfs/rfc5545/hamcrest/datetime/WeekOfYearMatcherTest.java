@@ -22,9 +22,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.WeekOfYearMatcher.inWeekOfYear;
 import static org.junit.Assert.assertThat;
 
@@ -40,27 +38,27 @@ public class WeekOfYearMatcherTest
     public void test() throws Exception
     {
         assertThat(inWeekOfYear(16),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180418T010001Z")),
-                        mismatches(DateTime.parse("20180415T005959Z"), "week of year was <15>"),
-                        mismatches(DateTime.parse("20180423T010000Z"), "week of year was <17>"),
-                        describesAs("week of year (<16>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180418T010001Z")),
+                mismatches(DateTime.parse("20180415T005959Z"), "week of year was <15>"),
+                mismatches(DateTime.parse("20180423T010000Z"), "week of year was <17>"),
+                describesAs("week of year (<16>)")
+            ));
         assertThat(inWeekOfYear(1, 16, 52),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180101T010001Z")),
-                        matches(DateTime.parse("20180418T010001Z")),
-                        matches(DateTime.parse("20181230T010001Z")),
-                        matches(DateTime.parse("20181231T010001Z")),
-                        matches(DateTime.parse("20190101T010001Z")),
-                        mismatches(DateTime.parse("20180108T010001Z"), "week of year was <2>"),
-                        mismatches(DateTime.parse("20180415T005959Z"), "week of year was <15>"),
-                        mismatches(DateTime.parse("20180423T010000Z"), "week of year was <17>"),
-                        mismatches(DateTime.parse("20181223T010001Z"), "week of year was <51>"),
-                        mismatches(DateTime.parse("20181223T010001Z"), "week of year was <51>"),
-                        mismatches(DateTime.parse("20190107T010001Z"), "week of year was <2>"),
-                        describesAs("week of year (<1> or <16> or <52>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180101T010001Z")),
+                matches(DateTime.parse("20180418T010001Z")),
+                matches(DateTime.parse("20181230T010001Z")),
+                matches(DateTime.parse("20181231T010001Z")),
+                matches(DateTime.parse("20190101T010001Z")),
+                mismatches(DateTime.parse("20180108T010001Z"), "week of year was <2>"),
+                mismatches(DateTime.parse("20180415T005959Z"), "week of year was <15>"),
+                mismatches(DateTime.parse("20180423T010000Z"), "week of year was <17>"),
+                mismatches(DateTime.parse("20181223T010001Z"), "week of year was <51>"),
+                mismatches(DateTime.parse("20181223T010001Z"), "week of year was <51>"),
+                mismatches(DateTime.parse("20190107T010001Z"), "week of year was <2>"),
+                describesAs("week of year (<1> or <16> or <52>)")
+            ));
 
     }
 }

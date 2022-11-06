@@ -28,6 +28,7 @@ import java.util.TimeZone;
  *
  * @author Marten Gajda
  */
+@Deprecated
 public final class RecurrenceRuleAdapter extends AbstractRecurrenceAdapter
 {
 

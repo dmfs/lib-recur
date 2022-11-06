@@ -4,11 +4,20 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest.iml" group="lib-recur-hamcrest" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest.iml" group="lib-recur-hamcrest" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_main.iml" group="lib-recur-hamcrest" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_test.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur-hamcrest_test.iml" group="lib-recur-hamcrest" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.iml" filepath="$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.jmh.iml" filepath="$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.jmh.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.main.iml" filepath="$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.test.iml" filepath="$PROJECT_DIR$/.idea/modules/benchmark/lib-recur.benchmark.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur.lib-recur-hamcrest.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur.lib-recur-hamcrest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur.lib-recur-hamcrest.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur.lib-recur-hamcrest.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur.lib-recur-hamcrest.test.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur-hamcrest/lib-recur.lib-recur-hamcrest.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur_main.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur_main.iml" group="lib-recur" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/lib-recur_test.iml" filepath="$PROJECT_DIR$/.idea/modules/lib-recur_test.iml" group="lib-recur" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.dmfs.lib-recur.iml" filepath="$PROJECT_DIR$/.idea/modules/org.dmfs.lib-recur.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.dmfs.lib-recur.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.dmfs.lib-recur.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.dmfs.lib-recur.test.iml" filepath="$PROJECT_DIR$/.idea/modules/org.dmfs.lib-recur.test.iml" />
     </modules>
   </component>
 </project>

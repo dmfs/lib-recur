@@ -20,18 +20,14 @@ package org.dmfs.rfc5545.recur;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
 import org.dmfs.rfc5545.recur.RecurrenceRule.Skip;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class RecurrenceIteratorTest
@@ -46,12 +42,6 @@ public class RecurrenceIteratorTest
     private final static DateTime ALLDAY_TEST_START_DATE = DateTime.parse("19850501");
 
     private final static List<TestRule> mTestRules = new ArrayList<TestRule>();
-
-
-    @Before
-    public void setUp() throws Exception
-    {
-    }
 
 
     @Test
@@ -207,8 +197,8 @@ public class RecurrenceIteratorTest
                 // check that the previous instance is always before the next instance
                 String errMsg = "";
                 errMsg = "instance no " + count + " " + lastInstance + " not before " + instance + " in rule "
-                        + new RecurrenceRule(rule.rule, RfcMode.RFC5545_LAX).toString();
-                assertTrue(errMsg, lastInstance.before(instance));
+                    + new RecurrenceRule(rule.rule, RfcMode.RFC5545_LAX).toString();
+                assertTrue(lastInstance.before(instance), errMsg);
 
                 lastInstance = instance;
                 count++;
@@ -225,8 +215,6 @@ public class RecurrenceIteratorTest
     /**
      * This test ensures that the rule is correctly evaluated when you move the start to a later instance. To do so it iterates over one rule and starts a new
      * iteration for every instance (using that instance as the start date). Then it compares the next instances of both iterations.
-     *
-     * @throws InvalidRecurrenceRuleException
      */
     @Test
     public void testWalkingStart() throws InvalidRecurrenceRuleException
@@ -342,7 +330,7 @@ public class RecurrenceIteratorTest
                 ffIterator.fastForward(fftodate);
                 int count = 0;
 
-                // fast forward original manually
+                // fast-forward original manually
                 while (original.hasNext() && original.peekMillis() < fftodate)
                 {
 
@@ -357,7 +345,7 @@ public class RecurrenceIteratorTest
                 {
                     try
                     {
-                        assertEquals(rule.rule, original.nextMillis(), ffIterator.nextMillis());
+                        assertEquals(original.nextMillis(), ffIterator.nextMillis(), rule.rule);
                     }
                     catch (IllegalStateException e)
                     {
@@ -368,7 +356,7 @@ public class RecurrenceIteratorTest
 
                 if (count < MAX_ITERATIONS)
                 {
-                    assertEquals(rule.rule, original.hasNext(), ffIterator.hasNext());
+                    assertEquals(original.hasNext(), ffIterator.hasNext(), rule.rule);
                 }
             }
         }
@@ -425,9 +413,9 @@ public class RecurrenceIteratorTest
     public void testSpecial() throws InvalidRecurrenceRuleException
     {
         TestRule rule = new TestRule("FREQ=YEARLY;BYWEEKNO=1").setStart("20180101")
-                .setMonths(12, 1)
-                .setMonthdays(29, 30, 31, 1, 2, 3, 4)
-                .setWeekdays(Calendar.MONDAY);
+            .setMonths(12, 1)
+            .setMonthdays(29, 30, 31, 1, 2, 3, 4)
+            .setWeekdays(Calendar.MONDAY);
 
         DateTime lastInstance = null;
         try
@@ -472,7 +460,7 @@ public class RecurrenceIteratorTest
                 // first instance of r2 should be lastInstance
                 String error1 = "";
                 // error1 = "error on first instance of rule " + rule.rule + " after " + count + " iterations ";
-                assertEquals(error1, lastInstance, i2.nextDateTime());
+                assertEquals(lastInstance, i2.nextDateTime(), error1);
 
                 lastInstance = it.nextDateTime();
                 System.out.println("x " + lastInstance);
@@ -484,7 +472,7 @@ public class RecurrenceIteratorTest
                 // check that the second instance of i2 equals the current instance of i
                 String error2 = "";
                 // error2 = "error on rule " + rule.rule + " after " + count + " iterations ";
-                assertEquals(error2, lastInstance, upcoming2);
+                assertEquals(lastInstance, upcoming2, error2);
             }
         }
         catch (ArrayIndexOutOfBoundsException e)
@@ -521,18 +509,18 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;COUNT=6;BYDAY=-2MO").setCount(6));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;COUNT=25;BYDAY=2WE,4WE").setCount(25));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3SA;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;COUNT=1000;WKST=SU").setCount(1000).setMonths(1, 2,
-                3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+            3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3SA;COUNT=24;WKST=SU").setCount(24));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3SU;BYMONTH=1,2,3,4,5,10,11,12;COUNT=8;WKST=SU").setCount(8).setMonths(1, 2, 3, 4, 5, 10,
-                11, 12));
+            11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3SU;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;COUNT=24;WKST=SU").setCount(24).setMonths(1, 2, 3,
-                4, 5, 6, 7, 8, 9, 10, 11, 12));
+            4, 5, 6, 7, 8, 9, 10, 11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3TU;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;COUNT=24;WKST=SU").setCount(24).setMonths(1, 2, 3,
-                4, 5, 6, 7, 8, 9, 10, 11, 12));
+            4, 5, 6, 7, 8, 9, 10, 11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+4FR;BYMONTH=1,2,3,4,5,7,8,9,10,11,12;COUNT=24;WKST=SU").setCount(24).setMonths(1, 2, 3, 4,
-                5, 7, 8, 9, 10, 11, 12));
+            5, 7, 8, 9, 10, 11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+4SA;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;COUNT=24;WKST=SU").setCount(24).setMonths(1, 2, 3,
-                4, 5, 6, 7, 8, 9, 10, 11, 12));
+            4, 5, 6, 7, 8, 9, 10, 11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;COUNT=24;BYDAY=2MO,4MO").setCount(24));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;COUNT=24;BYDAY=3TU").setCount(24));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYDAY=1SU,-1SU").setCount(10));
@@ -575,7 +563,7 @@ public class RecurrenceIteratorTest
         /* rules limited by UNTIL */
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=14;UNTIL=20130620T035959Z;WKST=SU").setUntil("20130620T035959Z"));
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR;UNTIL=20130928T065959Z;WKST=SU").setUntil("20130928T065959Z").setWeekdays(
-                Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=1;UNTIL=20120331T035959Z").setUntil("20120331T035959Z"));
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=1;UNTIL=20120514T220000Z").setUntil("20120514T220000Z"));
         mTestRules.add(new TestRule("FREQ=DAILY;INTERVAL=1;UNTIL=20130810T035959Z;WKST=SU").setUntil("20130810T035959Z"));
@@ -602,45 +590,45 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=1MO;UNTIL=20121231T203000Z").setUntil("20121231T203000Z").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=1TU;UNTIL=20131231T203000Z").setUntil("20131231T203000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules
-                .add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=2TH,4TH;UNTIL=20091210T200000Z").setUntil("20091210T200000Z").setWeekdays(Calendar.THURSDAY));
+            .add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=2TH,4TH;UNTIL=20091210T200000Z").setUntil("20091210T200000Z").setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=2TU,4TU;UNTIL=20100323T210000Z").setUntil("20100323T210000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=-1MO;BYMONTH=5;UNTIL=20140602T075959Z;WKST=SU").setUntil("20140602T075959Z").setWeekdays(
-                Calendar.MONDAY));
+            Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+1MO;UNTIL=20161206T045959Z;WKST=SU").setUntil("20161206T045959Z").setWeekdays(
-                Calendar.MONDAY));
+            Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+1SA,+3SA;UNTIL=20130530T035959Z;WKST=SU").setUntil("20130530T035959Z").setWeekdays(
-                Calendar.SATURDAY));
+            Calendar.SATURDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=-1SU;UNTIL=20150103T045959Z;WKST=SU").setUntil("20150103T045959Z").setWeekdays(
-                Calendar.SUNDAY));
+            Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+1TH,+3TH;UNTIL=20121217T045959Z;WKST=SU").setUntil("20121217T045959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+1TH,+3TH;UNTIL=20140102T045959Z;WKST=SU").setUntil("20140102T045959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+1WE;UNTIL=20140101T075959Z;WKST=SU").setUntil("20140101T075959Z").setWeekdays(
-                Calendar.WEDNESDAY));
+            Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+2MO;UNTIL=20150101T045959Z;WKST=SU").setUntil("20150101T045959Z").setWeekdays(
-                Calendar.MONDAY));
+            Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+2SA;UNTIL=20150106T045959Z;WKST=SU").setUntil("20150106T045959Z").setWeekdays(
-                Calendar.SATURDAY));
+            Calendar.SATURDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+2SU;UNTIL=20140101T045959Z;WKST=SU").setUntil("20140101T045959Z").setWeekdays(
-                Calendar.SUNDAY));
+            Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3MO;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;UNTIL=20131231T235959Z;WKST=MO")
-                .setUntil("20131231T235959Z").setMonths(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).setWeekdays(Calendar.MONDAY));
+            .setUntil("20131231T235959Z").setMonths(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12).setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3MO;UNTIL=20121201T095959Z;WKST=SU").setUntil("20121201T095959Z").setWeekdays(
-                Calendar.MONDAY));
+            Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3TH;UNTIL=20140101T045959Z;WKST=SU").setUntil("20140101T045959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3TH;UNTIL=20140102T045959Z;WKST=SU").setUntil("20140102T045959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3TU;BYMONTH=1,3,5,7,9,11;UNTIL=20131231T235959Z;WKST=MO").setUntil("20131231T235959Z")
-                .setMonths(1, 3, 5, 7, 9, 11).setWeekdays(Calendar.TUESDAY));
+            .setMonths(1, 3, 5, 7, 9, 11).setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+3TU;UNTIL=20131231T235959Z;WKST=MO").setUntil("20131231T235959Z").setWeekdays(
-                Calendar.TUESDAY));
+            Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=3WE;UNTIL=20121231T183000Z").setUntil("20121231T183000Z").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+4TU;UNTIL=20140101T075959Z;WKST=SU").setUntil("20140101T075959Z").setWeekdays(
-                Calendar.TUESDAY));
+            Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=+4WE;UNTIL=20131231T235959Z;WKST=MO").setUntil("20131231T235959Z").setWeekdays(
-                Calendar.WEDNESDAY));
+            Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1;UNTIL=20031101T233000Z").setUntil("20031101T233000Z").setMonthdays(1));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;UNTIL=20040701T065959Z;BYMONTHDAY=1").setUntil("20040701T065959Z").setMonthdays(1));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;UNTIL=20040702T065959Z;BYMONTHDAY=2").setUntil("20040702T065959Z").setMonthdays(2));
@@ -649,7 +637,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;UNTIL=20140518;BYDAY=1SU").setUntil("20140518").setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;UNTIL=20140518;BYDAY=3SU").setUntil("20140518").setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=2;BYDAY=+4TU;UNTIL=20131101T065959Z;WKST=SU").setUntil("20131101T065959Z").setWeekdays(
-                Calendar.TUESDAY));
+            Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=3;UNTIL=20210107T095959Z;WKST=SU").setUntil("20210107T095959Z"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=19971224T000000Z;BYDAY=1FR").setUntil("19971224T000000Z").setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20091224T000000Z;BYDAY=1FR").setUntil("20091224T000000Z").setWeekdays(Calendar.FRIDAY));
@@ -659,24 +647,24 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=FR;UNTIL=20121214T235959Z;INTERVAL=1").setUntil("20121214T235959Z").setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=FR;UNTIL=20130329T235959Z;INTERVAL=1").setUntil("20130329T235959Z").setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO,TH;UNTIL=20050203T000000Z").setUntil("20050203T000000Z").setWeekdays(Calendar.MONDAY,
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;UNTIL=20031010T000000Z").setUntil("20031010T000000Z").setWeekdays(Calendar.MONDAY,
-                Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;UNTIL=20040227T000000Z").setUntil("20040227T000000Z").setWeekdays(Calendar.MONDAY,
-                Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;UNTIL=20050408T000000Z").setUntil("20050408T000000Z").setWeekdays(Calendar.MONDAY,
-                Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO;UNTIL=20080630T110000;WKST=MO").setUntil("20080630T110000").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO;UNTIL=20121210T235959Z;INTERVAL=1").setUntil("20121210T235959Z").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO;UNTIL=20130325T235959Z;INTERVAL=1").setUntil("20130325T235959Z").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TH;UNTIL=20050203T000000Z").setUntil("20050203T000000Z").setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TH;UNTIL=20050715T000000Z").setUntil("20050715T000000Z").setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU,FR;UNTIL=20050523T000000Z").setUntil("20050523T000000Z").setWeekdays(Calendar.TUESDAY,
-                Calendar.FRIDAY));
+            Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU,FR;UNTIL=20050715T000000Z").setUntil("20050715T000000Z").setWeekdays(Calendar.TUESDAY,
-                Calendar.FRIDAY));
+            Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU,TH,FR;UNTIL=20030718T000000Z").setUntil("20030718T000000Z").setWeekdays(Calendar.TUESDAY,
-                Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU;UNTIL=20030715T000000Z").setUntil("20030715T000000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU;UNTIL=20050201T000000Z").setUntil("20050201T000000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU;UNTIL=20050713T000000Z").setUntil("20050713T000000Z").setWeekdays(Calendar.TUESDAY));
@@ -686,49 +674,49 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=WE;UNTIL=20050715T000000Z").setUntil("20050715T000000Z").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=WE;UNTIL=20081219T123000;WKST=MO").setUntil("20081219T123000").setWeekdays(Calendar.WEDNESDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=FR;UNTIL=20140101T075959Z;WKST=SU").setUntil("20140101T075959Z").setWeekdays(Calendar.FRIDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=FR;UNTIL=20140101T075959Z;WKST=SU").setUntil("20140101T075959Z").setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH;UNTIL=20130614T065959Z;WKST=SU").setUntil("20130614T065959Z").setWeekdays(
-                Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY));
+            Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO;UNTIL=20130505T045959Z").setUntil("20130505T045959Z").setWeekdays(Calendar.MONDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO;UNTIL=20131231T235959Z;WKST=MO").setUntil("20131231T235959Z").setWeekdays(Calendar.MONDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO;UNTIL=20131231T235959Z;WKST=MO").setUntil("20131231T235959Z").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SA;UNTIL=20130609T065959Z;WKST=SU").setUntil("20130609T065959Z").setWeekdays(
-                Calendar.SATURDAY));
+            Calendar.SATURDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SA;UNTIL=20251004T000000Z").setUntil("20251004T000000Z").setWeekdays(Calendar.SATURDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,SA;UNTIL=20130625T065959Z;WKST=SU").setUntil("20130625T065959Z").setWeekdays(
-                Calendar.SUNDAY, Calendar.SATURDAY));
+            Calendar.SUNDAY, Calendar.SATURDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU,SA;UNTIL=20130930T065959Z;WKST=SU").setUntil("20130930T065959Z").setWeekdays(
-                Calendar.SUNDAY, Calendar.SATURDAY));
+            Calendar.SUNDAY, Calendar.SATURDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20130527T035959Z;WKST=SU").setUntil("20130527T035959Z").setWeekdays(Calendar.SUNDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20130527T035959Z;WKST=SU").setUntil("20130527T035959Z").setWeekdays(Calendar.SUNDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20130528T035959Z;WKST=SU").setUntil("20130528T035959Z").setWeekdays(Calendar.SUNDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20130528T035959Z;WKST=SU").setUntil("20130528T035959Z").setWeekdays(Calendar.SUNDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20130610T065959Z;WKST=SU").setUntil("20130610T065959Z").setWeekdays(Calendar.SUNDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20130610T065959Z;WKST=SU").setUntil("20130610T065959Z").setWeekdays(Calendar.SUNDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20131101T035959Z;WKST=SU").setUntil("20131101T035959Z").setWeekdays(Calendar.SUNDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20131101T035959Z;WKST=SU").setUntil("20131101T035959Z").setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20171220T000000Z").setUntil("20171220T000000Z").setWeekdays(Calendar.SUNDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20210106T045959Z;WKST=SU").setUntil("20210106T045959Z").setWeekdays(Calendar.SUNDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20210106T045959Z;WKST=SU").setUntil("20210106T045959Z").setWeekdays(Calendar.SUNDAY));
         mTestRules
-                .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20210109T045959Z;WKST=SU").setUntil("20210109T045959Z").setWeekdays(Calendar.SUNDAY));
+            .add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20210109T045959Z;WKST=SU").setUntil("20210109T045959Z").setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;UNTIL=20251005T000000Z").setUntil("20251005T000000Z").setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TH;UNTIL=20120317T075959Z;WKST=SU").setUntil("20120317T075959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TH;UNTIL=20130531T035959Z;WKST=SU").setUntil("20130531T035959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TH;UNTIL=20130701T035959Z;WKST=SU").setUntil("20130701T035959Z").setWeekdays(
-                Calendar.THURSDAY));
+            Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TH;UNTIL=20251215T000000Z").setUntil("20251215T000000Z").setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TU;UNTIL=20100525T210000Z").setUntil("20100525T210000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TU;UNTIL=20110508T045959Z").setUntil("20110508T045959Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TU;UNTIL=20140128T235959Z;WKST=MO").setUntil("20140128T235959Z")
-                .setWeekdays(Calendar.TUESDAY));
+            .setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TU;UNTIL=20251215T000000Z").setUntil("20251215T000000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=TU;UNTIL=20251230T000000Z").setUntil("20251230T000000Z").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=WE;UNTIL=20071231T191500").setUntil("20071231T191500").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=WE;UNTIL=20131231T235959Z;WKST=MO").setUntil("20131231T235959Z").setWeekdays(
-                Calendar.WEDNESDAY));
+            Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=WE;UNTIL=20250924T000000Z").setUntil("20250924T000000Z").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=WE;UNTIL=20250925T000000Z").setUntil("20250925T000000Z").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=WE;UNTIL=20251220T000000Z").setUntil("20251220T000000Z").setWeekdays(Calendar.WEDNESDAY));
@@ -744,7 +732,7 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;UNTIL=20120503T035959Z").setUntil("20120503T035959Z"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;UNTIL=20140102T135959Z;WKST=SU").setUntil("20140102T135959Z"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=2;UNTIL=20091224T000000Z;WKST=SU;BYDAY=MO,WE,FR").setUntil("20091224T000000Z").setWeekdays(
-                Calendar.MONDAY, Calendar.WEDNESDAY, Calendar.FRIDAY));
+            Calendar.MONDAY, Calendar.WEDNESDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=2;UNTIL=20120321T035959Z;WKST=SU").setUntil("20120321T035959Z"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=2;UNTIL=21001230T173000Z;BYDAY=MO").setUntil("21001230T173000Z"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=4;BYDAY=SA;UNTIL=20131207T220000Z").setUntil("20131207T220000Z"));
@@ -797,9 +785,9 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10;UNTIL=20061029T090000Z").setUntil("20061029T090000Z").setMonths(10));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;BYDAY=1SU;BYMONTH=4;UNTIL=20060402T090000Z").setUntil("20060402T090000Z").setMonths(4));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;BYMONTH=10;BYMONTHDAY=31;UNTIL=20160102T095959Z;WKST=SU").setUntil("20160102T095959Z")
-                .setMonths(10).setMonthdays(31));
+            .setMonths(10).setMonthdays(31));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;BYMONTH=1,4,6,9;BYMONTHDAY=15;UNTIL=20220102T045959Z;WKST=SU").setUntil("20220102T045959Z")
-                .setMonths(1, 4, 6, 9).setMonthdays(15));
+            .setMonths(1, 4, 6, 9).setMonthdays(15));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;UNTIL=20030317;BYMONTH=3").setUntil("20030317").setMonths(3));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;UNTIL=20131225T215959Z;WKST=MO").setUntil("20131225T215959Z"));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;UNTIL=20210106T095959Z;WKST=SU").setUntil("20210106T095959Z"));
@@ -841,9 +829,9 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13").setWeekdays(Calendar.FRIDAY).setMonthdays(13));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=FR;BYSETPOS=2").setWeekdays(Calendar.FRIDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1;WKST=SU").setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
-                Calendar.THURSDAY, Calendar.FRIDAY).setMonthdays(31, 30, 29, 28, 27, 26));
+            Calendar.THURSDAY, Calendar.FRIDAY).setMonthdays(31, 30, 29, 28, 27, 26));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2").setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
-                Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SA;BYMONTHDAY=7,8,9,10,11,12,13").setWeekdays(Calendar.SATURDAY).setMonthdays(7, 8, 9, 10, 11, 12, 13));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SU,MO,TU,WE,TH,FR,SA;BYSETPOS=-1;WKST=SU"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=WE;BYSETPOS=1").setWeekdays(Calendar.WEDNESDAY));
@@ -865,11 +853,11 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=1TU,2TU,4TU,5TU").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=2TU,4TU").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=SU;BYMONTHDAY=13,7,8,9,10,11,12;BYMONTH=9").setMonths(9).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(13, 7, 8, 9, 10, 11, 12));
+            .setMonthdays(13, 7, 8, 9, 10, 11, 12));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8;BYMONTH=11").setMonths(11).setWeekdays(Calendar.TUESDAY)
-                .setMonthdays(2, 3, 4, 5, 6, 7, 8));
+            .setMonthdays(2, 3, 4, 5, 6, 7, 8));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4").setMonths(4).setWeekdays(Calendar.WEDNESDAY)
-                .setMonthdays(25, 26, 27, 21, 22, 23, 24));
+            .setMonthdays(25, 26, 27, 21, 22, 23, 24));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1").setMonthdays(1));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;BYSETPOS=1;BYDAY=WE").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=2;BYDAY=TU").setWeekdays(Calendar.TUESDAY));
@@ -883,13 +871,13 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=TU;WKST=SU").setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=WE").setWeekdays(Calendar.WEDNESDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=0;BYDAY=MO,TU,WE,TH,FR").setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
-                Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=FR;").setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=FR;WKST=SU").setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR;WKST=SU").setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY,
-                Calendar.THURSDAY, Calendar.FRIDAY));
+            Calendar.THURSDAY, Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=MO;WKST=SU").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SA").setWeekdays(Calendar.SATURDAY));
         mTestRules.add(new TestRule("FREQ=WEEKLY;INTERVAL=1;BYDAY=SU;WKST=SU").setWeekdays(Calendar.SUNDAY));
@@ -918,13 +906,13 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=5SU;BYHOUR=2;BYMINUTE=0;BYMONTH=10").setMonths(10).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=MO;BYWEEKNO=20").setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU;BYHOUR=2;BYMINUTE=0;BYMONTH=10;BYMONTHDAY=25,26").setMonths(10).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(25, 26));
+            .setMonthdays(25, 26));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU;BYHOUR=2;BYMINUTE=0;BYMONTH=11;BYMONTHDAY=1,2,3").setMonths(11).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(1, 2, 3));
+            .setMonthdays(1, 2, 3));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU;BYHOUR=2;BYMINUTE=0;BYMONTH=3;BYMONTHDAY=8,9,10").setMonths(3).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(8, 9, 10));
+            .setMonthdays(8, 9, 10));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU;BYHOUR=2;BYMINUTE=0;BYMONTH=4;BYMONTHDAY=1,2,3,4").setMonths(4).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(1, 2, 3, 4));
+            .setMonthdays(1, 2, 3, 4));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=TH;BYMONTH=3").setMonths(3).setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=TH;BYMONTH=6,7,8").setMonths(6, 7, 8).setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMINUTE=0;BYHOUR=2;BYDAY=-1SU;BYMONTH=10").setMonths(10).setWeekdays(Calendar.SUNDAY));
@@ -940,15 +928,15 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=10;BYDAY=3FR").setMonths(10).setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=10;BYDAY=3SU").setMonths(10).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=10;BYMONTHDAY=24,25,26,27,28,29,30;BYDAY=SA").setMonths(10).setWeekdays(Calendar.SATURDAY)
-                .setMonthdays(24, 25, 26, 27, 28, 29, 30));
+            .setMonthdays(24, 25, 26, 27, 28, 29, 30));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=10;BYMONTHDAY=9,10,11,12,13,14,15;BYDAY=SU").setMonths(10).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(9, 10, 11, 12, 13, 14, 15));
+            .setMonthdays(9, 10, 11, 12, 13, 14, 15));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=11;BYDAY=1SU").setMonths(11).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=12;BYDAY=-1SU").setMonths(12).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=12;BYDAY=FR;BYMONTHDAY=-1").setMonths(12).setWeekdays(Calendar.FRIDAY).setMonthdays(31));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=31").setMonths(12).setMonthdays(31));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1;BYDAY=MO,TU,WE,TH,FR;BYMONTHDAY=1,2,3;BYSETPOS=1").setMonths(1)
-                .setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY).setMonthdays(1, 2, 3));
+            .setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY).setMonthdays(1, 2, 3));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=1").setMonths(1).setMonthdays(1));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1;BYMONTHDAY=2").setMonths(1).setMonthdays(2));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=2;BYDAY=-1SU").setMonths(2).setWeekdays(Calendar.SUNDAY));
@@ -960,9 +948,9 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=3;BYDAY=3SU").setMonths(3).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=3;BYDAY=TH").setMonths(3).setWeekdays(Calendar.THURSDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=3;BYMONTHDAY=24,25,26,27,28,29,30;BYDAY=SA").setMonths(3).setWeekdays(Calendar.SATURDAY)
-                .setMonthdays(24, 25, 26, 27, 28, 29, 30));
+            .setMonthdays(24, 25, 26, 27, 28, 29, 30));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=3;BYMONTHDAY=9,10,11,12,13,14,15;BYDAY=SU").setMonths(3).setWeekdays(Calendar.SUNDAY)
-                .setMonthdays(9, 10, 11, 12, 13, 14, 15));
+            .setMonthdays(9, 10, 11, 12, 13, 14, 15));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=4;BYDAY=-1FR").setMonths(4).setWeekdays(Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=4;BYDAY=1SU").setMonths(4).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=4;BYDAY=3SU").setMonths(4).setWeekdays(Calendar.SUNDAY));
@@ -1014,34 +1002,34 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=1;BYMONTH=9").setMonths(9));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;").setMonths(1).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;INTERVAL=4;BYDAY=TU;BYMONTHDAY=2,3,4,5,6,7,8;BYMONTH=11").setMonths(11).setWeekdays(Calendar.TUESDAY)
-                .setMonthdays(2, 3, 4, 5, 6, 7, 8));
+            .setMonthdays(2, 3, 4, 5, 6, 7, 8));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=10;BYDAY=-1SU").setMonths(10).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=11;BYDAY=1SU").setMonths(11).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=3;BYDAY=-1SU").setMonths(3).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=MO;INTERVAL=1;BYMONTH=3;BYDAY=2SU").setMonths(3).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYDAY=1SU;BYMONTH=4").setMonths(4).setWeekdays(Calendar.SUNDAY));
         mTestRules.add(
-                new TestRule("FREQ=YEARLY;BYWEEKNO=1").setStart("20180101").setMonths(12, 1).setMonthdays(29, 30, 31, 1, 2, 3, 4).setWeekdays(Calendar.MONDAY));
+            new TestRule("FREQ=YEARLY;BYWEEKNO=1").setStart("20180101").setMonths(12, 1).setMonthdays(29, 30, 31, 1, 2, 3, 4).setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=1,10;BYMONTHDAY=3").setStart("20180101").setMonthdays(3).setMonths(1, 3));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=1,10;BYDAY=TU").setMonths(1, 3, 12).setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=1,10;BYDAY=TU;BYMONTHDAY=3").setStart("20180101")
-                .setMonths(1, 3)
-                .setMonthdays(3)
-                .setWeekdays(Calendar.TUESDAY));
+            .setMonths(1, 3)
+            .setMonthdays(3)
+            .setWeekdays(Calendar.TUESDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYYEARDAY=1,100").setStart("20180101").setMonths(1, 4).setMonthdays(1, 9, 10));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,2").setStart("20180101").setMonths(1, 2).setMonthdays(1));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,2;BYWEEKNO=1,7,20").setStart("20180101").setMonths(1, 2).setWeekdays(Calendar.MONDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYDAY=MO,WE,FR;BYMONTH=4,5").setMonths(4, 5).setWeekdays(Calendar.MONDAY, Calendar.WEDNESDAY,
-                Calendar.FRIDAY));
+            Calendar.FRIDAY));
         mTestRules.add(new TestRule("FREQ=YEARLY;WKST=SU;BYMONTH=5;BYMONTHDAY=-1 ").setMonths(5).setMonthdays(31));
         mTestRules.add(new TestRule("INTERVAL=1;FREQ=MONTHLY"));
 
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYSETPOS=1,3,5,7,9").setMonthdays(1, 3, 5, 7, 9).setStart("20010101"));
 
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;BYSETPOS=1,2,3")
-                        .setMonthdays(1, 2, 3));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;BYSETPOS=1,2,3")
+                .setMonthdays(1, 2, 3));
 
         /*
          * Rules with a specific number of instances
@@ -1049,45 +1037,45 @@ public class RecurrenceIteratorTest
 
         // first 9 mondays of 2016
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=MO;BYMONTH=1,2;UNTIL=20161231").setStart("20160104").setUntil("20161231").setInstances(9)
-                .setWeekdays(Calendar.MONDAY).setLastInstance("20160229"));
+            .setWeekdays(Calendar.MONDAY).setLastInstance("20160229"));
 
         // test mixed BYDAY elements (with and without position).
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=MO,1SU,-1SA;UNTIL=20160831").setStart("20160801").setUntil("20160831").setInstances(7)
-                .setLastInstance("20160829"));
+            .setLastInstance("20160829"));
 
         // every day in 2012 -> 366 instances
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(366).setLastInstance("20121231"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(366)
-                .setLastInstance("20121231"));
+            .setLastInstance("20121231"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(366)
-                .setLastInstance("20121231"));
+            .setLastInstance("20121231"));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20121231").setStart("20120101").setUntil("20121231").setInstances(366)
-                .setLastInstance("20121231"));
+            .setLastInstance("20121231"));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20121231")
-                        .setStart("20120101").setUntil("20121231").setInstances(366).setLastInstance("20121231"));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20121231")
+                .setStart("20120101").setUntil("20121231").setInstances(366).setLastInstance("20121231"));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20121231")
-                        .setStart("20120101").setUntil("20121231").setInstances(366).setLastInstance("20121231"));
+            .add(new TestRule(
+                "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20121231")
+                .setStart("20120101").setUntil("20121231").setInstances(366).setLastInstance("20121231"));
 
         // every day in 2013 -> 365 instances
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20131231").setStart("20130101").setUntil("20131231").setInstances(365).setLastInstance("20131231"));
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20130101").setUntil("20131231").setInstances(365)
-                .setLastInstance("20131231"));
+            .setLastInstance("20131231"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20130101").setUntil("20131231").setInstances(365)
-                .setLastInstance("20131231"));
+            .setLastInstance("20131231"));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20130101").setUntil("20131231").setInstances(365)
-                .setLastInstance("20131231"));
+            .setLastInstance("20131231"));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
-                        .setStart("20130101").setUntil("20131231").setInstances(365));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+                .setStart("20130101").setUntil("20131231").setInstances(365));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
-                        .setStart("20130101").setUntil("20131231").setInstances(365));
+            .add(new TestRule(
+                "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+                .setStart("20130101").setUntil("20131231").setInstances(365));
 
         // every day in 2012 and 2013 -> 731 instances
         mTestRules.add(new TestRule("FREQ=HOURLY;INTERVAL=24;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
@@ -1096,133 +1084,133 @@ public class RecurrenceIteratorTest
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=SU,MO,TH,WE,TU,FR,SA;UNTIL=20131231").setStart("20120101").setUntil("20131231").setInstances(731));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
-                        .setStart("20120101").setUntil("20131231").setInstances(731));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+                .setStart("20120101").setUntil("20131231").setInstances(731));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;UNTIL=20131231")
-                        .setStart("20120101").setUntil("20131231").setInstances(731));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;UNTIL=20131231")
+                .setStart("20120101").setUntil("20131231").setInstances(731));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;UNTIL=20131231")
-                        .setStart("20120101").setUntil("20131231").setInstances(731));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,-1,-2,-3,-4,-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-30,-31;UNTIL=20131231")
+                .setStart("20120101").setUntil("20131231").setInstances(731));
         mTestRules
-                .add(new TestRule(
-                        "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
-                        .setStart("20120101").setUntil("20131231").setInstances(731));
+            .add(new TestRule(
+                "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+                .setStart("20120101").setUntil("20131231").setInstances(731));
 
         // almost every day in 2013 (12*10 days are missing)
         mTestRules.add(new TestRule(
-                "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
-                .setStart("20130101").setUntil("20131231").setInstances(245)
-                .setMonthdays(1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
+            "FREQ=MONTHLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+            .setStart("20130101").setUntil("20131231").setInstances(245)
+            .setMonthdays(1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
         mTestRules.add(new TestRule(
-                "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
-                .setStart("20130101").setUntil("20131231").setInstances(245)
-                .setMonthdays(1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
+            "FREQ=YEARLY;BYMONTH=1,2,3,4,5,6,7,8,9,10,11,12;BYMONTHDAY=1,2,3,4,5,6,7,18,19,20,21,22,23,24,25,26,27,28,29,30,31;UNTIL=20131231")
+            .setStart("20130101").setUntil("20131231").setInstances(245)
+            .setMonthdays(1, 2, 3, 4, 5, 6, 7, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
 
         // every 2nd week in 2012 (except week 1) -> 25 instances
         mTestRules.add(new TestRule("FREQ=YEARLY;BYWEEKNO=3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53;UNTIL=20121231")
-                .setStart("20120101").setUntil("20121231").setInstances(25));
+            .setStart("20120101").setUntil("20121231").setInstances(25));
 
         // 2 instances in each month
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYDAY=1SU,-2MO;UNTIL=20131231").setStart("20130101").setUntil("20131231").setInstances(24)
-                .setWeekdays(Calendar.SUNDAY, Calendar.MONDAY));
+            .setWeekdays(Calendar.SUNDAY, Calendar.MONDAY));
 
         // 31th of Jan, March, May, July (no instances in September and November)
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,3,5,7,9,11;BYMONTHDAY=31;UNTIL=20131231").setStart("20130131").setUntil("20131231")
-                .setMonths(1, 3, 5, 7).setMonthdays(31).setInstances(4).setMonthdays(31));
+            .setMonths(1, 3, 5, 7).setMonthdays(31).setInstances(4).setMonthdays(31));
 
         // 1 instance in Jan + 1 in Dec.
         mTestRules.add(new TestRule("FREQ=YEARLY;BYDAY=1SU,-2MO;UNTIL=20131231").setStart("20130101").setUntil("20131231").setMonths(1, 12).setInstances(2)
-                .setWeekdays(Calendar.SUNDAY, Calendar.MONDAY));
+            .setWeekdays(Calendar.SUNDAY, Calendar.MONDAY));
 
         // 3 * 31 instances
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYMONTH=1,3,5;BYDAY=SU,MO,TU,WE,TH,FR,SA;UNTIL=20131231").setStart("20130101").setUntil("20131231")
-                .setMonths(1, 3, 5).setInstances(3 * 31));
+            .setMonths(1, 3, 5).setInstances(3 * 31));
         // 3 * 31 instances
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1,3,5;BYDAY=SU,MO,TU,WE,TH,FR,SA;UNTIL=20131231").setStart("20130101").setUntil("20131231")
-                .setMonths(1, 3, 5).setInstances(3 * 31));
+            .setMonths(1, 3, 5).setInstances(3 * 31));
 
         // each Jan 31st : 5
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTHDAY=31;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonths(1).setInstances(5)
-                .setMonthdays(31));
+            .setMonthdays(31));
 
         // each Jan 29th day: 5
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTHDAY=29;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonthdays(29).setInstances(5));
 
         // each day between Jan 27th and Jan 31st that is in week 5: 4 + 5 + 5 + 0 + 2
         mTestRules.add(new TestRule("FREQ=YEARLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231").setStart("20130101").setUntil("20171231")
-                .setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
+            .setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
 
         // each day between Jan 27th and Jan 31st that is in week 5: 4 + 5 + 5 + 0 + 2
         mTestRules.add(new TestRule("FREQ=MONTHLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
-                .setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
+            .setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
 
         // each day between Jan 27th and Jan 31st that is in week 5: 4 + 5 + 5 + 0 + 2
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=1;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
-                .setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
+            .setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
 
         // each day between Jan 27th and Jan 31st that is in week 5: 4 + 5 + 5 + 0 + 2
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYWEEKNO=5;BYMONTHDAY=27,28,29,30,31;UNTIL=20171231", RfcMode.RFC2445_LAX).setStart("20130101")
-                .setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
+            .setUntil("20171231").setMonths(1).setWeeks(5).setMonthdays(27, 28, 29, 30, 31).setInstances(16));
 
         // every 1st -> 12 * 5 = 60 instances
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTHDAY=1;UNTIL=20171231").setStart("20130101").setUntil("20171231").setMonthdays(1).setInstances(60));
         // every 1st in May, July and December -> 3 * 5 = 15 instances
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=5,7,12;BYMONTHDAY=1;UNTIL=20171231").setStart("20130501").setUntil("20171231").setMonths(5, 7, 12)
-                .setMonthdays(1).setInstances(15));
+            .setMonthdays(1).setInstances(15));
         // every 31st -> 7 * 5 = 35 instances
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTHDAY=31;UNTIL=20171231").setStart("20130131").setUntil("20171231").setMonthdays(31).setInstances(35));
         // every 31st in May, July and December -> 3 * 5 = 15 instances
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=5,7,12;BYMONTHDAY=31;UNTIL=20171231").setStart("20130531").setUntil("20171231").setMonths(5, 7, 12)
-                .setMonthdays(31).setInstances(15));
+            .setMonthdays(31).setInstances(15));
 
         // every 2nd last day -> 12 * 5 = 60 instances
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTHDAY=-2;UNTIL=20171231").setStart("20130130").setUntil("20171231").setMonthdays(27, 28, 29, 30)
-                .setInstances(5 * 12));
+            .setInstances(5 * 12));
         // every 2nd last day in May, July and December -> 3 * 5 = 15 instances
         mTestRules.add(new TestRule("FREQ=WEEKLY;BYMONTH=5,7,12;BYMONTHDAY=-2;UNTIL=20171231").setStart("20130530").setUntil("20171231").setMonths(5, 7, 12)
-                .setMonthdays(30).setInstances(15));
+            .setMonthdays(30).setInstances(15));
 
         mTestRules.add(new TestRule("FREQ=HOURLY;INTERVAL=2;UNTIL=20131231T235959Z").setStart("20120101T000000Z").setUntil("20131231T235959Z")
-                .setInstances(Math.min(MAX_ITERATIONS, 731 * 12)));
+            .setInstances(Math.min(MAX_ITERATIONS, 731 * 12)));
         mTestRules.add(new TestRule("FREQ=MINUTELY;INTERVAL=30;UNTIL=20120630T235959Z").setStart("20120101T000000Z").setUntil("20120630T235959Z")
-                .setInstances((31 + 29 + 31 + 30 + 31 + 30) * 24 * 2));
+            .setInstances((31 + 29 + 31 + 30 + 31 + 30) * 24 * 2));
         mTestRules.add(new TestRule("FREQ=SECONDLY;INTERVAL=900;UNTIL=20120331T235959Z").setStart("20120101T000000Z").setUntil("20120331T235959Z")
-                .setInstances((31 + 29 + 31) * 24 * 4));
+            .setInstances((31 + 29 + 31) * 24 * 4));
 
         mTestRules
-                .add(new TestRule(
-                        "FREQ=MONTHLY;BYMONTH=7,8;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=-1WE;UNTIL=20171231")
-                        .setStart("20130101").setUntil("20171231").setMonths(7, 8).setWeekdays(Calendar.WEDNESDAY).setMonthdays(25, 26, 27, 28, 29, 30, 31)
-                        .setInstances(10));
+            .add(new TestRule(
+                "FREQ=MONTHLY;BYMONTH=7,8;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=-1WE;UNTIL=20171231")
+                .setStart("20130101").setUntil("20171231").setMonths(7, 8).setWeekdays(Calendar.WEDNESDAY).setMonthdays(25, 26, 27, 28, 29, 30, 31)
+                .setInstances(10));
 
         mTestRules
-                .add(new TestRule(
-                        "FREQ=YEARLY;BYMONTH=2,4,6;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=2TH;UNTIL=20171231")
-                        .setStart("20130101").setUntil("20171231").setMonths(2, 4, 6).setWeekdays(Calendar.THURSDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14)
-                        .setInstances(15));
+            .add(new TestRule(
+                "FREQ=YEARLY;BYMONTH=2,4,6;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=2TH;UNTIL=20171231")
+                .setStart("20130101").setUntil("20171231").setMonths(2, 4, 6).setWeekdays(Calendar.THURSDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14)
+                .setInstances(15));
         mTestRules.add(new TestRule(
-                "FREQ=YEARLY;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=2TH;UNTIL=20171231")
-                .setStart("20130101").setUntil("20171231").setMonths(1).setWeekdays(Calendar.THURSDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14).setInstances(5));
+            "FREQ=YEARLY;BYMONTHDAY=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31;BYDAY=2TH;UNTIL=20171231")
+            .setStart("20130101").setUntil("20171231").setMonths(1).setWeekdays(Calendar.THURSDAY).setMonthdays(8, 9, 10, 11, 12, 13, 14).setInstances(5));
 
         mTestRules.add(new TestRule(
-                "FREQ=YEARLY;BYMONTH=1,3;BYYEARDAY=1,31,59,60,61,62;COUNT=30").setStart("20180101")
-                .setMonths(1, 3)
-                .setMonthdays(1, 31, 28, 29, 2, 3)
-                .setCount(30));
+            "FREQ=YEARLY;BYMONTH=1,3;BYYEARDAY=1,31,59,60,61,62;COUNT=30").setStart("20180101")
+            .setMonths(1, 3)
+            .setMonthdays(1, 31, 28, 29, 2, 3)
+            .setCount(30));
         mTestRules.add(new TestRule(
-                "FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60;UNTIL=20181231").setStart("20180101")
-                .setMonths(1, 3)
-                .setMonthdays(1, 31)
-                .setInstances(3));
+            "FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60;UNTIL=20181231").setStart("20180101")
+            .setMonths(1, 3)
+            .setMonthdays(1, 31)
+            .setInstances(3));
         mTestRules.add(new TestRule(
-                "FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60;BYDAY=WE;UNTIL=20181231").setStart("20180101")
-                .setMonths(1)
-                .setMonthdays(31)
-                .setInstances(1));
+            "FREQ=YEARLY;BYWEEKNO=1,3,4,5,8,9;BYYEARDAY=1,14,31,60;BYDAY=WE;UNTIL=20181231").setStart("20180101")
+            .setMonths(1)
+            .setMonthdays(31)
+            .setInstances(1));
 
         /**
          * Interval tests
@@ -1269,7 +1257,7 @@ public class RecurrenceIteratorTest
 
         // 20120101 was a Sunday
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYWEEKNO=20").setStart("20120101").setInstances(8).setMonths(5).setWeekdays(Calendar.SUNDAY)
-                .setSeconds(0).setMinutes(0).setHours(0));
+            .setSeconds(0).setMinutes(0).setHours(0));
 
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20191231;BYMONTHDAY=5").setStart("20120101").setInstances(8).setMonthdays(5));
 
@@ -1281,102 +1269,102 @@ public class RecurrenceIteratorTest
         // mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101Z;BYMONTH=3;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30")
         // .setStart("20120101T010101", "Europe/Berlin").setInstances(1));
         mTestRules
-                .add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101;BYMONTH=10;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30").setStart("20120101T010101").setInstances(8));
+            .add(new TestRule("FREQ=YEARLY;UNTIL=20200101T010101;BYMONTH=10;BYDAY=-1SU;BYHOUR=2;BYMINUTE=30").setStart("20120101T010101").setInstances(8));
 
         // leap years
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=30000101;BYMONTH=2;BYMONTHDAY=29").setStart("20000101").setInstances(25 * 10 - 7));
 
         // bysetpos
         mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20121231;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1").setStart("20120101").setInstances(12)
-                .setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
+            .setWeekdays(Calendar.MONDAY, Calendar.TUESDAY, Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY));
 
         // Rules with invalid UNTIL dates parsed in lax modes
         mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC5545_LAX).setStart("20140701T150000Z")
-                .setInstances(4).setWeekdays(Calendar.MONDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
+            .setInstances(4).setWeekdays(Calendar.MONDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
         mTestRules.add(new TestRule("FREQ=WEEKLY;UNTIL=20140801T150000ZZ;INTERVAL=1;BYDAY=MO", RfcMode.RFC2445_LAX).setStart("20140701T150000Z")
-                .setInstances(4).setWeekdays(Calendar.MONDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
+            .setInstances(4).setWeekdays(Calendar.MONDAY).setMonths(7).setMonthdays(1, 7, 14, 21, 28));
 
         mTestRules.add(new TestRule("FREQ=MONTHLY;UNTIL=20120131T120000;BYHOUR=12").setStart("20120101T000000").setInstances(1).setHours(12));
 
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120131T000000;BYHOUR=12").setStart("20120101T000000").setInstances(1).setMonths(1).setMonthdays(1)
-                .setHours(12));
+            .setHours(12));
 
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20121124T000000;BYMINUTE=12").setStart("20121123T000000").setInstances(1).setMonths(11)
-                .setMonthdays(23).setMinutes(12));
+            .setMonthdays(23).setMinutes(12));
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120103T000000;BYMINUTE=12,24,36,48").setStart("20120101T000000").setInstances(4).setMonths(1)
-                .setMonthdays(1).setMinutes(12, 24, 36, 48));
+            .setMonthdays(1).setMinutes(12, 24, 36, 48));
 
         mTestRules.add(new TestRule("FREQ=YEARLY;UNTIL=20120731T000000;BYHOUR=12").setStart("20120707T000000").setInstances(1).setMonths(7).setMonthdays(7)
-                .setHours(12));
+            .setHours(12));
 
         /* Tests for RSCALE */
 
         mTestRules.add(new TestRule("FREQ=YEARLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
-                .setStart("20130301").setUntil("29171231").setMonths(2, 3).setMonthdays(1, 29).setInstances(904));
+            .setStart("20130301").setUntil("29171231").setMonths(2, 3).setMonthdays(1, 29).setInstances(904));
         mTestRules.add(new TestRule("FREQ=YEARLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
-                .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28, 29).setInstances(905));
+            .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28, 29).setInstances(905));
         mTestRules.add(new TestRule("FREQ=YEARLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=OMIT;UNTIL=29171231", RfcMode.RFC2445_LAX).setStart("20130228")
-                .setUntil("29171231").setMonths(2).setMonthdays(1, 29).setInstances(219));
+            .setUntil("29171231").setMonths(2).setMonthdays(1, 29).setInstances(219));
         mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
-                .setStart("20130301").setUntil("29171231").setMonths(2, 3).setMonthdays(1, 29).setInstances(904));
+            .setStart("20130301").setUntil("29171231").setMonths(2, 3).setMonthdays(1, 29).setInstances(904));
         mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
-                .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28, 29).setInstances(905));
+            .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28, 29).setInstances(905));
         mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=OMIT;UNTIL=29171231", RfcMode.RFC2445_LAX).setStart("20130228")
-                .setUntil("20171231").setMonths(2).setMonthdays(1, 29).setInstances(219));
+            .setUntil("20171231").setMonths(2).setMonthdays(1, 29).setInstances(219));
         mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130301")
-                .setCount(20).setMonths(2, 3).setMonthdays(1, 29).setInstances(20));
+            .setCount(20).setMonths(2, 3).setMonthdays(1, 29).setInstances(20));
         mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130228")
-                .setCount(20).setMonths(2).setMonthdays(28, 29).setInstances(20));
+            .setCount(20).setMonths(2).setMonthdays(28, 29).setInstances(20));
         mTestRules.add(new TestRule("FREQ=MONTHLY;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=OMIT;COUNT=20", RfcMode.RFC2445_LAX).setStart("20130228")
-                .setCount(20).setMonths(2).setMonthdays(1, 29).setInstances(20));
+            .setCount(20).setMonths(2).setMonthdays(1, 29).setInstances(20));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=48;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=FORWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
-                .setStart("20130228").setUntil("29171231").setMonths(3).setMonthdays(1).setInstances(227));
+            .setStart("20130228").setUntil("29171231").setMonths(3).setMonthdays(1).setInstances(227));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=48;RSCALE=gregorian;BYMONTH=2;BYMONTHDAY=29;SKIP=BACKWARD;UNTIL=29171231", RfcMode.RFC2445_LAX)
-                .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28).setInstances(227));
+            .setStart("20130228").setUntil("29171231").setMonths(2).setMonthdays(28).setInstances(227));
 
         /* Special rules for the skip all but last test */
 
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=3;COUNT=10;BYMONTHDAY=10,11,12,13,14,15").setStart("20090714").setCount(10)
-                .setMonthdays(10, 11, 12, 13, 14, 15).setLastInstance("20100111"));
+            .setMonthdays(10, 11, 12, 13, 14, 15).setLastInstance("20100111"));
 
         /* Special test for fast birthday iterator */
 
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=1;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20181010"));
+            .setMonthdays(10).setLastInstance("20181010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20181010"));
+            .setMonthdays(10).setLastInstance("20181010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=3;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20181010"));
+            .setMonthdays(10).setLastInstance("20181010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=4;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20181010"));
+            .setMonthdays(10).setLastInstance("20181010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=6;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20181010"));
+            .setMonthdays(10).setLastInstance("20181010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=12;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20181010"));
+            .setMonthdays(10).setLastInstance("20181010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=24;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20271010"));
+            .setMonthdays(10).setLastInstance("20271010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=36;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20361010"));
+            .setMonthdays(10).setLastInstance("20361010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=48;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20451010"));
+            .setMonthdays(10).setLastInstance("20451010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=5;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20541010"));
+            .setMonthdays(10).setLastInstance("20541010"));
         mTestRules.add(new TestRule("FREQ=MONTHLY;INTERVAL=10;COUNT=10;BYMONTH=10,BYMONTHDAY=10").setStart("20091010").setCount(10).setMonths(10)
-                .setMonthdays(10).setLastInstance("20541010"));
+            .setMonthdays(10).setLastInstance("20541010"));
 
         /* Test time zone related issues */
 
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "Europe/Berlin")
-                .setInstances(2)
-                .setLastInstance("20160521T080000", "Europe/Berlin"));
+            .setInstances(2)
+            .setLastInstance("20160521T080000", "Europe/Berlin"));
         mTestRules.add(
-                new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "UTC").setInstances(1).setLastInstance("20160520T080000", "UTC"));
+            new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "UTC").setInstances(1).setLastInstance("20160520T080000", "UTC"));
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "America/New_York")
-                .setInstances(1)
-                .setLastInstance("20160520T080000", "America/New_York"));
+            .setInstances(1)
+            .setLastInstance("20160520T080000", "America/New_York"));
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000Z").setStart("20160520T080000", "Europe/Moscow")
-                .setInstances(2)
-                .setLastInstance("20160521T080000", "Europe/Moscow"));
+            .setInstances(2)
+            .setLastInstance("20160521T080000", "Europe/Moscow"));
 
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000").setStart("20160520T050000").setInstances(2).setLastInstance("20160521T050000"));
         mTestRules.add(new TestRule("FREQ=DAILY;UNTIL=20160521T060000").setStart("20160520T060000").setInstances(2).setLastInstance("20160521T060000"));

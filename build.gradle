@@ -28,9 +28,15 @@ allprojects {
 }
 
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     api 'org.dmfs:rfc5545-datetime:0.3'
-    implementation 'org.dmfs:jems:1.41'
-    testImplementation group: 'junit', name: 'junit', version: '4.11'
+    implementation 'org.dmfs:jems2:2.11.1'
     testImplementation project("lib-recur-hamcrest")
-    testImplementation 'org.dmfs:jems-testing:1.41'
+    testImplementation 'org.dmfs:jems2-testing:2.11.1'
+}
+
+
+test {
+    useJUnitPlatform()
 }

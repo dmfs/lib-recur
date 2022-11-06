@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recur;
@@ -26,8 +26,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class TestRule
@@ -216,9 +215,7 @@ public class TestRule
     {
         if (count == -1 && until != null)
         {
-            String errMsg = "";
-            // errMsg = "instance " + instance + " after " + until + " in rule " + rule;
-            assertTrue(errMsg, !instance.after(until));
+            assertFalse(instance.after(until), () -> "instance " + instance + " after " + until + " in rule " + rule);
         }
     }
 
@@ -227,9 +224,7 @@ public class TestRule
     {
         if (months != null)
         {
-            String errMsg = "";
-            // errMsg = "month of " + instance + " not in " + months + " rule: " + rule;
-            assertTrue(errMsg, months.contains(instance.getMonth() + 1));
+            assertTrue(months.contains(instance.getMonth() + 1), () -> "month of " + instance + " not in " + months + " rule: " + rule);
         }
     }
 
@@ -238,9 +233,7 @@ public class TestRule
     {
         if (weekdays != null)
         {
-            String errMsg = "";
-             errMsg = "weekday of " + instance + " not in " + weekdays + " rule: " + rule;
-            assertTrue(errMsg, weekdays.contains(instance.getDayOfWeek() + 1));
+            assertTrue(weekdays.contains(instance.getDayOfWeek() + 1), () -> "weekday of " + instance + " not in " + weekdays + " rule: " + rule);
         }
     }
 
@@ -249,9 +242,7 @@ public class TestRule
     {
         if (monthdays != null)
         {
-            String errMsg = "";
-            errMsg = "monthday of " + instance + " not in " + monthdays + " rule: " + rule;
-            assertTrue(errMsg, monthdays.contains(instance.getDayOfMonth()));
+            assertTrue(monthdays.contains(instance.getDayOfMonth()), () -> "monthday of " + instance + " not in " + monthdays + " rule: " + rule);
         }
     }
 
@@ -260,9 +251,7 @@ public class TestRule
     {
         if (weeks != null)
         {
-            String errMsg = "";
-            // errMsg = "week of " + instance + " not in " + weeks + " rule: " + rule;
-            assertTrue(errMsg, weeks.contains(instance.getWeekOfYear()));
+            assertTrue(weeks.contains(instance.getWeekOfYear()), () -> "week of " + instance + " not in " + weeks + " rule: " + rule);
         }
     }
 
@@ -271,9 +260,7 @@ public class TestRule
     {
         if (hours != null)
         {
-            String errMsg = "";
-            // errMsg = "hour of " + instance + " not in " + hours + " rule: " + rule;
-            assertTrue(errMsg, hours.contains(instance.getHours()));
+            assertTrue(hours.contains(instance.getHours()), () -> "hour of " + instance + " not in " + hours + " rule: " + rule);
         }
     }
 
@@ -282,9 +269,7 @@ public class TestRule
     {
         if (minutes != null)
         {
-            String errMsg = "";
-            // errMsg = "minute of " + instance + " not in " + minutes + " rule: " + rule;
-            assertTrue(errMsg, minutes.contains(instance.getMinutes()));
+            assertTrue(minutes.contains(instance.getMinutes()), () -> "minute of " + instance + " not in " + minutes + " rule: " + rule);
         }
     }
 
@@ -293,9 +278,7 @@ public class TestRule
     {
         if (seconds != null)
         {
-            String errMsg = "";
-            // errMsg = "hour of " + instance + " not in " + seconds + " rule: " + rule;
-            assertTrue(errMsg, seconds.contains(instance.getSeconds()));
+            assertTrue(seconds.contains(instance.getSeconds()), () -> "hour of " + instance + " not in " + seconds + " rule: " + rule);
         }
     }
 
@@ -335,9 +318,7 @@ public class TestRule
     {
         if (this.instances > 0)
         {
-            String errMsg = "";
-            errMsg = "invalid number of instances for " + rule + " with start " + start;
-            assertEquals(errMsg, this.instances, instances);
+            assertEquals(this.instances, instances, () -> "invalid number of instances for " + rule + " with start " + start);
         }
     }
 }
