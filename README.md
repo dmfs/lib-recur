@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/dmfs/lib-recur.svg?branch=master)](https://travis-ci.org/dmfs/lib-recur)
 [![codecov](https://codecov.io/gh/dmfs/lib-recur/branch/master/graph/badge.svg)](https://codecov.io/gh/dmfs/lib-recur)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/dmfs/lib-recur.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/dmfs/lib-recur/context:java)
 
 # lib-recur
 
@@ -167,26 +166,21 @@ This will always stop iterating after at most 1000 instances.
 By default, the parser is very tolerant and accepts all rules that comply with RFC 5545. You can use other modes to ensure a certain compliance level:
 
 		RecurrenceRule rule1 = new RecurrenceRule("FREQ=WEEKLY;BYWEEKNO=1,2,3,4;BYDAY=SU", RfcMode.RFC2445_STRICT);
-		// -> will iterate Sunday in the first four weeks of the year
-
+		// -> will throw an InvalidRecurrenceRuleExceptionException because in RFC 2445 BYWEEKNO is only valid in
+		// combination with YEARLY rules
 
 		RecurrenceRule rule2 = new RecurrenceRule("FREQ=WEEKLY;BYWEEKNO=1,2,3,4;BYDAY=SU", RfcMode.RFC2445_LAX);
-		// -> will iterate Sunday in the first four weeks of the year (just like RfcMode.RFC2445_STRICT)
-
+		// -> will iterate Sunday in the first four weeks of the year
 
 		RecurrenceRule rule3 = new RecurrenceRule("FREQ=WEEKLY;BYWEEKNO=1,2,3,4;BYDAY=SU", RfcMode.RFC5545_STRICT);
 		// -> will throw an InvalidRecurrenceRuleExceptionException because in RFC 5545 BYWEEKNO is only valid in
-		// combination to YEARLY rules
-
+		// combination with YEARLY rules
 
 		RecurrenceRule rule4 = new RecurrenceRule("FREQ=WEEKLY;BYWEEKNO=1,2,3,4;BYDAY=SU", RfcMode.RFC5545_LAX);
-		// -> will iterate every Sunday of the year
-		// since BYWEEKNO is not valid in WEEKLY rules this part is just dropped and the rule left is "FREQ=WEEKLY;BYDAY=SU"
-
+		// -> will iterate Sunday in the first four weeks of the year
 
 		RecurrenceRule rule5 = new RecurrenceRule("BYWEEKNO=1,2,3,4;BYDAY=SU;FREQ=WEEKLY", RfcMode.RFC2445_STRICT);
 		// -> will throw an InvalidRecurrenceRuleExceptionException because in RFC 2445 the rule must start with "FREQ="
-
 
 		RecurrenceRule rule6 = new RecurrenceRule("FREQ=MONTHLY;BYMONTH=4;", RfcMode.RFC2445_STRICT);
 		// -> will throw an InvalidRecurrenceRuleExceptionException because the trailing ";" is invalid
