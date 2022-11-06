@@ -127,7 +127,7 @@ new RecurrenceSet(DateTime.parse("19820523"),
 ```
 results in
 ```
-19830524,19840524,19850524…
+19820524,19830524,19840524,19850524…
 ```
 Note that `19820523` is not among the results.
 
@@ -142,7 +142,7 @@ new RecurrenceSet(DateTime.parse("19820523"),
 ```
 results in
 ```
-19820523,19830524,19840524,19850524…
+19820523,19820524,19830524,19840524,19850524…
 ```
 
 
@@ -203,18 +203,18 @@ To build a rule you have to specify a base frequency and optionally an RfcMode. 
 		rule.setCount(20);
 
 		// note that unlike with java.util.Calendar the months in this list are 1-based not 0-based
-		rule.setByRule(Parts.BYMONTH, 1, 3, 5, 7);
+		rule.setByRule(Part.BYMONTH, 1, 3, 5, 7);
 
-		rule.setByRule(Parts.BYMONTHDAY, 4, 8, 12);
+		rule.setByRule(Part.BYMONTHDAY, 4, 8, 12);
 
 		/*
 		 * Alternatively set the values from a list or an array:
 		 */ 
 		Integer[] dayArray = new Integer[]{4, 8, 12};
-		rule.setByRule(Parts.BYMONTHDAY, dayArray);
+		rule.setByRule(Part.BYMONTHDAY, dayArray);
 		
 		List<Integer> dayList = Arrays.asList(dayArray);
-		rule.setByRule(Parts.BYMONTHDAY, dayList);
+		rule.setByRule(Part.BYMONTHDAY, dayList);
 
 		String ruleStr = rule.toString(); 
 		// ruleStr is "FREQ=MONTHLY;BYMONTH=1,3,5,7;BYMONTHDAY=4,8,12;COUNT=20"
