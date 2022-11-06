@@ -44,8 +44,6 @@ final class UntilLimiter extends Limiter
      *         The {@link RecurrenceRule} to filter.
      * @param previous
      *         The previous filter instance.
-     * @param start
-     *         The first instance. This is used to determine if the iterated instances are floating or not.
      */
     public UntilLimiter(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, TimeZone startTimezone)
     {

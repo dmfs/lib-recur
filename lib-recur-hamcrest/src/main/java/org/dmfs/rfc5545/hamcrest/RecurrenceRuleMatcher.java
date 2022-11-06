@@ -17,10 +17,10 @@
 
 package org.dmfs.rfc5545.hamcrest;
 
-import org.dmfs.iterables.elementary.Seq;
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.iterable.composite.Joined;
-import org.dmfs.jems.iterable.decorators.Mapped;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.iterable.Joined;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.hamcrest.CoreMatchers;
@@ -31,9 +31,7 @@ import org.hamcrest.core.AllOf;
 
 import static org.dmfs.rfc5545.hamcrest.GeneratorMatcher.generates;
 import static org.dmfs.rfc5545.hamcrest.IncreasingMatcher.increasing;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.describedAs;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 
 /**
@@ -92,11 +90,6 @@ public final class RecurrenceRuleMatcher
 
     /**
      * This is just an alias to {@link CoreMatchers#is(Matcher)} which works better when being uses in a plural context.
-     *
-     * @param matcher
-     * @param <T>
-     *
-     * @return
      */
     public static <T> Matcher<T> are(Matcher<T> matcher)
     {
@@ -108,11 +101,6 @@ public final class RecurrenceRuleMatcher
 
     /**
      * This is just an alias to {@link CoreMatchers#is(Matcher)} which works better when being uses in a plural context.
-     *
-     * @param matcher
-     * @param <T>
-     *
-     * @return
      */
     @SafeVarargs
     public static <T> Matcher<T> are(Matcher<T>... matcher)

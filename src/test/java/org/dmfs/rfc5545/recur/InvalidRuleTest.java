@@ -1,12 +1,14 @@
 package org.dmfs.rfc5545.recur;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 /**

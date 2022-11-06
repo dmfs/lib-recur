@@ -23,19 +23,8 @@ import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics.CalendarMetricsFactory;
 import org.dmfs.rfc5545.calendarmetrics.GregorianCalendarMetrics;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
 
 
 /**
@@ -124,107 +113,107 @@ public final class RecurrenceRule
          * Base frequency of the recurring instances. This value is mandatory in every recurrence rule. The value must be a {@link Freq}.
          */
         FREQ(new FreqConverter())
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        return new FreqIterator(rule, calendarMetrics, start);
-                    }
+                    return new FreqIterator(rule, calendarMetrics, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("FREQ doesn't have a filter.");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("FREQ doesn't have a filter.");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // the frequency generator always expands
-                        return true;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // the frequency generator always expands
+                    return true;
+                }
+            },
 
         /**
          * The base interval of the recurring instances. If not specified the interval is <code>1</code>. The value must be a positive integer.
          */
         INTERVAL(new IntegerConverter(1, Integer.MAX_VALUE))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        throw new UnsupportedOperationException("INTERVAL doesn't have an iterator.");
-                    }
+                    throw new UnsupportedOperationException("INTERVAL doesn't have an iterator.");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("INTERVAL doesn't have a filter.");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("INTERVAL doesn't have a filter.");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        throw new UnsupportedOperationException("INTERVAL doesn't support expansion nor filtering");
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    throw new UnsupportedOperationException("INTERVAL doesn't support expansion nor filtering");
+                }
+            },
 
         /**
          * RSCALE defines the calendar scale to apply. It has been introduced in <a href="draft-daboo-icalendar-rscale-03">http://tools.ietf.org/html/draft-daboo-icalendar-rscale-03</a>
          */
         RSCALE(new RScaleConverter())
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    throws UnsupportedOperationException
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                            throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("RSCALE doesn't have an expander.");
-                    }
+                    throw new UnsupportedOperationException("RSCALE doesn't have an expander.");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("RSCALE doesn't have a filter.");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("RSCALE doesn't have a filter.");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        throw new UnsupportedOperationException("RSCALE doesn't support expansion nor filtering");
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    throw new UnsupportedOperationException("RSCALE doesn't support expansion nor filtering");
+                }
+            },
 
         /**
          * The start day of a week. The value must be a {@link Weekday}. This is relevant if any of {@link Part#BYDAY} or {@link Part#BYWEEKNO} are present.
          */
         WKST(new WeekdayConverter())
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        throw new UnsupportedOperationException("WKST doesn't have an iterator.");
-                    }
+                    throw new UnsupportedOperationException("WKST doesn't have an iterator.");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("WKST doesn't have a filter.");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("WKST doesn't have a filter.");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        throw new UnsupportedOperationException("WKST doesn't support expansion nor filtering.");
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    throw new UnsupportedOperationException("WKST doesn't support expansion nor filtering.");
+                }
+            },
 
         /**
          * A list of months that specify in which months the instances recur. The value is a list of non-zero integers. The actual values depend on the calendar
@@ -233,61 +222,61 @@ public final class RecurrenceRule
          * TODO: validate month numbers.
          */
         BYMONTH(new ListValueConverter<Integer>(new MonthConverter()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    return new ByMonthExpander(rule, previous, calendarMetrics, start);
+                }
+
+
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    if (rule.getFreq() == Freq.WEEKLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
+                        Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY)))
                     {
-                        return new ByMonthExpander(rule, previous, calendarMetrics, start);
+                        // the rule has a weekly scope and "By*day" filters, so we have to retain weeks that overlap this month
+                        return new ByMonthFilter(rule, calendarMetrics);
                     }
+                    return new TrivialByMonthFilter(rule);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        if (rule.getFreq() == Freq.WEEKLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
-                                Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY)))
-                        {
-                            // the rule has a weekly scope and "By*day" filters, so we have to retain weeks that overlap this month
-                            return new ByMonthFilter(rule, calendarMetrics);
-                        }
-                        return new TrivialByMonthFilter(rule);
-                    }
-
-
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return rule.getFreq() == Freq.YEARLY;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return rule.getFreq() == Freq.YEARLY;
+                }
+            },
 
         /**
          * The SKIP filter for months. This must not appear in an RRULE, any attempt to parse a value will fail. This is just an implementation helper.
          */
         _BYMONTHSKIP(ERROR_CONVERTER)
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    throws UnsupportedOperationException
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                            throws UnsupportedOperationException
-                    {
-                        return new ByMonthSkipFilter(rule, previous, calendarMetrics, start);
-                    }
+                    return new ByMonthSkipFilter(rule, previous, calendarMetrics, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("_BYMONTHSKIP doesn't support  filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("_BYMONTHSKIP doesn't support  filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
 
-                },
+            },
 
         /**
          * A list of week numbers that specify in which weeks the instances recur.
@@ -295,47 +284,47 @@ public final class RecurrenceRule
          * TODO: validate week numbers
          */
         BYWEEKNO(new ListValueConverter<Integer>(new IntegerConverter(-53, 53).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
+                    ByExpander.Scope scope = rule.hasPart(Part.BYMONTH) ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY;
+
+                    // allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
+                    boolean allowOverlappingWeeks = scope == ByExpander.Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
+                        Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
+
+                    switch (scope)
                     {
-                        ByExpander.Scope scope = rule.hasPart(Part.BYMONTH) ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY;
-
-                        // allow overlapping weeks in MONTHLY scope and if any BY*DAY rule is present
-                        boolean allowOverlappingWeeks = scope == ByExpander.Scope.MONTHLY && (rule.hasPart(Part.BYDAY) || rule.hasPart(
-                                Part.BYMONTHDAY) || rule.hasPart(Part.BYYEARDAY));
-
-                        switch (scope)
-                        {
-                            case MONTHLY:
-                                if (allowOverlappingWeeks)
-                                {
-                                    return new ByWeekNoMonthlyOverlapExpander(rule, previous, calendarTools, start);
-                                }
-                                return new ByWeekNoMonthlyExpander(rule, previous, calendarTools, start);
-                            case YEARLY:
-                                return new ByWeekNoYearlyExpander(rule, previous, calendarTools, start);
-                            default:
-                                throw new Error("Illegal scope");
-                        }
+                        case MONTHLY:
+                            if (allowOverlappingWeeks)
+                            {
+                                return new ByWeekNoMonthlyOverlapExpander(rule, previous, calendarTools, start);
+                            }
+                            return new ByWeekNoMonthlyExpander(rule, previous, calendarTools, start);
+                        case YEARLY:
+                            return new ByWeekNoYearlyExpander(rule, previous, calendarTools, start);
+                        default:
+                            throw new Error("Illegal scope");
                     }
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        // no filter defined
-                        return null;
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    // no filter defined
+                    return null;
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // byweekno always expands
-                        return true;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // byweekno always expands
+                    return true;
+                }
+            },
 
         /**
          * A list of year days that specify on which year days the instances recur. The actual limits depend on the calendar scale and needs to be validated
@@ -344,31 +333,31 @@ public final class RecurrenceRule
          * TODO: validate year days
          */
         BYYEARDAY(new ListValueConverter<>(new IntegerConverter(-366, 366).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        // RFC 5545 only allows BYYEARDAY expansion for YEARLY rules
-                        // We'll expand it the same way for WEEKLY and MONTHLY though and filter afterwards for other frequencies if allowed by the mode
-                        return new ByYearDayYearlyExpander(rule, previous, calendarMetrics, start);
-                    }
+                    // RFC 5545 only allows BYYEARDAY expansion for YEARLY rules
+                    // We'll expand it the same way for WEEKLY and MONTHLY though and filter afterwards for other frequencies if allowed by the mode
+                    return new ByYearDayYearlyExpander(rule, previous, calendarMetrics, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByYearDayFilter(rule, calendarMetrics);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByYearDayFilter(rule, calendarMetrics);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // expand in a yearly, monthly or weekly scope
-                        Freq freq = rule.getFreq();
-                        return freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // expand in a yearly, monthly or weekly scope
+                    Freq freq = rule.getFreq();
+                    return freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY;
+                }
+            },
 
         /**
          * A list of month days on which the event recurs. Valid values are non-zero integers. The actual limits depend on the calendar scale and needs to be
@@ -377,378 +366,379 @@ public final class RecurrenceRule
          * TODO: validate month days
          */
         BYMONTHDAY(new ListValueConverter<Integer>(new IntegerConverter(-31, 31).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    ByExpander.Scope scope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(
+                        Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY
+                        : ByExpander.Scope.WEEKLY)
+                        : ByExpander.Scope.MONTHLY;
+
+                    switch (scope)
                     {
-                        ByExpander.Scope scope = rule.hasPart(Part.BYWEEKNO) || rule.getFreq() == Freq.WEEKLY ? (rule.hasPart(
-                                Part.BYMONTH) || rule.getFreq() == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY
-                                : ByExpander.Scope.WEEKLY)
-                                : ByExpander.Scope.MONTHLY;
-
-                        switch (scope)
-                        {
-                            case MONTHLY:
-                                return new ByMonthDayMonthlyExpander(rule, previous, calendarMetrics, start);
-                            case WEEKLY:
-                                return new ByMonthDayWeeklyExpander(rule, previous, calendarMetrics, start);
-                            case WEEKLY_AND_MONTHLY:
-                                return new ByMonthDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
-                            default:
-                                throw new Error("Illegal Scope");
-                        }
+                        case MONTHLY:
+                            return new ByMonthDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                        case WEEKLY:
+                            return new ByMonthDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                        case WEEKLY_AND_MONTHLY:
+                            return new ByMonthDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                        default:
+                            throw new Error("Illegal Scope");
                     }
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByMonthDayFilter(rule, calendarMetrics);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByMonthDayFilter(rule, calendarMetrics);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // expand in a yearly, monthly or weekly scope if byyearday is not present
-                        Freq freq = rule.getFreq();
-                        return (freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY /* for RFC 2445 */) && !(rule
-                                .hasPart(Part.BYYEARDAY));
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // expand in a yearly, monthly or weekly scope if byyearday is not present
+                    Freq freq = rule.getFreq();
+                    return (freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY /* for RFC 2445 */) && !rule.hasPart(Part.BYYEARDAY);
+                }
+            },
 
         /**
          * The SKIP filter for monthdays. This must not appear in an RRULE, any attempt to parse a value will fail. This is just an implementation helper.
          */
         _BYMONTHDAYSKIP(ERROR_CONVERTER)
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    throws UnsupportedOperationException
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                            throws UnsupportedOperationException
-                    {
-                        return new ByMonthDaySkipFilter(rule, previous, calendarMetrics, start);
-                    }
+                    return new ByMonthDaySkipFilter(rule, previous, calendarMetrics, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("_BYMONTHDAYSKIP doesn't support filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("_BYMONTHDAYSKIP doesn't support filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
 
-                },
+            },
 
         /**
          * A list of {@link WeekdayNum}s on which the event recurs.
          */
         BYDAY(new ListValueConverter<WeekdayNum>(new WeekdayNumConverter()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    boolean hasByMonth = rule.hasPart(Part.BYMONTH);
+                    Freq freq = rule.getFreq();
+
+                    ByExpander.Scope scope = rule.hasPart(
+                        Part.BYWEEKNO) || freq == Freq.WEEKLY ? (hasByMonth || freq == Freq.MONTHLY
+                        ? ByExpander.Scope.WEEKLY_AND_MONTHLY
+                        : ByExpander.Scope.WEEKLY)
+                        : (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY);
+
+                    switch (scope)
                     {
-                        boolean hasByMonth = rule.hasPart(Part.BYMONTH);
-                        Freq freq = rule.getFreq();
-
-                        ByExpander.Scope scope = rule.hasPart(
-                                Part.BYWEEKNO) || freq == Freq.WEEKLY ? (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.WEEKLY_AND_MONTHLY : ByExpander.Scope.WEEKLY)
-                                : (hasByMonth || freq == Freq.MONTHLY ? ByExpander.Scope.MONTHLY : ByExpander.Scope.YEARLY);
-
-                        switch (scope)
-                        {
-                            case WEEKLY:
-                                return new ByDayWeeklyExpander(rule, previous, calendarMetrics, start);
-                            case WEEKLY_AND_MONTHLY:
-                                return new ByDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
-                            case MONTHLY:
-                                return new ByDayMonthlyExpander(rule, previous, calendarMetrics, start);
-                            case YEARLY:
-                                return new ByDayYearlyExpander(rule, previous, calendarMetrics, start);
-                            default:
-                                throw new Error("Illegal scope");
-                        }
+                        case WEEKLY:
+                            return new ByDayWeeklyExpander(rule, previous, calendarMetrics, start);
+                        case WEEKLY_AND_MONTHLY:
+                            return new ByDayWeeklyAndMonthlyExpander(rule, previous, calendarMetrics, start);
+                        case MONTHLY:
+                            return new ByDayMonthlyExpander(rule, previous, calendarMetrics, start);
+                        case YEARLY:
+                            return new ByDayYearlyExpander(rule, previous, calendarMetrics, start);
+                        default:
+                            throw new Error("Illegal scope");
                     }
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    Freq freq = rule.getFreq();
+                    // TODO: this method looks ugly and can use some improvement
+                    // TODO: consider doing this separation at parsing time
+                    Set<Weekday> nonPrefixed = EnumSet.noneOf(Weekday.class);
+                    Map<Weekday, Set<Integer>> prefixed = new EnumMap<>(Weekday.class);
+
+                    for (WeekdayNum wn : rule.getByDayPart())
                     {
-                        Freq freq = rule.getFreq();
-                        // TODO: this method looks ugly and can use some improvement
-                        // TODO: consider doing this separation at parsing time
-                        Set<Weekday> nonPrefixed = EnumSet.noneOf(Weekday.class);
-                        Map<Weekday, Set<Integer>> prefixed = new EnumMap<>(Weekday.class);
-
-                        for (WeekdayNum wn : rule.getByDayPart())
+                        if (wn.pos == 0)
                         {
-                            if (wn.pos == 0)
+                            nonPrefixed.add(wn.weekday);
+                        }
+                        else
+                        {
+                            Set<Integer> prefixes = prefixed.get(wn.weekday);
+                            if (prefixes == null) // TODO use java 8 API, check Android support first
                             {
-                                nonPrefixed.add(wn.weekday);
+                                prefixes = new HashSet<>();
+                                prefixed.put(wn.weekday, prefixes);
                             }
-                            else
-                            {
-                                Set<Integer> prefixes = prefixed.get(wn.weekday);
-                                if (prefixes == null) // TODO use java 8 API, check Android support first
-                                {
-                                    prefixes = new HashSet<>();
-                                    prefixed.put(wn.weekday, prefixes);
-                                }
-                                prefixes.add(wn.pos);
-                            }
+                            prefixes.add(wn.pos);
                         }
-
-                        if (prefixed.isEmpty()
-                                || freq != Freq.YEARLY && freq != Freq.MONTHLY
-                                || freq == Freq.YEARLY && rule.hasPart(BYWEEKNO))
-                        {
-                            return new ByDayFilter(calendarMetrics, nonPrefixed);
-                        }
-                        ByFilter baseFilter = new ByDayPrefixedFilter(
-                                calendarMetrics,
-                                prefixed,
-                                freq == Freq.YEARLY && rule.getByPart(BYMONTH) == null ?
-                                        ByDayPrefixedFilter.Scope.YEAR :
-                                        ByDayPrefixedFilter.Scope.MONTH);
-
-                        if (nonPrefixed.isEmpty())
-                        {
-                            return baseFilter;
-                        }
-
-                        ByFilter nonPrefixFilter = new ByDayFilter(calendarMetrics, nonPrefixed);
-                        return instance -> nonPrefixFilter.filter(instance) && baseFilter.filter(instance);
                     }
 
-
-                    @Override
-                    boolean expands(RecurrenceRule rule)
+                    if (prefixed.isEmpty()
+                        || (freq != Freq.YEARLY && freq != Freq.MONTHLY)
+                        || (freq == Freq.YEARLY && rule.hasPart(BYWEEKNO)))
                     {
-                        // expands in a yearly or monthly scope if neither byyearday nor bymonthday are present and in a weekly scope.
-                        Freq freq = rule.getFreq();
-                        return ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && !rule.hasPart(
-                                Part.BYYEARDAY) && !rule.hasPart(Part.BYMONTHDAY))
-                                || freq == Freq.WEEKLY;
+                        return new ByDayFilter(calendarMetrics, nonPrefixed);
                     }
-                },
+                    ByFilter baseFilter = new ByDayPrefixedFilter(
+                        calendarMetrics,
+                        prefixed,
+                        freq == Freq.YEARLY && rule.getByPart(BYMONTH) == null ?
+                            ByDayPrefixedFilter.Scope.YEAR :
+                            ByDayPrefixedFilter.Scope.MONTH);
+
+                    if (nonPrefixed.isEmpty())
+                    {
+                        return baseFilter;
+                    }
+
+                    ByFilter nonPrefixFilter = new ByDayFilter(calendarMetrics, nonPrefixed);
+                    return instance -> nonPrefixFilter.filter(instance) && baseFilter.filter(instance);
+                }
+
+
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // expands in a yearly or monthly scope if neither byyearday nor bymonthday are present and in a weekly scope.
+                    Freq freq = rule.getFreq();
+                    return ((freq == Freq.YEARLY || freq == Freq.MONTHLY) && !rule.hasPart(
+                        Part.BYYEARDAY) && !rule.hasPart(Part.BYMONTHDAY))
+                        || freq == Freq.WEEKLY;
+                }
+            },
 
         /**
          * A special BYMONTH filter for expander rewriting
          */
         _BYMONTH_FILTER(new ListValueConverter<>(new MonthConverter()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        throw new Error("Unexpected expander request");
-                    }
+                    throw new Error("Unexpected expander request");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new TrivialByMonthFilter(rule);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new TrivialByMonthFilter(rule);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return false;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return false;
+                }
+            },
 
         /**
          * A special BYWEEKNO filter for expander rewriting
          */
         _BYWEEKNO_FILTER(new ListValueConverter<>(new IntegerConverter(-53, 53).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-                    {
-                        throw new Error("Unexpected Expansion request");
-                    }
+                    throw new Error("Unexpected Expansion request");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByWeekNoFilter(rule, calendarMetrics);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByWeekNoFilter(rule, calendarMetrics);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return false;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return false;
+                }
+            },
 
         /**
          * A special BYYEARDAY filter for expander rewriting
          */
         _BYYEARDAY_FILTER(new ListValueConverter<>(new IntegerConverter(-366, 366).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        throw new Error("Unexpected expander request");
-                    }
+                    throw new Error("Unexpected expander request");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByYearDayFilter(rule, calendarMetrics);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByYearDayFilter(rule, calendarMetrics);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return false;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return false;
+                }
+            },
 
         /**
          * A special BYMONTHDAY filter for expander rewriting
          */
         _BYMONTHDAY_FILTER(new ListValueConverter<>(new IntegerConverter(-31, 31).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        throw new Error("This filter does not expand.");
-                    }
+                    throw new Error("This filter does not expand.");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByMonthDayFilter(rule, calendarMetrics);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByMonthDayFilter(rule, calendarMetrics);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return false;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return false;
+                }
+            },
 
         /**
          * A special BYDAY filter for expander rewriting
          */
         _BYDAY_FILTER(new ListValueConverter<>(new WeekdayNumConverter()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        throw new Error("Unexpected expansion request");
-                    }
+                    throw new Error("Unexpected expansion request");
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return BYDAY.getFilter(rule, calendarMetrics);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return BYDAY.getFilter(rule, calendarMetrics);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return false;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return false;
+                }
+            },
 
         /**
          * The hours on which the event recurs. The value must be a list of integers in the range 0 to 23.
          */
         BYHOUR(new ListValueConverter<Integer>(new IntegerConverter(0, 23)))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-                    {
-                        return new ByHourExpander(rule, previous, calendarTools, start);
-                    }
+                    return new ByHourExpander(rule, previous, calendarTools, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByHourFilter(rule);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByHourFilter(rule);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // expands whenever the scope is larger than an hour
-                        Freq freq = rule.getFreq();
-                        return freq != Freq.SECONDLY && freq != Freq.MINUTELY && freq != Freq.HOURLY;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // expands whenever the scope is larger than an hour
+                    Freq freq = rule.getFreq();
+                    return freq != Freq.SECONDLY && freq != Freq.MINUTELY && freq != Freq.HOURLY;
+                }
+            },
 
         /**
          * The minutes on which the event recurs. The value must be a list of integers in the range 0 to 59.
          */
         BYMINUTE(new ListValueConverter<Integer>(new IntegerConverter(0, 59)))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-                    {
-                        return new ByMinuteExpander(rule, previous, calendarTools, start);
-                    }
+                    return new ByMinuteExpander(rule, previous, calendarTools, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new ByMinuteFilter(rule);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new ByMinuteFilter(rule);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // expands whenever the scope is larger than a minute
-                        Freq freq = rule.getFreq();
-                        return freq != Freq.SECONDLY && freq != Freq.MINUTELY;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // expands whenever the scope is larger than a minute
+                    Freq freq = rule.getFreq();
+                    return freq != Freq.SECONDLY && freq != Freq.MINUTELY;
+                }
+            },
 
         /**
          * The seconds on which the event recurs. The value must be a list of integers in the range 0 to 60.
          */
         BYSECOND(new ListValueConverter<Integer>(new IntegerConverter(0, 60)))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-                    {
-                        return new BySecondExpander(rule, previous, calendarTools, start);
-                    }
+                    return new BySecondExpander(rule, previous, calendarTools, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        return new BySecondFilter(rule);
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    return new BySecondFilter(rule);
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        // expands whenever the scope is larger than a second
-                        return rule.getFreq() != Freq.SECONDLY;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    // expands whenever the scope is larger than a second
+                    return rule.getFreq() != Freq.SECONDLY;
+                }
+            },
 
         /**
          * SKIP defines how to handle instances that would fall on a leap day or leap month in a non-leap year. Legal values are defined in {@link Skip}. It has
@@ -757,68 +747,68 @@ public final class RecurrenceRule
          * Skipping is implemented by an expander because it might modify instances which is not supported by filters.
          */
         SKIP(new SkipValueConverter())
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    /*
+                     * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
+                     * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
+                     * year.
+                     *
+                     * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
+                     * SanityFilter.
+                     */
+                    if (rule.getFreq() == Freq.YEARLY && rule.getSkip() == Skip.FORWARD)
                     {
-                        /*
-                         * The only case when we need the buffer is when rolling a month in a yearly rule forward, because the instance may end up in the next interval
-                         * (i.e. the next year). A leap month can not be the first month in a year, hence it's impossible that we roll a instance backwards to the last
-                         * year.
-                         *
-                         * Leap days may be rolled forward or backwards, but only to the first/last day of the next/previous month, which will be handled by the
-                         * SanityFilter.
-                         */
-                        if (rule.getFreq() == Freq.YEARLY && rule.getSkip() == Skip.FORWARD)
-                        {
-                            return new SkipBuffer(rule, previous, calendarMetrics);
-                        }
-                        return null;
+                        return new SkipBuffer(rule, previous, calendarMetrics);
                     }
+                    return null;
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("SKIP doesn't support  filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("SKIP doesn't support  filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
+            },
 
         /**
          * Filters all invalid dates. This must not appear in an RRULE, any attempt to parse a value will fail. This is just an implementation helper.
          */
         _SANITY_FILTER(ERROR_CONVERTER)
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
+                    throws UnsupportedOperationException
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                            throws UnsupportedOperationException
-                    {
-                        // note: despite it's name the SanityFilter is implemented as an expander
-                        return new SanityFilter(previous, calendarMetrics, start);
-                    }
+                    // note: despite it's name the SanityFilter is implemented as an expander
+                    return new SanityFilter(previous, calendarMetrics, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("_SANITY doesn't support filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("_SANITY doesn't support filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
 
-                },
+            },
 
         /**
          * A list of set positions to consider when iterating the instances. The value is a list of integers. For now we accept any reasonable value.
@@ -826,83 +816,83 @@ public final class RecurrenceRule
          * TODO: validate the values. They should be within the limits of byyearday.
          */
         BYSETPOS(new ListValueConverter<Integer>(new IntegerConverter(-500, 500).noZero()))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-                    {
-                        return new BySetPosFilter(rule, previous, start);
-                    }
+                    return new BySetPosFilter(rule, previous, start);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("BYSETPOS doesn't support  filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("BYSETPOS doesn't support  filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
-                },
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
+            },
 
         /**
          * This part specifies the latest date of the last instance. The value is a {@link DateTime} in UTC or the local time zone. This part is mutually
          * exclusive with {@link #COUNT}. If neither {@link #UNTIL} nor {@link #COUNT} are specified the instances recur forever.
          */
         UNTIL(new DateTimeConverter())
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                    {
-                        return new UntilLimiter(rule, previous, calendarMetrics, startTimeZone);
-                    }
+                    return new UntilLimiter(rule, previous, calendarMetrics, startTimeZone);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("UNTIL doesn't support filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("UNTIL doesn't support filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
 
-                },
+            },
 
         /**
          * This part specifies total number of instances. The value is a positive integer. This part is mutually exclusive with {@link #UNTIL}. If neither
          * {@link #COUNT} nor {@link #UNTIL} are specified the instances recur forever.
          */
         COUNT(new IntegerConverter(1, Integer.MAX_VALUE))
+            {
+                @Override
+                RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
                 {
-                    @Override
-                    RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarTools, long start, TimeZone startTimeZone)
-                    {
-                        return new CountLimiter(rule, previous);
-                    }
+                    return new CountLimiter(rule, previous);
+                }
 
 
-                    @Override
-                    ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
-                    {
-                        throw new UnsupportedOperationException("COUNT doesn't support  filtering");
-                    }
+                @Override
+                ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException
+                {
+                    throw new UnsupportedOperationException("COUNT doesn't support  filtering");
+                }
 
 
-                    @Override
-                    boolean expands(RecurrenceRule rule)
-                    {
-                        return true;
-                    }
+                @Override
+                boolean expands(RecurrenceRule rule)
+                {
+                    return true;
+                }
 
-                };
+            };
 
         /**
          * A {@link ValueConverter} that can parse and serialize the value for a specific part. The generic type depends on the actual part.
@@ -914,7 +904,7 @@ public final class RecurrenceRule
          * Private constructor.
          *
          * @param converter
-         *         The {@link ValueConverter} that knows how to parse and serialize this part.
+         *     The {@link ValueConverter} that knows how to parse and serialize this part.
          */
         private Part(ValueConverter<?> converter)
         {
@@ -928,37 +918,37 @@ public final class RecurrenceRule
          * </p>
          *
          * @param rule
-         *         The rule to iterate.
+         *     The rule to iterate.
          * @param previous
-         *         The previous element in the filter chain.
+         *     The previous element in the filter chain.
          * @param calendarMetrics
-         *         The {@link CalendarMetrics} to use.
+         *     The {@link CalendarMetrics} to use.
          * @param start
-         *         The first instance of the event.
+         *     The first instance of the event.
          * @param startTimeZone
-         *         The {@link TimeZone} this event is in.
+         *     The {@link TimeZone} this event is in.
          *
          * @return The {@link RuleIterator} for this part.
          *
          * @throws UnsupportedOperationException
-         *         If this part does not have a {@link RuleIterator}.
+         *     If this part does not have a {@link RuleIterator}.
          */
         abstract RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
-                throws UnsupportedOperationException;
+            throws UnsupportedOperationException;
 
         /**
          * Return a {@link ByFilter}. <p> <strong>Note:</strong> {@link #FREQ}, {@link #INTERVAL}, {@link #RSCALE} and {@link #WKST} don't support this method
          * and throw an {@link UnsupportedOperationException}. </p>
          *
          * @param rule
-         *         The rule to iterate.
+         *     The rule to iterate.
          * @param calendarMetrics
-         *         The {@link CalendarMetrics} to use.
+         *     The {@link CalendarMetrics} to use.
          *
          * @return The {@link RuleIterator} for this part or <code>null</code> if the give rule doesn't need this part.
          *
          * @throws UnsupportedOperationException
-         *         If this part does not have a {@link ByFilter}.
+         *     If this part does not have a {@link ByFilter}.
          */
         abstract ByFilter getFilter(RecurrenceRule rule, CalendarMetrics calendarMetrics) throws UnsupportedOperationException;
 
@@ -966,7 +956,7 @@ public final class RecurrenceRule
          * Returns whether this part expands instances or not.
          *
          * @param rule
-         *         The rule this part belongs to.
+         *     The rule this part belongs to.
          *
          * @return <code>true</code> if this rule expands instances, <code>false</code> if it filters instances for the given rule.
          */
@@ -981,35 +971,35 @@ public final class RecurrenceRule
     static
     {
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYYEARDAY, Part.BYMONTHDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTHDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTHDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
 
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY, Part.BYMONTHDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYMONTHDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYMONTHDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
 
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER));
         YEAR_REWRITE_MAP.put(EnumSet.of(Part.BYMONTH, Part.BYWEEKNO, Part.BYYEARDAY, Part.BYMONTHDAY, Part.BYDAY),
-                EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
+            EnumSet.of(Part.BYYEARDAY, Part._BYMONTH_FILTER, Part._BYWEEKNO_FILTER, Part._BYMONTHDAY_FILTER, Part._BYDAY_FILTER));
     }
 
 
@@ -1052,9 +1042,9 @@ public final class RecurrenceRule
          * TODO: update range check
          *
          * @param pos
-         *         The position of the weekday in the Interval or <code>0</code> for every occurrence of the weekday.
+         *     The position of the weekday in the Interval or <code>0</code> for every occurrence of the weekday.
          * @param weekday
-         *         The {@link Weekday}.
+         *     The {@link Weekday}.
          */
         public WeekdayNum(int pos, Weekday weekday)
         {
@@ -1072,14 +1062,14 @@ public final class RecurrenceRule
          * definition in RFC 2445).
          *
          * @param value
-         *         The weekdaynum String to parse.
+         *     The weekdaynum String to parse.
          * @param tolerant
-         *         Set to <code>true</code> to be tolerant and accept values outside of the allowed range.
+         *     Set to <code>true</code> to be tolerant and accept values outside of the allowed range.
          *
          * @return A new {@link WeekdayNum} instance.
          *
          * @throws InvalidRecurrenceRuleException
-         *         If the weekdaynum string is invalid.
+         *     If the weekdaynum string is invalid.
          */
         public static WeekdayNum valueOf(String value, boolean tolerant) throws InvalidRecurrenceRuleException
         {
@@ -1113,12 +1103,12 @@ public final class RecurrenceRule
          * definition in RFC 2445). In contrast to {@link #valueOf(String, boolean)} this method is always strict and throws on every invalid value.
          *
          * @param value
-         *         The weekdaynum String to parse.
+         *     The weekdaynum String to parse.
          *
          * @return A new {@link WeekdayNum} instance.
          *
          * @throws InvalidRecurrenceRuleException
-         *         If the weekdaynum string is invalid.
+         *     If the weekdaynum string is invalid.
          */
         public static WeekdayNum valueOf(String value) throws InvalidRecurrenceRuleException
         {
@@ -1192,10 +1182,10 @@ public final class RecurrenceRule
      * parts to produce a valid recurrence rule.
      *
      * @param recur
-     *         A recurrence rule string as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
+     *     A recurrence rule string as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
      *
      * @throws InvalidRecurrenceRuleException
-     *         If an unrecoverable error occurs when parsing the rule (like FREQ is missing, or mutually exclusive parts have been found).
+     *     If an unrecoverable error occurs when parsing the rule (like FREQ is missing, or mutually exclusive parts have been found).
      */
     public RecurrenceRule(String recur) throws InvalidRecurrenceRuleException
     {
@@ -1207,13 +1197,13 @@ public final class RecurrenceRule
      * Create a new recurrence rule from String using a custom {@link RfcMode}.
      *
      * @param recur
-     *         A recurrence rule string as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
+     *     A recurrence rule string as defined in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>.
      * @param mode
-     *         A {@link RfcMode} to change the parsing behaviour in case of errors.
+     *     A {@link RfcMode} to change the parsing behaviour in case of errors.
      *
      * @throws InvalidRecurrenceRuleException
-     *         If the rule is invalid with respect to the chosen mode or if an unrecoverable error occurs when parsing the rule (like FREQ is missing, or
-     *         mutually exclusive parts have been found).
+     *     If the rule is invalid with respect to the chosen mode or if an unrecoverable error occurs when parsing the rule (like FREQ is missing, or
+     *     mutually exclusive parts have been found).
      */
     public RecurrenceRule(String recur, RfcMode mode) throws InvalidRecurrenceRuleException
     {
@@ -1227,7 +1217,7 @@ public final class RecurrenceRule
      * comply with RFC 5545, otherwise an exception is thrown.
      *
      * @param freq
-     *         The {@link Freq} values that specified the base frequency for this rule.
+     *     The {@link Freq} values that specified the base frequency for this rule.
      */
     public RecurrenceRule(Freq freq)
     {
@@ -1239,9 +1229,9 @@ public final class RecurrenceRule
      * Create a new recurrence rule with the given base frequency using a custom {@link RfcMode}.
      *
      * @param freq
-     *         The {@link Freq} values that specified the base frequency for this rule.
+     *     The {@link Freq} values that specified the base frequency for this rule.
      * @param mode
-     *         A {@link RfcMode} to change the behavior in case of errors.
+     *     A {@link RfcMode} to change the behavior in case of errors.
      */
     public RecurrenceRule(Freq freq, RfcMode mode)
     {
@@ -1256,9 +1246,7 @@ public final class RecurrenceRule
      * 2445</a> but not in <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>).
      *
      * @param recur
-     *         A recurrence rule string.
-     *
-     * @throws InvalidRecurrenceRuleException
+     *     A recurrence rule string.
      */
     private void parseString(String recur) throws InvalidRecurrenceRuleException
     {
@@ -1285,7 +1273,7 @@ public final class RecurrenceRule
         {
             // in RFC2445 rules must start with "FREQ=" !
             throw new InvalidRecurrenceRuleException(
-                    "RFC 2445 requires FREQ to be the first part of the rule: " + recur);
+                "RFC 2445 requires FREQ to be the first part of the rule: " + recur);
         }
 
         CalendarMetrics calScale = mCalendarMetrics;
@@ -1308,7 +1296,7 @@ public final class RecurrenceRule
                     {
                         String value = keyvalue.substring(equals + 1);
                         rScale = (CalendarMetrics) Part.RSCALE.converter.parse(value, calScale, null /* that's what we're trying to find out */,
-                                relaxed);
+                            relaxed);
                         partMap.put(Part.RSCALE, rScale);
                         break;
                     }
@@ -1380,7 +1368,7 @@ public final class RecurrenceRule
                 {
                     Object partValue = part.converter.parse(value, calScale, rScale, relaxed);
                     if (partValue != null && (part != Part.INTERVAL || !ONE.equals(
-                            partValue) /* do not store intervals with value 1 */))
+                        partValue) /* do not store intervals with value 1 */))
                     {
                         partMap.put(part, partValue);
                     }
@@ -1438,10 +1426,10 @@ public final class RecurrenceRule
      * Checks for invalid rules when a numeric value is set in BYDAY. Depending on the mode either an exception is thrown or the BYDAY rule is simply dropped.
      *
      * @param freq
-     *         The {@link Freq} specified in the rule.
+     *     The {@link Freq} specified in the rule.
      *
      * @throws InvalidRecurrenceRuleException
-     *         if the mode is set to RFC5545_STRICT and an invalid rule is detected.
+     *     if the mode is set to RFC5545_STRICT and an invalid rule is detected.
      */
     private void checkForInvalidNumericInByDay(Freq freq) throws InvalidRecurrenceRuleException
     {
@@ -1464,7 +1452,7 @@ public final class RecurrenceRule
                         if (mode == RfcMode.RFC5545_STRICT)
                         {
                             final String errMsg = "The BYDAY rule part must not be specified with a numeric value when the FREQ "
-                                    + "rule part is not set to MONTHLY or YEARLY.";
+                                + "rule part is not set to MONTHLY or YEARLY.";
                             throw new InvalidRecurrenceRuleException(errMsg);
                         }
                         else
@@ -1481,7 +1469,7 @@ public final class RecurrenceRule
                         if (mode == RfcMode.RFC5545_STRICT)
                         {
                             final String errMsg = "The BYDAY rule part must not be specified with a numeric value with"
-                                    + " the FREQ rule part set to YEARLY when BYWEEKNO is set";
+                                + " the FREQ rule part set to YEARLY when BYWEEKNO is set";
                             throw new InvalidRecurrenceRuleException(errMsg);
                         }
                         else
@@ -1499,7 +1487,7 @@ public final class RecurrenceRule
      * Validate this rule.
      *
      * @throws InvalidRecurrenceRuleException
-     *         if the rule is not valid with respect to the current {@link #mode}.
+     *     if the rule is not valid with respect to the current {@link #mode}.
      */
     private void validate() throws InvalidRecurrenceRuleException
     {
@@ -1550,10 +1538,10 @@ public final class RecurrenceRule
         {
             // in RFC 5545 BYYEARDAY does not support DAILY, WEEKLY and MONTHLY rules
             if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && partMap.containsKey(
-                    Part.BYYEARDAY))
+                Part.BYYEARDAY))
             {
                 throw new InvalidRecurrenceRuleException(
-                        "In RFC 5545, BYYEARDAY is not allowed in DAILY, WEEKLY or MONTHLY rules");
+                    "In RFC 5545, BYYEARDAY is not allowed in DAILY, WEEKLY or MONTHLY rules");
             }
 
             // in RFC 5545 BYMONTHAY must not be used in WEEKLY rules
@@ -1571,16 +1559,16 @@ public final class RecurrenceRule
         if (partMap.containsKey(Part.BYSETPOS))
         {
             if (!partMap.containsKey(Part.BYDAY) && !partMap.containsKey(Part.BYMONTHDAY) && !partMap.containsKey(
-                    Part.BYMONTH)
-                    && !partMap.containsKey(Part.BYHOUR) && !partMap.containsKey(Part.BYMINUTE) && !partMap.containsKey(
-                    Part.BYSECOND)
-                    && !partMap.containsKey(Part.BYWEEKNO) && !partMap.containsKey(Part.BYYEARDAY))
+                Part.BYMONTH)
+                && !partMap.containsKey(Part.BYHOUR) && !partMap.containsKey(Part.BYMINUTE) && !partMap.containsKey(
+                Part.BYSECOND)
+                && !partMap.containsKey(Part.BYWEEKNO) && !partMap.containsKey(Part.BYYEARDAY))
             {
                 if (strict)
                 {
                     // we're in strict mode => throw exception
                     throw new InvalidRecurrenceRuleException(
-                            "BYSETPOS must only be used in conjunction with another BYxxx rule.");
+                        "BYSETPOS must only be used in conjunction with another BYxxx rule.");
                 }
                 else
                 {
@@ -1600,12 +1588,12 @@ public final class RecurrenceRule
      * Validate if adding a specific list part would result in a valid rule.
      *
      * @param part
-     *         The part to be added.
+     *     The part to be added.
      * @param value
-     *         The value of this part.
+     *     The value of this part.
      *
      * @throws InvalidRecurrenceRuleException
-     *         if the rule is not valid with respect to the current {@link #mode}.
+     *     if the rule is not valid with respect to the current {@link #mode}.
      */
     private void validate(Part part, List<Integer> value) throws InvalidRecurrenceRuleException
     {
@@ -1623,7 +1611,7 @@ public final class RecurrenceRule
             if ((freq == Freq.DAILY || freq == Freq.WEEKLY || freq == Freq.MONTHLY) && part == Part.BYYEARDAY)
             {
                 throw new InvalidRecurrenceRuleException(
-                        "In RFC 5545, BYYEARDAY is not allowed in DAILY, WEEKLY or MONTHLY rules");
+                    "In RFC 5545, BYYEARDAY is not allowed in DAILY, WEEKLY or MONTHLY rules");
             }
 
             // in RFC 5545 BYMONTHAY must not be used in WEEKLY rules
@@ -1650,10 +1638,10 @@ public final class RecurrenceRule
      * Set the base frequency of this recurrence rule. <p> TODO: check if the rule is still valid afterwards (honor the silent parameter) </p>
      *
      * @param freq
-     *         The new {@link Freq} value of this rule.
+     *     The new {@link Freq} value of this rule.
      * @param silent
-     *         <code>true</code> to drop {@link Part}s that are no longer valid with the new frequency silently, <code>false</code> to throw an exception in
-     *         that case.
+     *     <code>true</code> to drop {@link Part}s that are no longer valid with the new frequency silently, <code>false</code> to throw an exception in
+     *     that case.
      */
     public void setFreq(Freq freq, boolean silent)
     {
@@ -1683,7 +1671,7 @@ public final class RecurrenceRule
      * calendar.
      *
      * @param skip
-     *         The new {@link Skip} value of this rule, <code>null</code> and {@link Skip#OMIT} will remove the SKIP part, the later one is the default anyway.
+     *     The new {@link Skip} value of this rule, <code>null</code> and {@link Skip#OMIT} will remove the SKIP part, the later one is the default anyway.
      */
     public void setSkip(Skip skip)
     {
@@ -1733,10 +1721,10 @@ public final class RecurrenceRule
      * default value anyway.
      *
      * @param interval
-     *         The new interval of this rule.
+     *     The new interval of this rule.
      *
      * @throws IllegalArgumentException
-     *         if interval is not a positive integer value.
+     *     if interval is not a positive integer value.
      */
     public void setInterval(int interval)
     {
@@ -1773,7 +1761,7 @@ public final class RecurrenceRule
      * not floating it's automatically converted to UTC.
      *
      * @param until
-     *         The UNTIL part of this rule or <code>null</code> to let the instances recur forever.
+     *     The UNTIL part of this rule or <code>null</code> to let the instances recur forever.
      */
     public void setUntil(DateTime until)
     {
@@ -1785,7 +1773,7 @@ public final class RecurrenceRule
         else
         {
             if ((!until.isFloating() && !DateTime.UTC.equals(until.getTimeZone())) || !mCalendarMetrics.equals(
-                    until.getCalendarMetrics()))
+                until.getCalendarMetrics()))
             {
                 mParts.put(Part.UNTIL, new DateTime(mCalendarMetrics, DateTime.UTC, until.getTimestamp()));
             }
@@ -1813,7 +1801,7 @@ public final class RecurrenceRule
      * Set the number of instances in the recurrence set. This will remove any UNTIL rule if present.
      *
      * @param count
-     *         The number if instances.
+     *     The number if instances.
      */
     public void setCount(int count)
     {
@@ -1837,7 +1825,7 @@ public final class RecurrenceRule
      * Checks if a specific part is present in this rule.
      *
      * @param part
-     *         The part if interest.
+     *     The part if interest.
      *
      * @return <code>true</code> if this rule has this part, <code>false</code> otherwise
      */
@@ -1854,7 +1842,7 @@ public final class RecurrenceRule
      * </p>
      *
      * @param part
-     *         The by-rule to return.
+     *     The by-rule to return.
      *
      * @return A list of integer values.
      */
@@ -1884,12 +1872,12 @@ public final class RecurrenceRule
      * #setByDayPart(List)}. </p>
      *
      * @param part
-     *         The by-rule to set.
+     *     The by-rule to set.
      * @param value
-     *         A list of integers that specify the rule or <code>null</code> (or an empty list) to remove the part.
+     *     A list of integers that specify the rule or <code>null</code> (or an empty list) to remove the part.
      *
      * @throws InvalidRecurrenceRuleException
-     *         if the list would become invalid by adding this part (this respects the current {@link RfcMode}.
+     *     if the list would become invalid by adding this part (this respects the current {@link RfcMode}.
      */
     public void setByPart(Part part, List<Integer> value) throws InvalidRecurrenceRuleException
     {
@@ -1925,12 +1913,12 @@ public final class RecurrenceRule
      * #setByDayPart(List)}. </p>
      *
      * @param part
-     *         The by-rule to set.
+     *     The by-rule to set.
      * @param values
-     *         Integers that specify the rule or <code>null</code> (or an empty list) to remove the part.
+     *     Integers that specify the rule or <code>null</code> (or an empty list) to remove the part.
      *
      * @throws InvalidRecurrenceRuleException
-     *         if the list would become invalid by adding this part (this respects the current {@link RfcMode}.
+     *     if the list would become invalid by adding this part (this respects the current {@link RfcMode}.
      */
     public void setByPart(Part part, Integer... values) throws InvalidRecurrenceRuleException
     {
@@ -1949,7 +1937,7 @@ public final class RecurrenceRule
      * Set the BYDAY part of this rule.
      *
      * @param value
-     *         A {@link List} of {@link WeekdayNum}s or <code>null</code> or an empty List to remove the part
+     *     A {@link List} of {@link WeekdayNum}s or <code>null</code> or an empty List to remove the part
      */
     public void setByDayPart(List<WeekdayNum> value)
     {
@@ -1991,7 +1979,7 @@ public final class RecurrenceRule
      * important for rules having a BYWEEKNO or BYDAY part.
      *
      * @param wkst
-     *         The start of the week to use when calculating the instances.
+     *     The start of the week to use when calculating the instances.
      */
     public void setWeekStart(Weekday wkst)
     {
@@ -2004,10 +1992,10 @@ public final class RecurrenceRule
      * that's the default value. This value is important for rules having a BYWEEKNO or BYDAY part.
      *
      * @param wkst
-     *         The start of the week to use when calculating the instances.
+     *     The start of the week to use when calculating the instances.
      * @param keepWkStMo
-     *         set to <code>true</code> to keep the WKST field if the value is {@link Weekday#MO}. Since Monday is the default adding it is not necessary, but
-     *         some implementations might be broken and use a different weekstart if it's not explicitly specified.
+     *     set to <code>true</code> to keep the WKST field if the value is {@link Weekday#MO}. Since Monday is the default adding it is not necessary, but
+     *     some implementations might be broken and use a different weekstart if it's not explicitly specified.
      */
     public void setWeekStart(Weekday wkst, boolean keepWkStMo)
     {
@@ -2029,12 +2017,12 @@ public final class RecurrenceRule
      * in RFC 2445 mode will override any existing x-part of the same name. </p>
      *
      * @param xname
-     *         The name of the x-part. Must be a valid identifier.
+     *     The name of the x-part. Must be a valid identifier.
      * @param value
-     *         The value of the x-part. Must be a valid name.
+     *     The value of the x-part. Must be a valid name.
      *
      * @throws UnsupportedOperationException
-     *         if {@link #mode} is set to {@link RfcMode#RFC5545_STRICT}.
+     *     if {@link #mode} is set to {@link RfcMode#RFC5545_STRICT}.
      */
     public void setXPart(String xname, String value)
     {
@@ -2078,7 +2066,7 @@ public final class RecurrenceRule
      * {@link #mode} equals {@link RfcMode#RFC5545_LAX} or {@link RfcMode#RFC5545_STRICT}.
      *
      * @param xname
-     *         The name of the x-part to check for.
+     *     The name of the x-part to check for.
      *
      * @return <code>true</code> if the part is present, <code>false</code> otherwise.
      */
@@ -2098,7 +2086,7 @@ public final class RecurrenceRule
      * RfcMode#RFC5545_LAX} or {@link RfcMode#RFC5545_STRICT}.
      *
      * @param xname
-     *         The name of the x-part to return.
+     *     The name of the x-part to return.
      *
      * @return The value of the x-part or <code>null</code>.
      */
@@ -2119,9 +2107,9 @@ public final class RecurrenceRule
      * value, you have to provide <code>null</code> as the timezone. </p>
      *
      * @param start
-     *         The time of the first instance in milliseconds since the epoch.
+     *     The time of the first instance in milliseconds since the epoch.
      * @param timezone
-     *         The {@link TimeZone} of the first instance or <code>null</code> for floating times.
+     *     The {@link TimeZone} of the first instance or <code>null</code> for floating times.
      *
      * @return A {@link RecurrenceRuleIterator}.
      */
@@ -2143,7 +2131,7 @@ public final class RecurrenceRule
      * floating time then start must be floating as well and vice versa. The same applies if the UNTIL value is an all-day value </p>
      *
      * @param start
-     *         The first instance.
+     *     The first instance.
      *
      * @return A {@link RuleIterator}.
      */
@@ -2155,12 +2143,12 @@ public final class RecurrenceRule
             if (until.isAllDay() != start.isAllDay())
             {
                 throw new IllegalArgumentException(
-                        "using allday start times with non-allday until values (and vice versa) is not allowed");
+                    "using allday start times with non-allday until values (and vice versa) is not allowed");
             }
             if (until.isFloating() != start.isFloating())
             {
                 throw new IllegalArgumentException(
-                        "using floating start times with absolute until values (and vice versa) is not allowed");
+                    "using floating start times with absolute until values (and vice versa) is not allowed");
             }
         }
 
@@ -2171,12 +2159,12 @@ public final class RecurrenceRule
         }
 
         // make sure we convert start to the rscale calendar metrics if they don't equal
-        long startInstance = !rScaleCalendarMetrics.scaleEquals(start.getCalendarMetrics()) ? new DateTime(
-                rScaleCalendarMetrics, start).getInstance() : start
-                .getInstance();
-
-        RuleIterator iterator = null;
+        long startInstance = !rScaleCalendarMetrics.scaleEquals(start.getCalendarMetrics())
+            ? new DateTime(rScaleCalendarMetrics, start).getInstance()
+            : start.getInstance();
         TimeZone startTimeZone = start.isFloating() ? null : start.getTimeZone();
+
+        RuleIterator iterator = Part.FREQ.getExpander(this, null, rScaleCalendarMetrics, startInstance, startTimeZone);
 
         // add SanityFilter if not present yet
         mParts.put(Part._SANITY_FILTER, null);
@@ -2194,17 +2182,15 @@ public final class RecurrenceRule
             }
         }
 
-        // since FREQ is the first part anyway we don't have to create it separately
         for (Part p : parts)
         {
             // add a filter for each rule part
-            if (p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
+            if (p != Part.FREQ && p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
             {
                 if (p.expands(this))
                 {
                     // if a part returns null for the expander just skip it
-                    RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance,
-                            startTimeZone);
+                    RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
                     iterator = newIterator == null ? iterator : newIterator;
                 }
                 else
@@ -2275,7 +2261,7 @@ public final class RecurrenceRule
      * Abstract class to parse and serialize a specific part of a RRULE.
      *
      * @param <T>
-     *         The type returned by the parser and expected by the serializer.
+     *     The type returned by the parser and expected by the serializer.
      *
      * @author Marten Gajda <marten@dmfs.org>
      */
@@ -2285,14 +2271,14 @@ public final class RecurrenceRule
          * Parses a string for a specific value <T>.
          *
          * @param value
-         *         The string representation of the value.
+         *     The string representation of the value.
          * @param tolerant
-         *         <code>true</code> to ignore any errors if possible
+         *     <code>true</code> to ignore any errors if possible
          *
          * @return An instance of <T> with the correct value.
          *
          * @throws InvalidRecurrenceRuleException
-         *         if the value is invalid.
+         *     if the value is invalid.
          */
         public abstract T parse(String value, CalendarMetrics calScale, CalendarMetrics rScale, boolean tolerant) throws InvalidRecurrenceRuleException;
 
@@ -2302,9 +2288,9 @@ public final class RecurrenceRule
          * the value. </p>
          *
          * @param out
-         *         The {@link StringBuilder} to write to.
+         *     The {@link StringBuilder} to write to.
          * @param value
-         *         The value to serialize.
+         *     The value to serialize.
          */
         public void serialize(StringBuilder out, Object value, CalendarMetrics rScale)
         {
@@ -2317,7 +2303,7 @@ public final class RecurrenceRule
      * Generic converter for comma separated list values.
      *
      * @param <T>
-     *         The type of the list elements.
+     *     The type of the list elements.
      *
      * @author Marten Gajda <marten@dmfs.org>
      */
@@ -2430,9 +2416,9 @@ public final class RecurrenceRule
          * Creates a new converter for integer lists.
          *
          * @param min
-         *         The lowest allowed value.
+         *     The lowest allowed value.
          * @param max
-         *         The highest allowed value.
+         *     The highest allowed value.
          */
         public IntegerConverter(int min, int max)
         {

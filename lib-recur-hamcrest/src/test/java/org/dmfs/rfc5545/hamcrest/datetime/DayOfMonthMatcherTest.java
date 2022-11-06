@@ -22,9 +22,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.DayOfMonthMatcher.onDayOfMonth;
 import static org.junit.Assert.assertThat;
 
@@ -41,22 +39,22 @@ public class DayOfMonthMatcherTest
     public void test() throws Exception
     {
         assertThat(onDayOfMonth(10),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180710T010001Z")),
-                        mismatches(DateTime.parse("20181001T005959Z"), "day of month was <1>"),
-                        mismatches(DateTime.parse("20181011T010000Z"), "day of month was <11>"),
-                        describesAs("day of month (<10>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180710T010001Z")),
+                mismatches(DateTime.parse("20181001T005959Z"), "day of month was <1>"),
+                mismatches(DateTime.parse("20181011T010000Z"), "day of month was <11>"),
+                describesAs("day of month (<10>)")
+            ));
         assertThat(onDayOfMonth(6, 8, 10),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180706T010001Z")),
-                        matches(DateTime.parse("20180708T010002Z")),
-                        matches(DateTime.parse("20180710T010003Z")),
-                        mismatches(DateTime.parse("20180605T005959Z"), "day of month was <5>"),
-                        mismatches(DateTime.parse("20180811T005958Z"), "day of month was <11>"),
-                        mismatches(DateTime.parse("20181009T005957Z"), "day of month was <9>"),
-                        mismatches(DateTime.parse("20180907T010000Z"), "day of month was <7>"),
-                        describesAs("day of month (<6> or <8> or <10>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180706T010001Z")),
+                matches(DateTime.parse("20180708T010002Z")),
+                matches(DateTime.parse("20180710T010003Z")),
+                mismatches(DateTime.parse("20180605T005959Z"), "day of month was <5>"),
+                mismatches(DateTime.parse("20180811T005958Z"), "day of month was <11>"),
+                mismatches(DateTime.parse("20181009T005957Z"), "day of month was <9>"),
+                mismatches(DateTime.parse("20180907T010000Z"), "day of month was <7>"),
+                describesAs("day of month (<6> or <8> or <10>)")
+            ));
     }
 }

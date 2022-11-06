@@ -23,9 +23,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Test;
 
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.describesAs;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.matches;
-import static org.dmfs.jems.hamcrest.matchers.matcher.MatcherMatcher.mismatches;
+import static org.dmfs.jems2.hamcrest.matchers.matcher.MatcherMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.WeekDayMatcher.onWeekDay;
 import static org.junit.Assert.assertThat;
 
@@ -41,23 +39,23 @@ public class WeekDayMatcherTest
     public void test() throws Exception
     {
         assertThat(onWeekDay(Weekday.WE),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180808T010001Z")),
-                        mismatches(DateTime.parse("20180809T005959Z"), "weekday was <TH>"),
-                        mismatches(DateTime.parse("20180807T010000Z"), "weekday was <TU>"),
-                        describesAs("weekday (<WE>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180808T010001Z")),
+                mismatches(DateTime.parse("20180809T005959Z"), "weekday was <TH>"),
+                mismatches(DateTime.parse("20180807T010000Z"), "weekday was <TU>"),
+                describesAs("weekday (<WE>)")
+            ));
         assertThat(onWeekDay(Weekday.MO, Weekday.WE, Weekday.FR),
-                AllOf.<Matcher<DateTime>>allOf(
-                        matches(DateTime.parse("20180808T010001Z")),
-                        matches(DateTime.parse("20180806T010002Z")),
-                        matches(DateTime.parse("20180810T010003Z")),
-                        mismatches(DateTime.parse("20180805T005959Z"), "weekday was <SU>"),
-                        mismatches(DateTime.parse("20180804T005958Z"), "weekday was <SA>"),
-                        mismatches(DateTime.parse("20180814T005957Z"), "weekday was <TU>"),
-                        mismatches(DateTime.parse("20180816T010000Z"), "weekday was <TH>"),
-                        describesAs("weekday (<MO> or <WE> or <FR>)")
-                ));
+            AllOf.<Matcher<DateTime>>allOf(
+                matches(DateTime.parse("20180808T010001Z")),
+                matches(DateTime.parse("20180806T010002Z")),
+                matches(DateTime.parse("20180810T010003Z")),
+                mismatches(DateTime.parse("20180805T005959Z"), "weekday was <SU>"),
+                mismatches(DateTime.parse("20180804T005958Z"), "weekday was <SA>"),
+                mismatches(DateTime.parse("20180814T005957Z"), "weekday was <TU>"),
+                mismatches(DateTime.parse("20180816T010000Z"), "weekday was <TH>"),
+                describesAs("weekday (<MO> or <WE> or <FR>)")
+            ));
 
     }
 }

@@ -17,22 +17,22 @@
 
 package org.dmfs.rfc5545.recurrenceset;
 
-import org.dmfs.iterators.AbstractBaseIterator;
+import org.dmfs.jems2.iterator.BaseIterator;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Duration;
 import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
-import static org.dmfs.jems.hamcrest.matchers.GeneratableMatcher.startsWith;
-import static org.dmfs.jems.hamcrest.matchers.iterator.IteratorMatcher.iteratorOf;
+import static org.dmfs.jems2.hamcrest.matchers.generatable.GeneratableMatcher.startsWith;
+import static org.dmfs.jems2.hamcrest.matchers.iterator.IteratorMatcher.iteratorOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 
 /**
@@ -380,7 +380,7 @@ public class RecurrenceSetIteratorTest
     }
 
 
-    private final static class RecurrenceAdapter extends AbstractBaseIterator<Long>
+    private final static class RecurrenceAdapter extends BaseIterator<Long>
     {
 
         private final RecurrenceSetIterator mDelegate;

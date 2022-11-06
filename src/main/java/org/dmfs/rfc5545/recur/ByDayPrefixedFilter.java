@@ -17,7 +17,7 @@
 
 package org.dmfs.rfc5545.recur;
 
-import org.dmfs.jems.function.BiFunction;
+import org.dmfs.jems2.BiFunction;
 import org.dmfs.rfc5545.Instance;
 import org.dmfs.rfc5545.Weekday;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
@@ -36,16 +36,16 @@ final class ByDayPrefixedFilter implements ByFilter
     public enum Scope
     {
         MONTH(
-                (instance, metrics) ->
-                        (Instance.dayOfMonth(instance) - 1) / 7 + 1,
-                (instance, metrics) ->
-                        (Instance.dayOfMonth(instance) - metrics.getDaysPerPackedMonth(Instance.year(instance), Instance.month(instance))) / 7 - 1),
+            (instance, metrics) ->
+                (Instance.dayOfMonth(instance) - 1) / 7 + 1,
+            (instance, metrics) ->
+                (Instance.dayOfMonth(instance) - metrics.getDaysPerPackedMonth(Instance.year(instance), Instance.month(instance))) / 7 - 1),
         YEAR(
-                (instance, metrics) ->
-                        (metrics.getDayOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance)) - 1) / 7 + 1,
-                (instance, metrics) ->
-                        (metrics.getDayOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance))
-                                - metrics.getDaysPerYear(Instance.year(instance))) / 7 - 1);
+            (instance, metrics) ->
+                (metrics.getDayOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance)) - 1) / 7 + 1,
+            (instance, metrics) ->
+                (metrics.getDayOfYear(Instance.year(instance), Instance.month(instance), Instance.dayOfMonth(instance))
+                    - metrics.getDaysPerYear(Instance.year(instance))) / 7 - 1);
 
         private final BiFunction<Long, CalendarMetrics, Integer> mNthDay;
         private final BiFunction<Long, CalendarMetrics, Integer> mNthLastDay;
@@ -69,9 +69,9 @@ final class ByDayPrefixedFilter implements ByFilter
 
 
     public ByDayPrefixedFilter(
-            CalendarMetrics calendarMetrics,
-            Map<Weekday, Set<Integer>> prefixedWeekDays,
-            Scope scope)
+        CalendarMetrics calendarMetrics,
+        Map<Weekday, Set<Integer>> prefixedWeekDays,
+        Scope scope)
     {
         mCalendarMetrics = calendarMetrics;
         mPrefixedWeekDays = prefixedWeekDays;
@@ -83,11 +83,11 @@ final class ByDayPrefixedFilter implements ByFilter
     public boolean filter(long instance)
     {
         Set<Integer> prefixes = mPrefixedWeekDays.get(mWeekdayArray[mCalendarMetrics.getDayOfWeek(
-                Instance.year(instance),
-                Instance.month(instance),
-                Instance.dayOfMonth(instance))]);
+            Instance.year(instance),
+            Instance.month(instance),
+            Instance.dayOfMonth(instance))]);
         return prefixes == null
-                || (!prefixes.contains(mScope.mNthDay.value(instance, mCalendarMetrics))
-                && !prefixes.contains(mScope.mNthLastDay.value(instance, mCalendarMetrics)));
+            || (!prefixes.contains(mScope.mNthDay.value(instance, mCalendarMetrics))
+            && !prefixes.contains(mScope.mNthLastDay.value(instance, mCalendarMetrics)));
     }
 }

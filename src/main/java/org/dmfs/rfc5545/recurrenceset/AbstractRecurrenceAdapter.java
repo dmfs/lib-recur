@@ -26,6 +26,7 @@ import java.util.TimeZone;
  *
  * @author Marten Gajda
  */
+@Deprecated
 public abstract class AbstractRecurrenceAdapter
 {
 
