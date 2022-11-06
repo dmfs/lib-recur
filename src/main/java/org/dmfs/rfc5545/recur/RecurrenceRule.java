@@ -401,8 +401,7 @@ public final class RecurrenceRule
                 {
                     // expand in a yearly, monthly or weekly scope if byyearday is not present
                     Freq freq = rule.getFreq();
-                    return (freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY /* for RFC 2445 */) && !(rule
-                        .hasPart(Part.BYYEARDAY));
+                    return (freq == Freq.YEARLY || freq == Freq.MONTHLY || freq == Freq.WEEKLY /* for RFC 2445 */) && !rule.hasPart(Part.BYYEARDAY);
                 }
             },
 
@@ -495,8 +494,8 @@ public final class RecurrenceRule
                     }
 
                     if (prefixed.isEmpty()
-                        || freq != Freq.YEARLY && freq != Freq.MONTHLY
-                        || freq == Freq.YEARLY && rule.hasPart(BYWEEKNO))
+                        || (freq != Freq.YEARLY && freq != Freq.MONTHLY)
+                        || (freq == Freq.YEARLY && rule.hasPart(BYWEEKNO)))
                     {
                         return new ByDayFilter(calendarMetrics, nonPrefixed);
                     }
