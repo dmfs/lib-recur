@@ -53,29 +53,27 @@ public final class RuleInstances implements InstanceIterable
     public InstanceIterator iterator(DateTime firstInstance)
     {
         RecurrenceRuleIterator iterator = mRrule.iterator(firstInstance);
+
         return new InstanceIterator()
         {
-            private final RecurrenceRuleIterator mIterator = iterator;
-
-
             @Override
             public boolean hasNext()
             {
-                return mIterator.hasNext();
+                return iterator.hasNext();
             }
 
 
             @Override
             public long next()
             {
-                return mIterator.nextMillis();
+                return iterator.nextMillis();
             }
 
 
             @Override
             public void fastForward(long until)
             {
-                mIterator.fastForward(until);
+                iterator.fastForward(until);
             }
         };
     }

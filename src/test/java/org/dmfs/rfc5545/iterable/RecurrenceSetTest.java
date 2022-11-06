@@ -161,4 +161,39 @@ class RecurrenceSetTest
                 DateTime.parse("20220125")
             ));
     }
+
+
+    // see https://github.com/dmfs/lib-recur/issues/75
+    @Test
+    void testBySetPosWithOutOfSyncFirst() throws InvalidRecurrenceRuleException
+    {
+        assertThat(new RecurrenceSet(DateTime.parse("20220101"),
+                new FirstAndRuleInstances(new RecurrenceRule("FREQ=MONTHLY;BYDAY=MO,FR;BYSETPOS=1,2,3;COUNT=6")
+                )),
+            iteratesTo(
+                DateTime.parse("20220101"),
+                DateTime.parse("20220103"),
+                DateTime.parse("20220107"),
+                DateTime.parse("20220204"),
+                DateTime.parse("20220207"),
+                DateTime.parse("20220211")));
+    }
+
+
+    // see https://github.com/dmfs/lib-recur/issues/75
+    @Test
+    void testBySetPosWithSyncedFirst() throws InvalidRecurrenceRuleException
+    {
+        assertThat(new RecurrenceSet(DateTime.parse("20220101"),
+                new RuleInstances(new RecurrenceRule("FREQ=MONTHLY;BYDAY=MO,FR;BYSETPOS=1,2,3;COUNT=6")
+                )),
+            iteratesTo(
+                DateTime.parse("20220103"),
+                DateTime.parse("20220107"),
+                DateTime.parse("20220110"),
+                DateTime.parse("20220204"),
+                DateTime.parse("20220207"),
+                DateTime.parse("20220211")
+            ));
+    }
 }
