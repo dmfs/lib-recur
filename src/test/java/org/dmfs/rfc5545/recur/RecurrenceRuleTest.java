@@ -21,17 +21,20 @@ import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Weekday;
 import org.junit.jupiter.api.Test;
 
+import static org.dmfs.jems2.hamcrest.matchers.LambdaMatcher.having;
+import static org.dmfs.jems2.hamcrest.matchers.fragile.BrokenFragileMatcher.throwing;
 import static org.dmfs.jems2.hamcrest.matchers.single.SingleMatcher.hasValue;
 import static org.dmfs.rfc5545.Weekday.*;
+import static org.dmfs.rfc5545.hamcrest.GeneratorMatcher.generates;
 import static org.dmfs.rfc5545.hamcrest.RecurrenceRuleMatcher.*;
 import static org.dmfs.rfc5545.hamcrest.datetime.BeforeMatcher.before;
 import static org.dmfs.rfc5545.hamcrest.datetime.DayOfMonthMatcher.onDayOfMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.MonthMatcher.inMonth;
 import static org.dmfs.rfc5545.hamcrest.datetime.WeekDayMatcher.onWeekDay;
 import static org.dmfs.rfc5545.hamcrest.datetime.YearMatcher.inYear;
+import static org.dmfs.rfc5545.recur.RecurrenceRule.RfcMode.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasToString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 
 /**
@@ -93,5 +96,65 @@ public final class RecurrenceRuleTest
         RecurrenceRuleIterator iterator = rule.iterator(DateTime.parse("20210701T120000Z"));
         System.out.println(rule.getByPart(RecurrenceRule.Part.BYMONTH));
         System.out.println(rule.toString());
+    }
+
+
+    /**
+     * see https://github.com/dmfs/lib-recur/issues/109
+     */
+    @Test
+    void testAllDayUntilAndDateTimeStart() throws InvalidRecurrenceRuleException
+    {
+        assertThat(new RecurrenceRule("FREQ=DAILY;BYHOUR=12;UNTIL=20230305", RFC5545_LAX),
+            allOf(validRule(DateTime.parse("20230301T000000"),
+                    walking(),
+                    results(5)),
+                generates("20230301T000000",
+                    "20230301T120000",
+                    "20230302T120000",
+                    "20230303T120000",
+                    "20230304T120000",
+                    "20230305T120000")));
+
+        assertThat(new RecurrenceRule("FREQ=DAILY;BYHOUR=12;UNTIL=20230305", RFC2445_LAX),
+            allOf(validRule(DateTime.parse("20230301T000000"),
+                    walking(),
+                    results(5)),
+                generates("20230301T000000",
+                    "20230301T120000",
+                    "20230302T120000",
+                    "20230303T120000",
+                    "20230304T120000",
+                    "20230305T120000")));
+
+        assertThat(new RecurrenceRule("FREQ=DAILY;UNTIL=20230305", RFC5545_LAX),
+            allOf(validRule(DateTime.parse("20230301T000000"),
+                    walking(),
+                    results(5)),
+                generates("20230301T000000",
+                    "20230301T000000",
+                    "20230302T000000",
+                    "20230303T000000",
+                    "20230304T000000",
+                    "20230305T000000")));
+
+        assertThat(new RecurrenceRule("FREQ=DAILY;UNTIL=20230305", RFC2445_LAX),
+            allOf(validRule(DateTime.parse("20230301T000000"),
+                    walking(),
+                    results(5)),
+                generates("20230301T000000",
+                    "20230301T000000",
+                    "20230302T000000",
+                    "20230303T000000",
+                    "20230304T000000",
+                    "20230305T000000")));
+
+        assertThat(new RecurrenceRule("FREQ=DAILY;BYHOUR=12;UNTIL=20230305", RFC5545_STRICT),
+            is(having(
+                r -> () -> r.iterator(DateTime.parse("20230301T000000")), is(throwing(IllegalArgumentException.class)))));
+
+        assertThat(new RecurrenceRule("FREQ=DAILY;BYHOUR=12;UNTIL=20230305", RFC2445_STRICT),
+            is(having(
+                r -> () -> r.iterator(DateTime.parse("20230301T000000")), is(throwing(IllegalArgumentException.class)))));
     }
 }
