@@ -50,7 +50,7 @@ public final class RecurrenceRule
          * Parses recurrence rules according to <a href="http://tools.ietf.org/html/rfc2445#section-4.3.10">RFC 2445</a>. Every error will cause an exception to
          * be thrown.
          */
-        RFC2445_STRICT,
+        RFC2445_STRICT(false),
 
         /**
          * Parses recurrence rules according to <a href="http://tools.ietf.org/html/rfc2445#section-4.3.10">RFC 2445</a> in a more tolerant way. The parser will
@@ -59,13 +59,13 @@ public final class RecurrenceRule
          * differently than with {@link #RFC5545_LAX}. {@link #RFC5545_LAX} will just drop all invalid parts and evaluate the rule according to RFC 5545. This
          * mode will evaluate all rules. <p> Also this mode will output rules that comply with RFC 2445. </p>
          */
-        RFC2445_LAX,
+        RFC2445_LAX(true),
 
         /**
          * Parses recurrence rules according to <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a>. Every error will cause an exception to
          * be thrown.
          */
-        RFC5545_STRICT,
+        RFC5545_STRICT(false),
 
         /**
          * Parses recurrence rules according to <a href="http://tools.ietf.org/html/rfc5545#section-3.3.10">RFC 5545</a> in a more tolerant way. The parser will
@@ -74,7 +74,15 @@ public final class RecurrenceRule
          * are evaluated differently than with {@link #RFC2445_LAX}. This mode will just drop all invalid parts and evaluate the rule according to RFC 5545.
          * {@link #RFC2445_LAX} will evaluate all rules. <p> Also this mode will output rules that comply with RFC 5545. </p>
          */
-        RFC5545_LAX;
+        RFC5545_LAX(true);
+
+        final boolean mIsLax;
+
+
+        RfcMode(boolean isLax)
+        {
+            mIsLax = isLax;
+        }
     }
 
 
@@ -847,7 +855,9 @@ public final class RecurrenceRule
                 @Override
                 RuleIterator getExpander(RecurrenceRule rule, RuleIterator previous, CalendarMetrics calendarMetrics, long start, TimeZone startTimeZone)
                 {
-                    return new UntilLimiter(rule, previous, calendarMetrics, startTimeZone);
+                    return rule.mode.mIsLax && rule.getUntil() != null && rule.getUntil().isAllDay()
+                        ? new UntilDateLimiter(rule, previous)
+                        : new UntilLimiter(rule, previous, startTimeZone);
                 }
 
 
@@ -1150,6 +1160,11 @@ public final class RecurrenceRule
      * The default calendar scale - Gregorian Calendar.
      */
     private final static CalendarMetrics DEFAULT_CALENDAR_SCALE = new GregorianCalendarMetrics(Weekday.MO, 4);
+
+    /**
+     * {@link Part}s that don't provide expander or limiter.
+     */
+    private final static Set<Part> NON_EXPANDABLE = EnumSet.of(Part.FREQ, Part.INTERVAL, Part.WKST, Part.RSCALE);
 
     /**
      * The default skip value if RSCALE is present but SKIP is not.
@@ -2140,10 +2155,10 @@ public final class RecurrenceRule
         DateTime until = getUntil();
         if (until != null)
         {
-            if (until.isAllDay() != start.isAllDay())
+            if (!mode.mIsLax && until.isAllDay() != start.isAllDay())
             {
                 throw new IllegalArgumentException(
-                    "using allday start times with non-allday until values (and vice versa) is not allowed");
+                    "using allday start times with non-allday until values (and vice versa) is not allowed in strict modes");
             }
             if (until.isFloating() != start.isFloating())
             {
@@ -2182,21 +2197,20 @@ public final class RecurrenceRule
             }
         }
 
+        parts.removeAll(NON_EXPANDABLE);
+
         for (Part p : parts)
         {
             // add a filter for each rule part
-            if (p != Part.FREQ && p != Part.INTERVAL && p != Part.WKST && p != Part.RSCALE)
+            if (p.expands(this))
             {
-                if (p.expands(this))
-                {
-                    // if a part returns null for the expander just skip it
-                    RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
-                    iterator = newIterator == null ? iterator : newIterator;
-                }
-                else
-                {
-                    ((ByExpander) iterator).addFilter(p.getFilter(this, rScaleCalendarMetrics));
-                }
+                // if a part returns null for the expander just skip it
+                RuleIterator newIterator = p.getExpander(this, iterator, rScaleCalendarMetrics, startInstance, startTimeZone);
+                iterator = newIterator == null ? iterator : newIterator;
+            }
+            else
+            {
+                ((ByExpander) iterator).addFilter(p.getFilter(this, rScaleCalendarMetrics));
             }
         }
         return new RecurrenceRuleIterator(iterator, start, rScaleCalendarMetrics);

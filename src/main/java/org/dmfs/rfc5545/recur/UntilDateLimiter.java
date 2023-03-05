@@ -20,15 +20,11 @@ package org.dmfs.rfc5545.recur;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Instance;
 
-import java.util.TimeZone;
-
 
 /**
- * A {@link Limiter} that filters all instances after a certain date (the one specified in the UNTIL part).
- *
- * @author Marten Gajda
+ * A {@link Limiter} that filters all instances after a certain all-day date (the one specified in the UNTIL part).
  */
-final class UntilLimiter extends Limiter
+final class UntilDateLimiter extends Limiter
 {
     /**
      * The latest allowed instance start date.
@@ -37,20 +33,15 @@ final class UntilLimiter extends Limiter
 
 
     /**
-     * Create a new limiter for the UNTIL part.
-     *
-     * @param rule
-     *     The {@link RecurrenceRule} to filter.
-     * @param previous
-     *     The previous filter instance.
+     * Create a new limiter for an all-day UNTIL part.
      */
-    public UntilLimiter(RecurrenceRule rule, RuleIterator previous, TimeZone startTimezone)
+    public UntilDateLimiter(RecurrenceRule rule, RuleIterator previous)
     {
         super(previous);
         DateTime until = rule.getUntil();
-        if (!until.isFloating())
+        if (!until.isAllDay())
         {
-            until = until.shiftTimeZone(startTimezone);
+            throw new RuntimeException("Illegal use of UntilDateLimiter with non-allday date " + until);
         }
         mUntil = until.getInstance();
     }
@@ -59,6 +50,6 @@ final class UntilLimiter extends Limiter
     @Override
     boolean stop(long instance)
     {
-        return mUntil < Instance.maskWeekday(instance);
+        return mUntil < Instance.setSecond(Instance.setMinute(Instance.setHour(Instance.maskWeekday(instance), 0), 0), 0);
     }
 }
