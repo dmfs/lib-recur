@@ -1,6 +1,7 @@
 plugins {
     id 'java-library'
     id 'org.dmfs.gver' version '0.18.0'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -53,6 +54,19 @@ allprojects {
     group 'org.dmfs'
     repositories {
         mavenCentral()
+    }
+}
+
+if (project.hasProperty('SONATYPE_USERNAME') && project.hasProperty('SONATYPE_PASSWORD')) {
+    apply plugin: 'io.github.gradle-nexus.publish-plugin'
+
+    nexusPublishing {
+        repositories {
+            sonatype {
+                username = SONATYPE_USERNAME
+                password = SONATYPE_PASSWORD
+            }
+        }
     }
 }
 
