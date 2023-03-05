@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dmfs/lib-recur.svg?branch=master)](https://travis-ci.org/dmfs/lib-recur)
+[![Build](https://github.com/dmfs/lib-recur/actions/workflows/main.yml/badge.svg?label=main)](https://github.com/dmfs/lib-recur/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/dmfs/lib-recur/branch/master/graph/badge.svg)](https://codecov.io/gh/dmfs/lib-recur)
 
 # lib-recur
