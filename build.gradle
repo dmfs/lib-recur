@@ -1,15 +1,45 @@
-apply plugin: 'java-library'
+plugins {
+    id 'java-library'
+    id 'org.dmfs.gver' version '0.18.0'
+}
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-def gitVersion = { ->
-    def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags'
-        standardOutput = stdout
+gver {
+    issueTracker GitHub {
+        repo = "dmfs/lib-recur"
+        if (project.hasProperty("GITHUB_API_TOKEN")) {
+            accessToken = GITHUB_API_TOKEN
+        }
     }
-    return stdout.toString().trim()
+    changes {
+        are none when {
+            affects only(matches(~/.*\.md/))
+        }
+        are major when {
+            commitMessage contains(~/(?i)#(major|break(ing)?)\b/)
+        }
+        are minor when {
+            commitMessage contains(~/(?i)#(?<issue>\d+)\b/) {
+                where("issue") { isIssue { labeled "enhancement" } }
+            }
+        }
+        are patch when {
+            commitMessage contains(~/(?i)#(?<issue>\d+)\b/) {
+                where("issue") { isIssue { labeled "bug" } }
+            }
+        }
+        are minor when {
+            commitMessage contains("#feature\\b")
+        }
+        otherwise patch
+    }
+    preReleases {
+        on ~/main|master/ use { "beta" }
+        on ~/(.*\/)?(?<name>.*)/ use { "alpha-${group('name')}.1" }
+    }
+    releaseBranchPattern ~/main|master$/
 }
 
 configurations {
@@ -21,7 +51,6 @@ apply from: 'jacoco.gradle'
 
 allprojects {
     group 'org.dmfs'
-    version gitVersion()
     repositories {
         mavenCentral()
     }
