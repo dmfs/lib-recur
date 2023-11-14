@@ -60,10 +60,7 @@ public final class FastForwarded implements InstanceIterable
     public InstanceIterator iterator(DateTime firstInstance)
     {
         InstanceIterator iterator = mDelegate.iterator(firstInstance);
-        if (firstInstance.getTimestamp() < mTimeStamp)
-        {
-            iterator.fastForward(mTimeStamp);
-        }
+        iterator.fastForward(mTimeStamp);
         return iterator;
     }
 }
