@@ -31,6 +31,8 @@ import org.junit.jupiter.api.Test;
 import java.util.TimeZone;
 
 import static org.dmfs.jems2.hamcrest.matchers.iterable.IterableMatcher.iteratesTo;
+import static org.dmfs.rfc5545.recur.Freq.MONTHLY;
+import static org.dmfs.rfc5545.recur.RecurrenceRule.Part.BYMONTHDAY;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
@@ -159,6 +161,53 @@ class RecurrenceSetTest
                 DateTime.parse("20220117"),
                 DateTime.parse("20220124"),
                 DateTime.parse("20220125")
+            ));
+    }
+
+
+    @Test
+    void testFastForwardedWithInstanceList() throws InvalidRecurrenceRuleException
+    {
+        assertThat(new RecurrenceSet(DateTime.parse("20220101"),
+                new FastForwarded(DateTime.parse("20220111"),
+                    new InstanceList("20220110,20220118", DateTime.UTC),
+                    new RuleInstances(new RecurrenceRule("FREQ=WEEKLY;BYDAY=SA;COUNT=5"))
+                )
+            ),
+            iteratesTo(
+                DateTime.parse("20220115"),
+                DateTime.parse("20220118"),
+                DateTime.parse("20220122"),
+                DateTime.parse("20220129")
+            ));
+    }
+
+    /**
+     * https://github.com/dmfs/lib-recur/issues/125
+     */
+    @Test
+    void testIssue125() throws InvalidRecurrenceRuleException
+    {
+
+        RecurrenceRule rrule = new RecurrenceRule(MONTHLY);
+        rrule.setByPart(BYMONTHDAY, 10);
+        rrule.setCount(5);
+
+        long[] rdates = new long[] { 1689379200000L, 1692057600000L }; // 2023-07-15, 2023-08-15
+
+
+        assertThat(
+            new RecurrenceSet(new DateTime(2023, 7, 1), // 2023-08-01
+                new FastForwarded(new DateTime(2023, 7, 1), // 2023-08-01
+                    new InstanceList(rdates),
+                    new RuleInstances(rrule))),
+            iteratesTo(
+                DateTime.parse("20230810"),
+                DateTime.parse("20230815"),
+                DateTime.parse("20230910"),
+                DateTime.parse("20231010"),
+                DateTime.parse("20231110"),
+                DateTime.parse("20231210")
             ));
     }
 }
