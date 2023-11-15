@@ -1960,8 +1960,10 @@ public final class RecurrenceRule
         {
             mParts.remove(Part.BYDAY);
         }
-
-        mParts.put(Part.BYDAY, value);
+        else
+        {
+            mParts.put(Part.BYDAY, value);
+        }
     }
 
 

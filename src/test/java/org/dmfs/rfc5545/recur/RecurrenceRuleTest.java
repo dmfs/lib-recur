@@ -21,6 +21,8 @@ import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Weekday;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.dmfs.jems2.hamcrest.matchers.LambdaMatcher.having;
 import static org.dmfs.jems2.hamcrest.matchers.fragile.BrokenFragileMatcher.throwing;
 import static org.dmfs.jems2.hamcrest.matchers.single.SingleMatcher.hasValue;
@@ -156,5 +158,33 @@ public final class RecurrenceRuleTest
         assertThat(new RecurrenceRule("FREQ=DAILY;BYHOUR=12;UNTIL=20230305", RFC2445_STRICT),
             is(having(
                 r -> () -> r.iterator(DateTime.parse("20230301T000000")), is(throwing(IllegalArgumentException.class)))));
+    }
+
+    /**
+     * see https://github.com/dmfs/lib-recur/issues/127
+     */
+    @Test
+    public void testSetByDayPart() throws InvalidRecurrenceRuleException {
+        RecurrenceRule rrule = new RecurrenceRule("FREQ=MONTHLY;BYMONTHDAY=31;COUNT=3");
+        rrule.setByDayPart(Collections.emptyList());
+
+        assertThat(rrule,
+            allOf(validRule(DateTime.parse("20230501T000000"),
+                    walking(),
+                    results(3)),
+                generates("20230501T000000",
+                    "20230531T000000",
+                    "20230731T000000",
+                    "20230831T000000")));
+
+        rrule.setByPart(null);
+        assertThat(rrule,
+            allOf(validRule(DateTime.parse("20230501T000000"),
+                    walking(),
+                    results(3)),
+                generates("20230501T000000",
+                    "20230531T000000",
+                    "20230731T000000",
+                    "20230831T000000")));
     }
 }
