@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Marten Gajda <marten@dmfs.org>
+ * Copyright 2022 Marten Gajda <marten@dmfs.org>
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.dmfs.rfc5545.recurrenceset;
+package org.dmfs.rfc5545.instanceiterator;
 
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.InstanceIterator;
 import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
 
 import java.util.NoSuchElementException;
 
 
 /**
- * An {@link AbstractRecurrenceAdapter.InstanceIterator} which inserts a start instance.
- *
- * @author Marten Gajda
+ * An {@link InstanceIterator} which limits the number of iterated instances.
  */
-@Deprecated
-public final class CountLimitedRecurrenceRuleIterator implements AbstractRecurrenceAdapter.InstanceIterator
+public final class CountLimitedRecurrenceRuleIterator implements InstanceIterator
 {
     private final RecurrenceRuleIterator mDelegate;
     private int mRemaining;
@@ -49,21 +48,21 @@ public final class CountLimitedRecurrenceRuleIterator implements AbstractRecurre
 
 
     @Override
-    public long next()
+    public DateTime next()
     {
         if (!hasNext())
         {
             throw new NoSuchElementException("No further elements to iterate");
         }
         mRemaining--;
-        return mDelegate.nextMillis();
+        return mDelegate.nextDateTime();
     }
 
 
     @Override
-    public void fastForward(long until)
+    public void fastForward(DateTime until)
     {
-        while (hasNext() && mDelegate.peekMillis() < until)
+        while (hasNext() && mDelegate.peekMillis() < until.getTimestamp())
         {
             next();
         }

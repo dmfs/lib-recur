@@ -17,28 +17,19 @@
 
 package org.dmfs.rfc5545.recur;
 
-import org.dmfs.iterables.decorators.DelegatingIterable;
-import org.dmfs.iterables.decorators.Sieved;
-import org.dmfs.jems.function.FragileFunction;
-import org.dmfs.jems.function.Function;
-import org.dmfs.jems.iterable.decorators.Mapped;
-import org.dmfs.jems.iterable.elementary.Seq;
-import org.dmfs.jems.predicate.composite.Not;
-import org.dmfs.jems.procedure.composite.ForEach;
+import org.dmfs.jems2.FragileFunction;
+import org.dmfs.jems2.Function;
+import org.dmfs.jems2.iterable.DelegatingIterable;
+import org.dmfs.jems2.iterable.Mapped;
+import org.dmfs.jems2.iterable.Seq;
+import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.predicate.Not;
 import org.dmfs.rfc5545.DateTime;
-import org.dmfs.rfc5545.recurrenceset.RecurrenceRuleAdapter;
-import org.dmfs.rfc5545.recurrenceset.RecurrenceSet;
-import org.dmfs.rfc5545.recurrenceset.RecurrenceSetIterator;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.dmfs.rfc5545.RecurrenceSet;
+import org.dmfs.rfc5545.recurrenceset.Difference;
+import org.dmfs.rfc5545.recurrenceset.Merged;
+import org.dmfs.rfc5545.recurrenceset.OfRule;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.TimeZone;
 
@@ -60,54 +51,66 @@ public class RecurrenceSetExpansion
         int iterations;
 
         @Param({
-                "FREQ=DAILY;BYDAY=MO,TU,WE",
-                "FREQ=DAILY;BYDAY=MO,TU,WE" + ":" + "FREQ=DAILY;BYDAY=WE,TH,FR" + ":" + "FREQ=DAILY;BYDAY=SU,SO" })
+            "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "FREQ=DAILY;BYDAY=MO,TU,WE" + ":" + "FREQ=DAILY;BYDAY=WE,TH,FR" + ":" + "FREQ=DAILY;BYDAY=SU,SO" })
         String instances;
 
         @Param({
-                "",
-                "FREQ=DAILY;BYDAY=MO",
-                "FREQ=DAILY;BYDAY=MO" + ":" + "FREQ=DAILY;BYDAY=WE" + ":" + "FREQ=DAILY;BYDAY=WE,FR" })
+            "",
+            "FREQ=DAILY;BYDAY=MO",
+            "FREQ=DAILY;BYDAY=MO" + ":" + "FREQ=DAILY;BYDAY=WE" + ":" + "FREQ=DAILY;BYDAY=WE,FR" })
         String exceptions;
 
         RecurrenceSet recurrenceSet;
 
+        DateTime start = new DateTime(TimeZone.getTimeZone("Europe/Berlin"), 2024, 1, 16, 14, 1, 0);
 
         @Setup
         public void setup()
         {
-            recurrenceSet = new RecurrenceSet();
-            new ForEach<>(new RuleAdapters(instances)).process(recurrenceSet::addInstances);
-            new ForEach<>(new RuleAdapters(exceptions)).process(recurrenceSet::addExceptions);
+            if (!exceptions.isEmpty())
+            {
+                recurrenceSet = new Difference(
+                    new Merged(new RuleSets(instances, start)),
+                    new Merged(new RuleSets(exceptions, start))
+                );
+            }
+            else
+            {
+                recurrenceSet = new Merged(new RuleSets(instances, start));
+            }
         }
     }
 
 
     @Benchmark
-    public long testExpansion(BenchmarkState state)
+    public DateTime testExpansion(BenchmarkState state)
     {
-        RecurrenceSetIterator r = state.recurrenceSet.iterator(TimeZone.getDefault(), DateTime.now().getTimestamp());
-        long last = 0L;
+        DateTime last = null;
         int count = state.iterations;
-        while (r.hasNext() && count-- > 0)
+        for (DateTime dt : state.recurrenceSet)
         {
-            last = r.next();
+            last = dt;
+            if (--count == 0)
+            {
+                break;
+            }
         }
         return last;
     }
 
 
-    private static class RuleAdapters extends DelegatingIterable<RecurrenceRuleAdapter>
+    private static class RuleSets extends DelegatingIterable<RecurrenceSet>
     {
 
-        public RuleAdapters(String ruleString)
+        public RuleSets(String ruleString, DateTime start)
         {
             super(new Mapped<>(
-                    RecurrenceRuleAdapter::new,
-                    new Mapped<>(
-                            new Unchecked<>(RecurrenceRule::new),
-                            new Sieved<>(new Not<>(String::isEmpty),
-                                    new Seq<>(ruleString.split(":"))))));
+                rule -> new OfRule(rule, start),
+                new Mapped<>(
+                    new Unchecked<>(RecurrenceRule::new),
+                    new Sieved<>(new Not<>(String::isEmpty),
+                        new Seq<>(ruleString.split(":"))))));
         }
     }
 

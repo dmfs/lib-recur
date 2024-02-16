@@ -22,7 +22,10 @@ import org.dmfs.rfc5545.DateTime;
 
 /**
  * An {@link Iterable} of recurring instances.
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.RecurrenceSet}
  */
+@Deprecated
 public interface InstanceIterable
 {
     /**

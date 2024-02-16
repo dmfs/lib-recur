@@ -12,14 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 package org.dmfs.rfc5545.recur;
 
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.Instance;
+import org.dmfs.rfc5545.InstanceIterator;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
+import org.eclipse.jdt.annotation.NonNull;
 
 import java.util.TimeZone;
 
@@ -30,7 +32,7 @@ import java.util.TimeZone;
  *
  * @author Marten Gajda
  */
-public final class RecurrenceRuleIterator
+public final class RecurrenceRuleIterator implements InstanceIterator
 {
     /**
      * The previous iterator instance. This is <code>null</code> for the {@link FreqIterator}.
@@ -75,10 +77,8 @@ public final class RecurrenceRuleIterator
     /**
      * Creates a new {@link RecurrenceRuleIterator} that gets its input from <code>ruleIterator</code>.
      *
-     * @param ruleIterator
-     *         The last {@link RuleIterator} in the chain of iterators.
-     * @param start
-     *         The first instance to iterate.
+     * @param ruleIterator The last {@link RuleIterator} in the chain of iterators.
+     * @param start        The first instance to iterate.
      */
     RecurrenceRuleIterator(RuleIterator ruleIterator, DateTime start, CalendarMetrics calendarMetrics)
     {
@@ -148,13 +148,13 @@ public final class RecurrenceRuleIterator
         if (mAllDay)
         {
             return new DateTime(mCalendarMetrics, Instance.year(nextInstance), Instance.month(nextInstance),
-                    Instance.dayOfMonth(nextInstance));
+                Instance.dayOfMonth(nextInstance));
         }
         else
         {
             return new DateTime(mCalendarMetrics, mTimeZone, Instance.year(nextInstance), Instance.month(nextInstance),
-                    Instance.dayOfMonth(nextInstance),
-                    Instance.hour(nextInstance), Instance.minute(nextInstance), Instance.second(nextInstance));
+                Instance.dayOfMonth(nextInstance),
+                Instance.hour(nextInstance), Instance.minute(nextInstance), Instance.second(nextInstance));
         }
     }
 
@@ -162,6 +162,12 @@ public final class RecurrenceRuleIterator
     public boolean hasNext()
     {
         return mNextInstance != Long.MIN_VALUE;
+    }
+
+    @Override
+    public DateTime next()
+    {
+        return nextDateTime();
     }
 
 
@@ -207,14 +213,14 @@ public final class RecurrenceRuleIterator
         if (mAllDay)
         {
             return mNextDateTime = new DateTime(mCalendarMetrics, Instance.year(nextInstance),
-                    Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
+                Instance.month(nextInstance), Instance.dayOfMonth(nextInstance));
         }
         else
         {
             return mNextDateTime = new DateTime(mCalendarMetrics, mTimeZone, Instance.year(nextInstance),
-                    Instance.month(nextInstance),
-                    Instance.dayOfMonth(nextInstance), Instance.hour(nextInstance), Instance.minute(nextInstance),
-                    Instance.second(nextInstance));
+                Instance.month(nextInstance),
+                Instance.dayOfMonth(nextInstance), Instance.hour(nextInstance), Instance.minute(nextInstance),
+                Instance.second(nextInstance));
         }
     }
 
@@ -223,8 +229,7 @@ public final class RecurrenceRuleIterator
      * Skip the given number of instances. <p> <strong>Note:</strong> After calling this method you should call {@link #hasNext()} before you continue because
      * there might be less than <code>skip</code> instances left when you call this. </p>
      *
-     * @param skip
-     *         The number of instances to skip.
+     * @param skip The number of instances to skip.
      */
     public void skip(int skip)
     {
@@ -258,8 +263,7 @@ public final class RecurrenceRuleIterator
      * Skip all instances up to a specific date. <p> <strong>Note:</strong> After calling this method you should call {@link #hasNext()} before you continue
      * because there might no more instances left if there is an UNTIL or COUNT part in the rule. </p>
      *
-     * @param until
-     *         The time stamp of earliest date to be returned by the next call to {@link #nextMillis()} or {@link #nextDateTime()}.
+     * @param until The time stamp of earliest date to be returned by the next call to {@link #nextMillis()} or {@link #nextDateTime()}.
      */
     public void fastForward(long until)
     {
@@ -298,17 +302,16 @@ public final class RecurrenceRuleIterator
      * Skip all instances up to a specific date. <p> <strong>Note:</strong> After calling this method you should call {@link #hasNext()} before you continue
      * because there might no more instances left if there is an UNTIL or COUNT part in the rule. </p>
      *
-     * @param until
-     *         The earliest date to be returned by the next call to {@link #nextMillis()} or {@link #nextDateTime()}.
+     * @param until The earliest date to be returned by the next call to {@link #nextMillis()} or {@link #nextDateTime()}.
      */
-    public void fastForward(DateTime until)
+    public void fastForward(@NonNull DateTime until)
     {
         if (!hasNext())
         {
             return;
         }
 
-        DateTime untilDate = until.shiftTimeZone(mTimeZone);
+        DateTime untilDate = until.isAllDay() ? until.startOfDay().shiftTimeZone(mTimeZone) : until.shiftTimeZone(mTimeZone);
 
         // convert until to an instance
         long untilInstance = untilDate.getInstance();

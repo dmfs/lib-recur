@@ -25,7 +25,10 @@ import java.util.Locale;
 /**
  * An iterator for recurrence sets. It takes a number of {@link InstanceIterator}s for instances and exceptions and iterates all resulting instances
  * (i.e. only the instances, not the exceptions).
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.instanceiterator.EffectiveInstancesIterator}
  */
+@Deprecated
 public final class EffectiveInstancesIterator implements InstanceIterator
 {
     /**
@@ -45,10 +48,8 @@ public final class EffectiveInstancesIterator implements InstanceIterator
     /**
      * Create a new recurrence iterator for specific lists of instances and exceptions.
      *
-     * @param instances
-     *     The instances, must not be <code>null</code> or empty.
-     * @param exceptions
-     *     The exceptions, may be null.
+     * @param instances  The instances, must not be <code>null</code> or empty.
+     * @param exceptions The exceptions, may be null.
      */
     public EffectiveInstancesIterator(InstanceIterator instances, InstanceIterator exceptions)
     {
@@ -74,9 +75,7 @@ public final class EffectiveInstancesIterator implements InstanceIterator
      * Get the next instance of this set. Do not call this if {@link #hasNext()} returns <code>false</code>.
      *
      * @return The time in milliseconds since the epoch of the next instance.
-     *
-     * @throws ArrayIndexOutOfBoundsException
-     *     if there are no more instances.
+     * @throws ArrayIndexOutOfBoundsException if there are no more instances.
      */
     @Override
     public long next()
@@ -94,8 +93,7 @@ public final class EffectiveInstancesIterator implements InstanceIterator
     /**
      * Fast-forward to the next instance at or after the given date.
      *
-     * @param until
-     *     The date to fast-forward to in milliseconds since the epoch.
+     * @param until The date to fast-forward to in milliseconds since the epoch.
      */
     @Override
     public void fastForward(long until)

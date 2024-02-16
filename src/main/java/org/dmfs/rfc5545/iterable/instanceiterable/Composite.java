@@ -27,7 +27,10 @@ import org.dmfs.rfc5545.iterable.InstanceIterator;
 /**
  * A composite {@link InstanceIterable} composed of other {@link InstanceIterable}s. This {@link InstanceIterator}
  * returned by this class returns the instances of all given {@link InstanceIterable}s in chronological order.
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.recurrenceset.Merged}
  */
+@Deprecated
 public final class Composite implements InstanceIterable
 {
     private final InstanceIterable mDelegate;

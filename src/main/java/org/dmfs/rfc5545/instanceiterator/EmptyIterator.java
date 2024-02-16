@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Marten Gajda <marten@dmfs.org>
+ * Copyright 2022 Marten Gajda <marten@dmfs.org>
  *
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.dmfs.rfc5545.recurrenceset;
+package org.dmfs.rfc5545.instanceiterator;
+
+
+import org.dmfs.rfc5545.DateTime;
+import org.dmfs.rfc5545.InstanceIterator;
 
 import java.util.NoSuchElementException;
 
 
 /**
- * An {@link AbstractRecurrenceAdapter.InstanceIterator} without any instances.
+ * An {@link InstanceIterator} without any instances.
  */
-@Deprecated
-public final class EmptyIterator implements AbstractRecurrenceAdapter.InstanceIterator
+public final class EmptyIterator implements InstanceIterator
 {
+    public static final InstanceIterator INSTANCE = new EmptyIterator();
+
+
     @Override
     public boolean hasNext()
     {
@@ -34,14 +40,15 @@ public final class EmptyIterator implements AbstractRecurrenceAdapter.InstanceIt
 
 
     @Override
-    public long next()
+    public DateTime next()
     {
         throw new NoSuchElementException("No elements to iterate");
     }
 
 
     @Override
-    public void fastForward(long until)
+    public void fastForward(DateTime until)
     {
+        /* nothing to do */
     }
 }

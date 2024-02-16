@@ -7,7 +7,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
-    jmh 'org.dmfs:jems2:2.11.1'
+    jmh libs.jems2
     jmh rootProject
 }
 

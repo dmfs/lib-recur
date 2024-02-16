@@ -24,11 +24,15 @@ import org.dmfs.rfc5545.iterable.instanceiterator.Composite;
 import org.dmfs.rfc5545.iterable.instanceiterator.CountLimitedRecurrenceRuleIterator;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
+import org.dmfs.rfc5545.recurrenceset.OfRuleAndFirst;
 
 
 /**
  * Implements {@link InstanceIterable} for a {@link RecurrenceRule} that also returns any non-synchronized first instance.
+ *
+ * @deprecated in favour of {@link OfRuleAndFirst}
  */
+@Deprecated
 public final class FirstAndRuleInstances implements InstanceIterable
 {
     /**
@@ -40,8 +44,7 @@ public final class FirstAndRuleInstances implements InstanceIterable
     /**
      * Create a new adapter for the given rule and start.
      *
-     * @param rule
-     *     The recurrence rule to adapt to.
+     * @param rule The recurrence rule to adapt to.
      */
     public FirstAndRuleInstances(RecurrenceRule rule)
     {

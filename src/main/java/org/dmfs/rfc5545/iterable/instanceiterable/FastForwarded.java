@@ -24,7 +24,10 @@ import org.dmfs.rfc5545.iterable.InstanceIterator;
 
 /**
  * An {@link InstanceIterable} that fast forwards the iteration to a given instant. All instances prior to that instant will be skipped.
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.recurrenceset.FastForwarded}
  */
+@Deprecated
 public final class FastForwarded implements InstanceIterable
 {
     private final long mTimeStamp;

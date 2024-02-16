@@ -22,12 +22,16 @@ import org.dmfs.rfc5545.iterable.InstanceIterable;
 import org.dmfs.rfc5545.iterable.InstanceIterator;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.dmfs.rfc5545.recur.RecurrenceRuleIterator;
+import org.dmfs.rfc5545.recurrenceset.OfRule;
 
 
 /**
  * Implements {@link InstanceIterable} for a {@link RecurrenceRule}. That only iterates instances that match the {@link RecurrenceRule}.
  * Any non-synchronized first instance is not returned.
+ *
+ * @deprecated in favour of {@link OfRule}
  */
+@Deprecated
 public final class RuleInstances implements InstanceIterable
 {
 
@@ -40,8 +44,7 @@ public final class RuleInstances implements InstanceIterable
     /**
      * Create a new adapter for the given rule and start.
      *
-     * @param rule
-     *     The recurrence rule to adapt to.
+     * @param rule The recurrence rule to adapt to.
      */
     public RuleInstances(RecurrenceRule rule)
     {
