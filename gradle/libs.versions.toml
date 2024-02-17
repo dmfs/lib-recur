@@ -1,0 +1,29 @@
+[versions]
+eclipse-jdt = "2.2.600"
+hamcrest = "2.2"
+jems2 = "2.22.0"
+junit = "5.8.2"
+junit-testkit = "1.9.2"
+srcless = "0.3.0"
+confidence = "0.42.0"
+
+[libraries]
+srcless-annotations = { module = "org.dmfs:srcless-annotations", version.ref = "srcless" }
+srcless-processors = { module = "org.dmfs:srcless-processors", version.ref = "srcless" }
+eclipse-jdt-anntation = { module = 'org.eclipse.jdt:org.eclipse.jdt.annotation', version.ref = "eclipse-jdt" }
+nullless-processors = { module = "org.dmfs:nullless-processors", version.ref = "srcless" }
+
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+jems2 = { module = "org.dmfs:jems2", version.ref = "jems2" }
+jems2-testing = { module = "org.dmfs:jems2-testing", version.ref = "jems2" }
+jems2-confidence = { module = "org.dmfs:jems2-confidence", version.ref = "jems2" }
+
+confidence-core = { module = "org.saynotobugs:confidence-core", version.ref = "confidence" }
+confidence-test = { module = "org.saynotobugs:confidence-test", version.ref = "confidence" }
+
+[bundles]
+srcless-processors = ["srcless-processors", "nullless-processors"]
+
+[plugins]

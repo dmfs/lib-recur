@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    compileOnly libs.eclipse.jdt.anntation
+    compileOnly libs.srcless.annotations
+    annotationProcessor libs.bundles.srcless.processors
+    api libs.confidence.core
+    implementation libs.jems2
+    implementation libs.jems2.confidence
+    api rootProject
+
+    testImplementation libs.confidence.test
+    testImplementation libs.jems2.testing
+    testImplementation libs.junit.jupiter.api
+    testRuntimeOnly libs.junit.jupiter.engine
+}
+
+test {
+    useJUnitPlatform()
+}

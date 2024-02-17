@@ -27,139 +27,178 @@ The iterator has support for [RSCALE](https://tools.ietf.org/html/rfc7529). At t
 
 RSCALE is supported in all RFC2445 and RFC5545 modes.
 
-## Example code
+## Recurrence Set API
 
-### Iterating instances
+In addition to interpreting recurrence rules, this library provides a set of classes to determine the result of any combination of rrules, rdates and exdates (and exrules, for that matter) as specified in RFC 5545.
 
-The basic use case is to iterate over all instances of a given rule starting on a specific day. Note that some rules may recur forever. In that case you must limit the number of instances in order to avoid an infinite loop.
+Version 0.16.0 introduces a new API that is slightly different from the previous one. The new API fixes a few design issues that
+made the code more complex than necessary.
 
-The following code iterates over the instances of a recurrence rule:
+There is a new interface called `RecurrenceSet` that is implemented by a couple of adapters, decorators and composites. A `RecurrenceSet`
+represents the set of occurrences of a recurrence rule or list or any combination of them (including exclusions).
 
-		
+`RecurrenceSet` extends the `Iterable` interface, so it can be used with any `Iterable` decorator from the jems2 library and in `for` loops.
+
+### Iterating RRules
+
+The most common use case is probably just iterating the occurrences of recurrence rules. Although you still can do this using the `RecurrenceRuleIterator`
+returned by `RecurrenceRule.iterator(DateTime)`, you may be better off using the `OfRule` adapter that implements the
+`Iterable` interface.
+
+#### Examples
+
 ```java
-DateTime start = RecurrenceRuleIterator it = rule.iterator(start);
+RecurrenceSet occurrences = new OfRule(rrule, startDate);
+```
 
-int maxInstances = 100; // limit instances for rules that recur forever
+You can combine this with the `First` or `While` decorators from the jems2 library to guard against infinite rules and use it to
+loop over the occurrences.
 
-while (it.hasNext() && (!rule.isInfinite() || maxInstances-- > 0))
-{
-    DateTime nextInstance = it.nextDateTime();
-    // do something with nextInstance
+```java
+for (DateTime occurrence:new First<>(1000, // iterate at most/the first 1000 occurrences
+    new OfRule(rrule, startDate))) {
+    // do something with occurrence
 }
 ```
 
-### Iterating Recurrence Sets
-
-This library also supports processing of EXRULEs, RDATEs and EXDATEs, i.e. complete recurrence sets.
-
-In order to iterate a recurrence set you first compose the set from its components:
-
 ```java
-RecurrenceRule rule = new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=23;BYMONTH=5");
-
-DateTime firstInstance = new DateTime(1982, 4 /* 0-based month numbers! */,23);
-
-for (DateTime instance:new RecurrenceSet(firstInstance, new RuleInstances(rule))) {
-    // do something with instance    
-}
-```
-
-`RecurrenceSet` takes two `InstanceIterable` arguments the first one is expected to iterate the actual
-occurrences, the second, optional one iterates exceptions:
-
-```java
-RecurrenceRule rule = new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=23;BYMONTH=5");
-
-DateTime firstInstance = new DateTime(1982, 4 /* 0-based month numbers! */,23);
-
-for (DateTime instance:
-    new RecurrenceSet(firstInstance,
-        new RuleInstances(rule),
-        new InstanceList(exceptions))) {
-    // do something with instance    
-}
-```
-
-You can compose multiple rules or `InstanceList`s using `Composite` like this
-
-```java
-RecurrenceRule rule1 = new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=23;BYMONTH=5");
-RecurrenceRule rule2 = new RecurrenceRule("FREQ=MONTHLY;BYMONTHDAY=20");
-
-DateTime firstInstance = new DateTime(1982, 4 /* 0-based month numbers! */,23);
-
-for (DateTime instance:
-    new RecurrenceSet(firstInstance,
-        new Composite(new RuleInstances(rule1), new RuleInstances(rule2)),
-        new InstanceList(exceptions))) {
-    // do something with instance    
-}
-```
-
-or simply by providing a `List` of `InstanceIterable`s:
-
-```java
-RecurrenceRule rule1 = new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=23;BYMONTH=5");
-RecurrenceRule rule2 = new RecurrenceRule("FREQ=MONTHLY;BYMONTHDAY=20");
-
-DateTime firstInstance = new DateTime(1982, 4 /* 0-based month numbers! */,23);
-
-for (DateTime instance:
-    new RecurrenceSet(firstInstance,
-        List.of(new RuleInstances(rule1), new RuleInstances(rule2)),
-        new InstanceList(exceptions))) {
-    // do something with instance    
+for (DateTime occurrence:new While<>(endDate::isAfter, // stop at "endDate"
+    new OfRule(rrule, startDate))) {
+    // do something with occurrence
 }
 ```
 
 #### Handling first instances that don't match the RRULE
 
-Note that `RuleInstances` does not iterate the start date if it doesn't match the RRULE. If you want to
-iterate any non-synchronized first date, use `FirstAndRuleInstances` instead!
+Note that `OfRule` does not iterate the start date if it doesn't match the RRULE. If you want to
+iterate any non-synchronized first date, use `OfRuleAndFirst` instead!
 
 ```java
-new RecurrenceSet(DateTime.parse("19820523"),
-    new RuleInstances(
-        new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=24;BYMONTH=5")))) {
-    // do something with instance    
-}
+new OfRule(
+    new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=24;BYMONTH=5"),
+    DateTime.parse("19820523"))
 ```
 results in
 ```
 19820524,19830524,19840524,19850524…
 ```
-Note that `19820523` is not among the results.
+Note that `19820523` is not among the results because it doesn't match the rule as it doesn't fall on the 24th.
 
 However,
 
 ```java
-new RecurrenceSet(DateTime.parse("19820523"),
-    new RuleInstances(
-        new FirstAndRuleInstances("FREQ=YEARLY;BYMONTHDAY=24;BYMONTH=5")))) {
-    // do something with instance    
-}
+new OfRuleAndFirst(
+    new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=24;BYMONTH=5"),
+    DateTime.parse("19820523"))
 ```
 results in
 ```
 19820523,19820524,19830524,19840524,19850524…
 ```
 
+### Iterating RDates and ExDates
 
-#### Dealing with infinite rules
+Similarly, iterating comma separated Date or DateTime lists (i.e. `RDATE` and `EXDATE` ) can be done with the `OfList` adapter.
 
-Be aware that RRULEs are infinite if they specify neither `COUNT` nor `UNTIL`. This might easily result in an infinite loop when you just iterate over the recurrence set like above.
+#### Example
 
-One way to address this is by adding a decorator like `First` from the `jems2`  library:
+```java
+for (DateTime occurrence:new OfList(timeZone, rdates)) {
+    // do something with occurrence
+}
+```
+
+### Combining multiple Rules and/or Lists
+
+You can merge the occurrences of multiple sets with the `Merged` class. A `Merged` `RecurrenceSet` iterates the occurrences
+of all given `RecurrenceSet`s in chronological order.
+
+#### Example
+
+```java
+RecurrenceSet merged = new Merged(
+    new OfRule(rule, start),
+    new OfList(timezone, rdates)
+);
+```
+
+The result iterates the occurrences of both, the rule and the rdates in chronological order.
+
+### Excluding Exceptions
+
+Exceptions can be excluded by composing occurrences and exceptions using `Difference` like in
+
+```java
+RecurrenceSet withoutExceptions = new Difference(
+    new OfRule(rule, start),
+    new OfList(timezone, exdates));
+```
+
+This `RecurrenceSet` contains all the occurrences iterated by the given rule, except those in the exdates list. Note that these must be exact matches,
+i.e. the exdate `20240216` does *not* result in the exclusion of `20240216T120000` nor of `20240216T000000`.
+
+### Fast forwarding
+
+Sometimes you might want to skip all the instances prior to a given date. This can be achieved by applying the `FastForwarded` decorator like in
+
+```java
+RecurrenceSet merged = new FastForwarded(
+    fastForwardToDate,
+    new Merged(
+        new OfRule(rule, start),
+        new OfList(timezone, rdates)));
+```
+
+Note, that `new FastForwarded(fastForwardTo, new OfRule(rrule, start))` and `new OfRule(rrule, fastForwardTo)` are not necessarily the same
+set of occurrences.
+
+
+
+### Dealing with infinite rules
+
+Be aware that RRULEs are infinite if they specify neither `COUNT` nor `UNTIL`. This might easily result in an infinite loop if not taken care of.
+
+As stated above, a simple way to deal with this is by applying a decorator like `First` or `While` from the jems2 library:
 
 ```java
 RecurrenceRule rule = new RecurrenceRule("FREQ=YEARLY;BYMONTHDAY=23;BYMONTH=5");
-DateTime firstInstance = new DateTime(1982, 4 /* 0-based month numbers! */,23);
-for (DateTime instance: new First(1000, new RecurrenceSet(firstInstance, new RuleInstances(rule)))) {
-    // do something with instance    
+DateTime start = new DateTime(1982, 4 /* 0-based month numbers! */,23);
+for (DateTime occurrence:new First<>(1000, new OfRule(rule, start))) {
+    // do something with occurrence    
 }
 ```
 
 This will always stop iterating after at most 1000 instances.
+
+### Determining the last instance of a RecurrenceSet
+
+Finite, non-empty `RecurrenceSet`s have a last instance that can be determined with the `LastInstance` adapter.
+`LastInstance` is an `Optional` of a `DateTime` value that's present when the given `RecurrenceSet` is finite and
+non-empty.
+
+#### Example
+
+```java
+new LastInstance(new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=10"), startDate));
+```
+
+### RFC 5545 Instance Iteration Example
+
+In a recurring `VEVENT` you might find `RRULE`s, `RDATE`s, `EXDATE`s and (in RFC 2445) `EXRULE`s. Assuming you have all
+these in variables with these respective names the `RecurrenceSet` might be constructed like in
+
+```java
+RecurrenceSet occurrences = new Difference(
+    new Merged(
+        new OfRule(new RecurrenceRule(rrule), dtstart),
+        new OfList(timezone, rdates)
+    ),
+    new Merged(
+        new OfRule(new RecurrenceRule(exrule), dtstart),
+        new OfList(timezone, exdates)
+    )
+);
+```
 
 ### Strict and lax parsing
 
@@ -233,4 +272,4 @@ There are at least two other implentations of recurrence iterators for Java:
 
 ## License
 
-Copyright (c) Marten Gajda 2022, licensed under Apache2.
+Copyright (c) Marten Gajda 2024, licensed under Apache2.

@@ -25,7 +25,10 @@ import java.util.NoSuchElementException;
 
 /**
  * An {@link InstanceIterator} which limits the number of iterated instances.
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.instanceiterator.CountLimitedRecurrenceRuleIterator}
  */
+@Deprecated
 public final class CountLimitedRecurrenceRuleIterator implements InstanceIterator
 {
     private final RecurrenceRuleIterator mDelegate;

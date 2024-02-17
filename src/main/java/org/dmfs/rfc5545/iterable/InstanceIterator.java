@@ -17,6 +17,10 @@
 
 package org.dmfs.rfc5545.iterable;
 
+/**
+ * @deprecated in favour of {@link org.dmfs.rfc5545.InstanceIterator}
+ */
+@Deprecated
 public interface InstanceIterator
 {
     /**

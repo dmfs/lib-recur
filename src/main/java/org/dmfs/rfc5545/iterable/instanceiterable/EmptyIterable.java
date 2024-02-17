@@ -25,7 +25,10 @@ import org.dmfs.rfc5545.iterable.instanceiterator.EmptyIterator;
 
 /**
  * An {@link InstanceIterable} that doesn't have any instances.
+ *
+ * @deprecated without replacement
  */
+@Deprecated
 public final class EmptyIterable implements InstanceIterable
 {
     public static final InstanceIterable INSTANCE = new EmptyIterable();

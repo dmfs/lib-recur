@@ -71,12 +71,16 @@ if (project.hasProperty('SONATYPE_USERNAME') && project.hasProperty('SONATYPE_PA
 }
 
 dependencies {
+    compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.600'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     api 'org.dmfs:rfc5545-datetime:0.3'
-    implementation 'org.dmfs:jems2:2.11.1'
+    api libs.jems2
     testImplementation project("lib-recur-hamcrest")
-    testImplementation 'org.dmfs:jems2-testing:2.11.1'
+    testImplementation project("lib-recur-confidence")
+    testImplementation 'org.dmfs:jems2-testing:2.22.0'
+    testImplementation libs.jems2.confidence
+    testImplementation 'org.saynotobugs:confidence-core:0.42.0'
 }
 
 

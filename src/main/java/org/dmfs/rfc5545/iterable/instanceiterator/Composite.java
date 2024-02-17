@@ -32,7 +32,10 @@ import java.util.NoSuchElementException;
 
 /**
  * An {@link InstanceIterator} which iterates the elements of other {@link InstanceIterator} in chronological order.
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.instanceiterator.Merged}
  */
+@Deprecated
 public final class Composite implements InstanceIterator
 {
     private List<Helper> mHelpers;

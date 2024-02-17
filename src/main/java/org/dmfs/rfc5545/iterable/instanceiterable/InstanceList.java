@@ -21,6 +21,7 @@ import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.calendarmetrics.CalendarMetrics;
 import org.dmfs.rfc5545.iterable.InstanceIterable;
 import org.dmfs.rfc5545.iterable.InstanceIterator;
+import org.dmfs.rfc5545.recurrenceset.OfList;
 
 import java.util.Arrays;
 import java.util.TimeZone;
@@ -28,7 +29,10 @@ import java.util.TimeZone;
 
 /**
  * An {@link InstanceIterable} of a given list of instances.
+ *
+ * @deprecated in favour of {@link OfList}
  */
+@Deprecated
 public final class InstanceList implements InstanceIterable
 {
 
@@ -46,10 +50,8 @@ public final class InstanceList implements InstanceIterable
     /**
      * Create an adapter for the instances in <code>list</code>.
      *
-     * @param list
-     *     A comma separated list of instances using the date-time format as defined in RFC 5545.
-     * @param timeZone
-     *     The time zone to apply to the instances.
+     * @param list     A comma separated list of instances using the date-time format as defined in RFC 5545.
+     * @param timeZone The time zone to apply to the instances.
      */
     public InstanceList(String list, TimeZone timeZone)
     {
@@ -60,12 +62,9 @@ public final class InstanceList implements InstanceIterable
     /**
      * Create an adapter for the instances in <code>list</code>.
      *
-     * @param calendarMetrics
-     *     The calendar scale to use.
-     * @param list
-     *     A comma separated list of instances using the date-time format as defined in RFC 5545.
-     * @param timeZone
-     *     The time zone to apply to the instances.
+     * @param calendarMetrics The calendar scale to use.
+     * @param list            A comma separated list of instances using the date-time format as defined in RFC 5545.
+     * @param timeZone        The time zone to apply to the instances.
      */
     public InstanceList(CalendarMetrics calendarMetrics, String list, TimeZone timeZone)
     {
@@ -94,8 +93,7 @@ public final class InstanceList implements InstanceIterable
     /**
      * Create an adapter for the instances in <code>list</code>.
      *
-     * @param instances
-     *     An array of instance time stamps in milliseconds.
+     * @param instances An array of instance time stamps in milliseconds.
      */
     public InstanceList(long[] instances)
     {

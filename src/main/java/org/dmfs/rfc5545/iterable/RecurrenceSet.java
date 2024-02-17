@@ -21,6 +21,7 @@ import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.iterable.instanceiterable.Composite;
 import org.dmfs.rfc5545.iterable.instanceiterable.EmptyIterable;
 import org.dmfs.rfc5545.iterable.instanceiterator.EffectiveInstancesIterator;
+import org.dmfs.rfc5545.recurrenceset.Difference;
 
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -30,7 +31,10 @@ import java.util.TimeZone;
  * An {@link Iterable} of a recurrence set.
  * <p>
  * The recurrence set is determined from a number of {@link InstanceIterable}s providing instances and exceptions.
+ *
+ * @deprecated in favour of {@link Difference}
  */
+@Deprecated
 public final class RecurrenceSet implements Iterable<DateTime>
 {
     private final DateTime mFirst;

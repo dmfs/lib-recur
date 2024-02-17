@@ -24,7 +24,10 @@ import java.util.NoSuchElementException;
 
 /**
  * An {@link InstanceIterator} without any instances.
+ *
+ * @deprecated in favour of {@link org.dmfs.rfc5545.instanceiterator.EmptyIterator}
  */
+@Deprecated
 public final class EmptyIterator implements InstanceIterator
 {
     public static final InstanceIterator INSTANCE = new EmptyIterator();
