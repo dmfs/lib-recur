@@ -1,0 +1,4604 @@
+[
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=24"
+        },
+        "primaryMetric" : {
+            "score" : 2774684.9521025713,
+            "scoreError" : 147098.95239905638,
+            "scoreConfidence" : [
+                2627585.999703515,
+                2921783.9045016277
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2135592.2144872914,
+                "50.0" : 2858179.3576369896,
+                "90.0" : 2939527.815273171,
+                "95.0" : 2942660.9288274855,
+                "99.0" : 2943707.9599754415,
+                "99.9" : 2943707.9599754415,
+                "99.99" : 2943707.9599754415,
+                "99.999" : 2943707.9599754415,
+                "99.9999" : 2943707.9599754415,
+                "100.0" : 2943707.9599754415
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2607507.400049768,
+                    2595108.1191027276,
+                    2539357.1497876844,
+                    2595453.310571276,
+                    2563721.7636721823
+                ],
+                [
+                    2135592.2144872914,
+                    2510657.0427196263,
+                    2829938.273375199,
+                    2695583.7578107025,
+                    2893123.028587605
+                ],
+                [
+                    2939067.78802267,
+                    2943707.9599754415,
+                    2938047.0623362265,
+                    2940217.8561489224,
+                    2921252.4179227753
+                ],
+                [
+                    2930181.4005315285,
+                    2877199.3284615446,
+                    2874157.3747781944,
+                    2865435.8657031027,
+                    2858179.3576369896
+                ],
+                [
+                    2848182.0362834767,
+                    2896229.076319948,
+                    2876534.015222646,
+                    2842247.591615172,
+                    2850442.611441579
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=MONTHLY;BYMONTH=12;BYMONTHDAY=24"
+        },
+        "primaryMetric" : {
+            "score" : 2542762.510634077,
+            "scoreError" : 61693.692805798935,
+            "scoreConfidence" : [
+                2481068.817828278,
+                2604456.2034398755
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2398024.7388687087,
+                "50.0" : 2532138.5572690945,
+                "90.0" : 2654093.0924399737,
+                "95.0" : 2674812.0642560436,
+                "99.0" : 2681557.8358315835,
+                "99.9" : 2681557.8358315835,
+                "99.99" : 2681557.8358315835,
+                "99.999" : 2681557.8358315835,
+                "99.9999" : 2681557.8358315835,
+                "100.0" : 2681557.8358315835
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2593107.5686804326,
+                    2542184.0712168906,
+                    2523296.3913901155,
+                    2532138.5572690945,
+                    2531247.9735070285
+                ],
+                [
+                    2595453.4928990495,
+                    2578989.6273774495,
+                    2608657.979049068,
+                    2563281.3011142504,
+                    2604184.0866479604
+                ],
+                [
+                    2500992.713743544,
+                    2513359.7195682265,
+                    2500682.165250796,
+                    2512778.575132224,
+                    2507341.3857495016
+                ],
+                [
+                    2650773.8670134335,
+                    2681557.8358315835,
+                    2659071.930579784,
+                    2627206.1475149887,
+                    2648758.5662776735
+                ],
+                [
+                    2411093.135207197,
+                    2424943.74152639,
+                    2425533.902464483,
+                    2398024.7388687087,
+                    2434403.2919720537
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=YEARLY;BYDAY=-2SU,-3SU,-4SU,-5SU"
+        },
+        "primaryMetric" : {
+            "score" : 3090609.703909915,
+            "scoreError" : 21368.62957124566,
+            "scoreConfidence" : [
+                3069241.0743386694,
+                3111978.3334811605
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3026437.019610429,
+                "50.0" : 3096057.0054231677,
+                "90.0" : 3126569.632215112,
+                "95.0" : 3136985.5598805677,
+                "99.0" : 3140101.70691395,
+                "99.9" : 3140101.70691395,
+                "99.99" : 3140101.70691395,
+                "99.999" : 3140101.70691395,
+                "99.9999" : 3140101.70691395,
+                "100.0" : 3140101.70691395
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3082890.330237435,
+                    3092058.6763020195,
+                    3096057.0054231677,
+                    3077729.593531464,
+                    3080109.2006731806
+                ],
+                [
+                    3116776.8394319233,
+                    3124473.020267847,
+                    3071828.975524246,
+                    3085298.2590104025,
+                    3102084.5819978868
+                ],
+                [
+                    3107509.2739394936,
+                    3059953.051827089,
+                    3098967.5174602666,
+                    3140101.70691395,
+                    3079268.1654182808
+                ],
+                [
+                    3104324.851499852,
+                    3026437.019610429,
+                    3034921.6585136615,
+                    3113971.785584354,
+                    3043016.239597929
+                ],
+                [
+                    3101653.9882141845,
+                    3129714.550136009,
+                    3074483.5487803323,
+                    3110810.6798528465,
+                    3110802.0779996165
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=MONTHLY;INTERVAL=3;BYDAY=2WE"
+        },
+        "primaryMetric" : {
+            "score" : 3350293.253053561,
+            "scoreError" : 46780.936824304285,
+            "scoreConfidence" : [
+                3303512.316229257,
+                3397074.189877865
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3239390.3536250666,
+                "50.0" : 3356642.14805198,
+                "90.0" : 3428241.398077117,
+                "95.0" : 3459995.4086431726,
+                "99.0" : 3467149.8156929836,
+                "99.9" : 3467149.8156929836,
+                "99.99" : 3467149.8156929836,
+                "99.999" : 3467149.8156929836,
+                "99.9999" : 3467149.8156929836,
+                "100.0" : 3467149.8156929836
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3346125.530498021,
+                    3356642.14805198,
+                    3344535.4587064157,
+                    3379263.3295971267,
+                    3443301.7921936135
+                ],
+                [
+                    3389297.8029212807,
+                    3398195.1644665156,
+                    3376121.3301480957,
+                    3396541.282302407,
+                    3417516.6820889115
+                ],
+                [
+                    3308880.1539159096,
+                    3361257.7607254414,
+                    3325832.057611529,
+                    3271552.085433503,
+                    3347295.7809450454
+                ],
+                [
+                    3268668.445443786,
+                    3248485.975260394,
+                    3239390.3536250666,
+                    3276537.8000636883,
+                    3255419.5756151574
+                ],
+                [
+                    3418201.1353327855,
+                    3467149.8156929836,
+                    3377916.559787203,
+                    3387935.445194986,
+                    3355267.860717183
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=YEARLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4"
+        },
+        "primaryMetric" : {
+            "score" : 1542604.8322665337,
+            "scoreError" : 16667.17660318895,
+            "scoreConfidence" : [
+                1525937.6556633448,
+                1559272.0088697227
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1498677.475809861,
+                "50.0" : 1539861.8922698775,
+                "90.0" : 1576231.8686975394,
+                "95.0" : 1586016.4311085464,
+                "99.0" : 1589278.290565559,
+                "99.9" : 1589278.290565559,
+                "99.99" : 1589278.290565559,
+                "99.999" : 1589278.290565559,
+                "99.9999" : 1589278.290565559,
+                "100.0" : 1589278.290565559
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1538290.1023730242,
+                    1510919.3608080966,
+                    1524500.4372081745,
+                    1529006.7254616797,
+                    1533233.9786234405
+                ],
+                [
+                    1528402.0951248258,
+                    1535135.6790649851,
+                    1560618.9217188421,
+                    1556948.1517870217,
+                    1533851.4485351131
+                ],
+                [
+                    1589278.290565559,
+                    1566787.1202179857,
+                    1578405.4257088506,
+                    1574782.8306899988,
+                    1569547.8281421473
+                ],
+                [
+                    1539861.8922698775,
+                    1530869.6583250996,
+                    1543444.7191536168,
+                    1541739.8732245218,
+                    1557492.7228822971
+                ],
+                [
+                    1524101.4819998292,
+                    1543864.9327306673,
+                    1543501.0555784297,
+                    1498677.475809861,
+                    1511858.5986593908
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=MONTHLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4"
+        },
+        "primaryMetric" : {
+            "score" : 1463111.2092206157,
+            "scoreError" : 15806.897191394039,
+            "scoreConfidence" : [
+                1447304.3120292216,
+                1478918.1064120098
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1423060.170725522,
+                "50.0" : 1463130.3462090692,
+                "90.0" : 1498100.5144012864,
+                "95.0" : 1499803.1189669261,
+                "99.0" : 1499866.9232804473,
+                "99.9" : 1499866.9232804473,
+                "99.99" : 1499866.9232804473,
+                "99.999" : 1499866.9232804473,
+                "99.9999" : 1499866.9232804473,
+                "100.0" : 1499866.9232804473
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1484288.2894157507,
+                    1466154.6318550026,
+                    1478991.0086067813,
+                    1473762.27426628,
+                    1455752.4298947451
+                ],
+                [
+                    1460879.6808740206,
+                    1425231.6606724497,
+                    1426955.812939465,
+                    1423060.170725522,
+                    1427710.470878357
+                ],
+                [
+                    1465544.8533520708,
+                    1460624.2923737385,
+                    1467798.9340646404,
+                    1468419.0046236345,
+                    1461480.8266687857
+                ],
+                [
+                    1463130.3462090692,
+                    1462636.6165363828,
+                    1497064.695845226,
+                    1499654.2422353767,
+                    1499866.9232804473
+                ],
+                [
+                    1474377.7962500658,
+                    1457762.4372383375,
+                    1463635.6936225067,
+                    1461853.166858655,
+                    1451143.97122808
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=YEARLY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 1661155.175061627,
+            "scoreError" : 16179.104844151205,
+            "scoreConfidence" : [
+                1644976.0702174758,
+                1677334.2799057784
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1618228.100598215,
+                "50.0" : 1662849.5878654737,
+                "90.0" : 1688913.7710859498,
+                "95.0" : 1699682.1889577068,
+                "99.0" : 1701602.2780370098,
+                "99.9" : 1701602.2780370098,
+                "99.99" : 1701602.2780370098,
+                "99.999" : 1701602.2780370098,
+                "99.9999" : 1701602.2780370098,
+                "100.0" : 1701602.2780370098
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1662849.5878654737,
+                    1652187.5253104486,
+                    1650302.0557215193,
+                    1679245.6896183458,
+                    1678026.73007621
+                ],
+                [
+                    1671147.710214677,
+                    1667420.3608109914,
+                    1684721.6310725834,
+                    1678998.5642292376,
+                    1701602.2780370098
+                ],
+                [
+                    1662642.0568695292,
+                    1671301.775215382,
+                    1658670.653014769,
+                    1656588.617436532,
+                    1670514.2756669817
+                ],
+                [
+                    1638638.6672033009,
+                    1618228.100598215,
+                    1631907.020464642,
+                    1622420.0595293345,
+                    1659822.1796128384
+                ],
+                [
+                    1671422.3966010865,
+                    1665212.9762887466,
+                    1695201.9811059996,
+                    1657548.2628418603,
+                    1622258.2211349653
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=MONTHLY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 3805580.3055537688,
+            "scoreError" : 39676.077064908124,
+            "scoreConfidence" : [
+                3765904.2284888607,
+                3845256.382618677
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3697200.8652273137,
+                "50.0" : 3812668.7823624937,
+                "90.0" : 3875800.4437524,
+                "95.0" : 3896665.8249351177,
+                "99.0" : 3905315.7997677615,
+                "99.9" : 3905315.7997677615,
+                "99.99" : 3905315.7997677615,
+                "99.999" : 3905315.7997677615,
+                "99.9999" : 3905315.7997677615,
+                "100.0" : 3905315.7997677615
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3876482.5503256153,
+                    3846572.6194918323,
+                    3810889.2976124943,
+                    3816262.6169121363,
+                    3724587.796545216
+                ],
+                [
+                    3799591.84877421,
+                    3712655.6036825147,
+                    3828276.5588752716,
+                    3905315.7997677615,
+                    3875345.7060369235
+                ],
+                [
+                    3746784.5666570566,
+                    3785902.3926167632,
+                    3812668.7823624937,
+                    3697200.8652273137,
+                    3731510.5431284592
+                ],
+                [
+                    3833700.975379384,
+                    3765474.8708329084,
+                    3840287.63177319,
+                    3840931.1050870228,
+                    3847168.483090069
+                ],
+                [
+                    3819669.6985794855,
+                    3780936.902160756,
+                    3794417.9494357198,
+                    3841362.338076583,
+                    3805510.1364130336
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=WEEKLY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 2751872.7586016734,
+            "scoreError" : 29037.10561132597,
+            "scoreConfidence" : [
+                2722835.6529903472,
+                2780909.8642129996
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2671434.4840894807,
+                "50.0" : 2753012.186548267,
+                "90.0" : 2799453.957683429,
+                "95.0" : 2808250.473036104,
+                "99.0" : 2810085.787995461,
+                "99.9" : 2810085.787995461,
+                "99.99" : 2810085.787995461,
+                "99.999" : 2810085.787995461,
+                "99.9999" : 2810085.787995461,
+                "100.0" : 2810085.787995461
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2722853.9118596376,
+                    2810085.787995461,
+                    2795965.2642027144,
+                    2803968.0714642713,
+                    2726027.9043404735
+                ],
+                [
+                    2770842.6006337176,
+                    2759579.5169013753,
+                    2781959.7232282683,
+                    2757557.8524775445,
+                    2728350.2842242806
+                ],
+                [
+                    2738968.108333288,
+                    2746875.143122401,
+                    2753012.186548267,
+                    2718269.9866414727,
+                    2792926.2777602146
+                ],
+                [
+                    2782966.1388394115,
+                    2784487.5804612734,
+                    2751389.679551478,
+                    2784967.5553150144,
+                    2796444.5484962007
+                ],
+                [
+                    2700039.6704441044,
+                    2671434.4840894807,
+                    2687867.5244553946,
+                    2699152.6897402424,
+                    2730826.4739158396
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=DAILY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 2514113.98772882,
+            "scoreError" : 22838.146438653,
+            "scoreConfidence" : [
+                2491275.841290167,
+                2536952.1341674733
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2467482.9763901983,
+                "50.0" : 2506630.132183222,
+                "90.0" : 2566222.3058291143,
+                "95.0" : 2571496.3017201144,
+                "99.0" : 2572268.0118036848,
+                "99.9" : 2572268.0118036848,
+                "99.99" : 2572268.0118036848,
+                "99.999" : 2572268.0118036848,
+                "99.9999" : 2572268.0118036848,
+                "100.0" : 2572268.0118036848
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2507186.3251137454,
+                    2510024.3355559837,
+                    2505261.6404275927,
+                    2511012.696451968,
+                    2502607.3473498547
+                ],
+                [
+                    2521120.242064162,
+                    2563906.746476223,
+                    2553165.8618545625,
+                    2569695.6448584506,
+                    2572268.0118036848
+                ],
+                [
+                    2505567.2247967175,
+                    2468605.58103899,
+                    2479638.734025588,
+                    2501450.359119283,
+                    2496213.6453516628
+                ],
+                [
+                    2467482.9763901983,
+                    2496526.975740939,
+                    2506606.252632957,
+                    2506630.132183222,
+                    2491480.6316176327
+                ],
+                [
+                    2482922.9451686293,
+                    2550260.1546728294,
+                    2561806.679620473,
+                    2510686.187725128,
+                    2510722.3611800326
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 134852.09155234983,
+            "scoreError" : 1171.0320682793235,
+            "scoreConfidence" : [
+                133681.05948407052,
+                136023.12362062914
+            ],
+            "scorePercentiles" : {
+                "0.0" : 131636.2194481366,
+                "50.0" : 134746.709790723,
+                "90.0" : 137171.38693512353,
+                "95.0" : 137222.6734062119,
+                "99.0" : 137224.26476486964,
+                "99.9" : 137224.26476486964,
+                "99.99" : 137224.26476486964,
+                "99.999" : 137224.26476486964,
+                "99.9999" : 137224.26476486964,
+                "100.0" : 137224.26476486964
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    137030.65025594315,
+                    135408.19981684248,
+                    134362.79948006233,
+                    137224.26476486964,
+                    135898.81644534948
+                ],
+                [
+                    134746.709790723,
+                    135125.40207532342,
+                    135197.00350590516,
+                    136088.756324493,
+                    134267.83612882564
+                ],
+                [
+                    134392.91543361006,
+                    134000.84999231482,
+                    133620.10767136278,
+                    134382.07141240267,
+                    136004.8385141812
+                ],
+                [
+                    136231.8812510911,
+                    133962.0816733245,
+                    137218.96023601043,
+                    135394.87590978015,
+                    137139.67140119892
+                ],
+                [
+                    133077.3015233144,
+                    133406.12808577876,
+                    133801.19862503294,
+                    131636.2194481366,
+                    131682.74904286893
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 1984603.6774720903,
+            "scoreError" : 15274.889052521208,
+            "scoreConfidence" : [
+                1969328.7884195691,
+                1999878.5665246116
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1949215.014846476,
+                "50.0" : 1986587.6827127382,
+                "90.0" : 2013032.663438756,
+                "95.0" : 2021947.7502588641,
+                "99.0" : 2022554.8069934447,
+                "99.9" : 2022554.8069934447,
+                "99.99" : 2022554.8069934447,
+                "99.999" : 2022554.8069934447,
+                "99.9999" : 2022554.8069934447,
+                "100.0" : 2022554.8069934447
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1986227.5931225829,
+                    1965924.7927710463,
+                    1949215.014846476,
+                    1995415.74065518,
+                    1960227.10009592
+                ],
+                [
+                    1987345.306024142,
+                    1974343.8382559502,
+                    1952009.2678314308,
+                    1968476.932989501,
+                    1980893.4615384648
+                ],
+                [
+                    1987726.5958601232,
+                    1982239.20190093,
+                    1986580.2922413512,
+                    1957941.4985521003,
+                    1953737.9057251262
+                ],
+                [
+                    1993991.5096255168,
+                    1989755.32143594,
+                    1998370.844769007,
+                    1986587.6827127382,
+                    2002312.9146046091
+                ],
+                [
+                    2008033.5827013645,
+                    2020531.2845448432,
+                    2003516.4446887404,
+                    2022554.8069934447,
+                    2001133.0023157378
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 2083986.2722717545,
+            "scoreError" : 26601.506452931295,
+            "scoreConfidence" : [
+                2057384.7658188231,
+                2110587.778724686
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2003533.7261492235,
+                "50.0" : 2093252.5543007262,
+                "90.0" : 2114831.9836720596,
+                "95.0" : 2143980.2733187443,
+                "99.0" : 2156215.863025841,
+                "99.9" : 2156215.863025841,
+                "99.99" : 2156215.863025841,
+                "99.999" : 2156215.863025841,
+                "99.9999" : 2156215.863025841,
+                "100.0" : 2156215.863025841
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2080948.257222844,
+                    2105437.6472619325,
+                    2085196.1325187732,
+                    2090246.6092912217,
+                    2113151.314585306
+                ],
+                [
+                    2045515.5160198207,
+                    2054182.007784393,
+                    2012587.8789354495,
+                    2019197.570757784,
+                    2003533.7261492235
+                ],
+                [
+                    2093731.9498573472,
+                    2093252.5543007262,
+                    2084689.372380935,
+                    2089509.973139294,
+                    2111518.145793161
+                ],
+                [
+                    2114432.9301186423,
+                    2099242.471032104,
+                    2105186.3167097517,
+                    2115430.5640021856,
+                    2156215.863025841
+                ],
+                [
+                    2095515.8369700608,
+                    2099856.5454310076,
+                    2097812.1100201434,
+                    2086718.5560522075,
+                    2046546.9574337006
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1",
+            "rule" : "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 3817053.516688881,
+            "scoreError" : 54969.31225055185,
+            "scoreConfidence" : [
+                3762084.204438329,
+                3872022.8289394327
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3686720.513263948,
+                "50.0" : 3827920.814755857,
+                "90.0" : 3913163.8600355512,
+                "95.0" : 3926156.5144569403,
+                "99.0" : 3931702.5148947793,
+                "99.9" : 3931702.5148947793,
+                "99.99" : 3931702.5148947793,
+                "99.999" : 3931702.5148947793,
+                "99.9999" : 3931702.5148947793,
+                "100.0" : 3931702.5148947793
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3734592.0861021136,
+                    3737126.7968801134,
+                    3757283.245138881,
+                    3805947.2737068813,
+                    3794407.8912086794
+                ],
+                [
+                    3931702.5148947793,
+                    3827920.814755857,
+                    3871313.2398293503,
+                    3760390.1130320528,
+                    3870781.661428211
+                ],
+                [
+                    3793210.133816839,
+                    3838839.056003224,
+                    3841561.706125948,
+                    3862062.4035613677,
+                    3889609.413922389
+                ],
+                [
+                    3896297.3104205714,
+                    3890756.167675335,
+                    3879041.8743014983,
+                    3913129.202213486,
+                    3913215.8467686493
+                ],
+                [
+                    3686720.513263948,
+                    3725311.199290934,
+                    3742411.6289962246,
+                    3752671.227921525,
+                    3710034.5959631796
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=YEARLY;BYMONTH=12;BYMONTHDAY=24"
+        },
+        "primaryMetric" : {
+            "score" : 2389.012936534236,
+            "scoreError" : 36.90846351554925,
+            "scoreConfidence" : [
+                2352.104473018687,
+                2425.921400049785
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2307.3468425191327,
+                "50.0" : 2392.525711760806,
+                "90.0" : 2457.379364213388,
+                "95.0" : 2484.0507202093895,
+                "99.0" : 2492.4059961020753,
+                "99.9" : 2492.4059961020753,
+                "99.99" : 2492.4059961020753,
+                "99.999" : 2492.4059961020753,
+                "99.9999" : 2492.4059961020753,
+                "100.0" : 2492.4059961020753
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2492.4059961020753,
+                    2452.5955560491198,
+                    2464.5550764597897,
+                    2406.9127571146755,
+                    2438.238470602504
+                ],
+                [
+                    2407.275130787326,
+                    2415.1888608085237,
+                    2402.7441226479514,
+                    2434.1282199929205,
+                    2372.888476139932
+                ],
+                [
+                    2346.0623147640836,
+                    2430.815033450149,
+                    2418.9349291990434,
+                    2392.001294060501,
+                    2406.606199853296
+                ],
+                [
+                    2369.154581646042,
+                    2331.4498131322275,
+                    2318.61633822634,
+                    2392.525711760806,
+                    2379.077512718442
+                ],
+                [
+                    2346.86211105541,
+                    2342.0756873066694,
+                    2326.280530606558,
+                    2307.3468425191327,
+                    2330.5818463523888
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=MONTHLY;BYMONTH=12;BYMONTHDAY=24"
+        },
+        "primaryMetric" : {
+            "score" : 2156.1360424081886,
+            "scoreError" : 47.334272937473685,
+            "scoreConfidence" : [
+                2108.801769470715,
+                2203.470315345662
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2052.9627054315447,
+                "50.0" : 2143.304148437856,
+                "90.0" : 2242.7095124159077,
+                "95.0" : 2265.0553917770276,
+                "99.0" : 2269.7464089508658,
+                "99.9" : 2269.7464089508658,
+                "99.99" : 2269.7464089508658,
+                "99.999" : 2269.7464089508658,
+                "99.9999" : 2269.7464089508658,
+                "100.0" : 2269.7464089508658
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2071.4172160734365,
+                    2071.7700331119704,
+                    2096.9872371585334,
+                    2052.9627054315447,
+                    2125.2143225748937
+                ],
+                [
+                    2181.6328799401713,
+                    2200.65546403004,
+                    2228.2390029991243,
+                    2269.7464089508658,
+                    2235.109397334465
+                ],
+                [
+                    2254.1096850380713,
+                    2202.759145909468,
+                    2231.565709701391,
+                    2232.79238558626,
+                    2186.214849464399
+                ],
+                [
+                    2064.8144615539654,
+                    2141.4261414661414,
+                    2143.304148437856,
+                    2107.3108485287044,
+                    2155.3047445825696
+                ],
+                [
+                    2114.368788698471,
+                    2122.991489966215,
+                    2144.964794743418,
+                    2125.0970692233745,
+                    2142.6421296993553
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=YEARLY;BYDAY=-2SU,-3SU,-4SU,-5SU"
+        },
+        "primaryMetric" : {
+            "score" : 3468.437089524465,
+            "scoreError" : 66.60251709746629,
+            "scoreConfidence" : [
+                3401.834572426999,
+                3535.0396066219314
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3294.521877122038,
+                "50.0" : 3500.648498934263,
+                "90.0" : 3568.4491408815484,
+                "95.0" : 3602.32171785163,
+                "99.0" : 3607.9344848853884,
+                "99.9" : 3607.9344848853884,
+                "99.99" : 3607.9344848853884,
+                "99.999" : 3607.9344848853884,
+                "99.9999" : 3607.9344848853884,
+                "100.0" : 3607.9344848853884
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3303.5097952536125,
+                    3294.521877122038,
+                    3299.6593144056073,
+                    3356.347721404228,
+                    3386.7481993354772
+                ],
+                [
+                    3496.656496158462,
+                    3473.8738789245012,
+                    3418.8397548780813,
+                    3415.1018110683867,
+                    3379.245578614794
+                ],
+                [
+                    3501.7098329157216,
+                    3530.65998461699,
+                    3541.3930636542755,
+                    3501.5011015019886,
+                    3521.64995376475
+                ],
+                [
+                    3525.729819093087,
+                    3515.269899157978,
+                    3554.5983938428963,
+                    3589.225261439527,
+                    3607.9344848853884
+                ],
+                [
+                    3521.4564340330526,
+                    3467.93620102906,
+                    3464.5499059217614,
+                    3542.159976155696,
+                    3500.648498934263
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=MONTHLY;INTERVAL=3;BYDAY=2WE"
+        },
+        "primaryMetric" : {
+            "score" : 3880.7854817486323,
+            "scoreError" : 55.00085386355927,
+            "scoreConfidence" : [
+                3825.784627885073,
+                3935.7863356121916
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3769.524546517193,
+                "50.0" : 3872.2882968739577,
+                "90.0" : 3997.7696937702644,
+                "95.0" : 4002.9309378833123,
+                "99.0" : 4005.0121073683795,
+                "99.9" : 4005.0121073683795,
+                "99.99" : 4005.0121073683795,
+                "99.999" : 4005.0121073683795,
+                "99.9999" : 4005.0121073683795,
+                "100.0" : 4005.0121073683795
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3830.317200020488,
+                    3808.2128476645294,
+                    3830.5115961853094,
+                    3872.2882968739577,
+                    3821.6158088185393
+                ],
+                [
+                    3908.4154977746457,
+                    3949.898369960876,
+                    3891.384751165597,
+                    3957.0238950257663,
+                    3958.452719433049
+                ],
+                [
+                    3880.7347222881476,
+                    3901.864053406866,
+                    3816.0371277193517,
+                    3803.1724752066707,
+                    3863.776405577675
+                ],
+                [
+                    4005.0121073683795,
+                    3998.074875751489,
+                    3992.1768836214574,
+                    3997.5662391161145,
+                    3896.1047243528137
+                ],
+                [
+                    3782.820506680086,
+                    3799.2050764646647,
+                    3769.524546517193,
+                    3846.4888221314804,
+                    3838.9574945906497
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=YEARLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4"
+        },
+        "primaryMetric" : {
+            "score" : 2011.2459606080383,
+            "scoreError" : 30.601037132794044,
+            "scoreConfidence" : [
+                1980.6449234752442,
+                2041.8469977408324
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1944.0155619123666,
+                "50.0" : 2002.0969152331897,
+                "90.0" : 2079.215138232311,
+                "95.0" : 2095.437868304281,
+                "99.0" : 2098.2164295624375,
+                "99.9" : 2098.2164295624375,
+                "99.99" : 2098.2164295624375,
+                "99.999" : 2098.2164295624375,
+                "99.9999" : 2098.2164295624375,
+                "100.0" : 2098.2164295624375
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1946.397345390472,
+                    1970.5252776814702,
+                    1962.7640773281164,
+                    1994.0081855849844,
+                    1944.0155619123666
+                ],
+                [
+                    2012.2451078352733,
+                    2004.007546738455,
+                    1972.4293245070928,
+                    2017.584821754141,
+                    2003.0773976417227
+                ],
+                [
+                    2098.2164295624375,
+                    2088.954558701916,
+                    2044.9513698294547,
+                    2069.8461197740407,
+                    2072.722191252574
+                ],
+                [
+                    2002.0969152331897,
+                    1994.5909002543174,
+                    2001.3031373284139,
+                    1993.5313439060112,
+                    1996.479322807333
+                ],
+                [
+                    2051.537555416993,
+                    2031.990705770102,
+                    1998.0446225885105,
+                    1997.7619638651388,
+                    2012.0672325364208
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=MONTHLY;INTERVAL=1;BYDAY=WE;BYMONTHDAY=25,26,27,21,22,23,24;BYMONTH=4"
+        },
+        "primaryMetric" : {
+            "score" : 1793.034483792169,
+            "scoreError" : 33.04700521869345,
+            "scoreConfidence" : [
+                1759.9874785734758,
+                1826.0814890108625
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1709.0253160789778,
+                "50.0" : 1799.9605249719393,
+                "90.0" : 1843.4621343430156,
+                "95.0" : 1857.182364649075,
+                "99.0" : 1858.9832250815132,
+                "99.9" : 1858.9832250815132,
+                "99.99" : 1858.9832250815132,
+                "99.999" : 1858.9832250815132,
+                "99.9999" : 1858.9832250815132,
+                "100.0" : 1858.9832250815132
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1742.3459600350507,
+                    1712.016028811963,
+                    1716.9136289429823,
+                    1711.7001667994716,
+                    1709.0253160789778
+                ],
+                [
+                    1813.7994340489415,
+                    1815.1028139500327,
+                    1786.0503964894792,
+                    1821.2935985709366,
+                    1852.980356973386
+                ],
+                [
+                    1823.5771052645698,
+                    1829.06107037409,
+                    1799.9605249719393,
+                    1858.9832250815132,
+                    1829.0276971773985
+                ],
+                [
+                    1783.5293882879882,
+                    1784.6773202102024,
+                    1829.5005081033682,
+                    1825.0266162663643,
+                    1837.1166525894353
+                ],
+                [
+                    1784.9084042124027,
+                    1781.8844811418414,
+                    1803.215460372358,
+                    1785.2905584752425,
+                    1788.8753815742934
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=YEARLY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 8668.2919233379,
+            "scoreError" : 252.00271610957626,
+            "scoreConfidence" : [
+                8416.289207228323,
+                8920.294639447477
+            ],
+            "scorePercentiles" : {
+                "0.0" : 8171.720305308982,
+                "50.0" : 8804.67370935794,
+                "90.0" : 9053.581932277393,
+                "95.0" : 9084.214624879964,
+                "99.0" : 9097.213058730107,
+                "99.9" : 9097.213058730107,
+                "99.99" : 9097.213058730107,
+                "99.999" : 9097.213058730107,
+                "99.9999" : 9097.213058730107,
+                "100.0" : 9097.213058730107
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    9097.213058730107,
+                    9053.884945896298,
+                    9053.379923198123,
+                    8771.367731209744,
+                    8804.67370935794
+                ],
+                [
+                    8908.973527437242,
+                    8877.826729999571,
+                    8924.974817530368,
+                    8871.800954048154,
+                    8936.140197808802
+                ],
+                [
+                    8335.56963819748,
+                    8281.800218133338,
+                    8255.719637412258,
+                    8188.97139667449,
+                    8323.014400108083
+                ],
+                [
+                    9039.147657730498,
+                    8943.152211002904,
+                    8799.697800778125,
+                    9015.195446710408,
+                    8810.24910892259
+                ],
+                [
+                    8171.720305308982,
+                    8198.261646264293,
+                    8339.311576569813,
+                    8357.09098820362,
+                    8348.160456214237
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=MONTHLY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 8738.939385519778,
+            "scoreError" : 91.09866267561145,
+            "scoreConfidence" : [
+                8647.840722844167,
+                8830.038048195389
+            ],
+            "scorePercentiles" : {
+                "0.0" : 8532.050122807794,
+                "50.0" : 8761.102986132038,
+                "90.0" : 8912.6613441045,
+                "95.0" : 8973.197144420794,
+                "99.0" : 8984.582403399423,
+                "99.9" : 8984.582403399423,
+                "99.99" : 8984.582403399423,
+                "99.999" : 8984.582403399423,
+                "99.9999" : 8984.582403399423,
+                "100.0" : 8984.582403399423
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    8761.102986132038,
+                    8816.665658924408,
+                    8766.71404907449,
+                    8612.92991402117,
+                    8580.653911337402
+                ],
+                [
+                    8766.894557886846,
+                    8713.384772362058,
+                    8758.1134447592,
+                    8762.710657046646,
+                    8716.941228882679
+                ],
+                [
+                    8847.471621010933,
+                    8984.582403399423,
+                    8773.06630414083,
+                    8647.264771486603,
+                    8853.484270375675
+                ],
+                [
+                    8946.631540137325,
+                    8858.043756054263,
+                    8650.32430205404,
+                    8770.00307835088,
+                    8890.014546749282
+                ],
+                [
+                    8578.002418165921,
+                    8532.050122807794,
+                    8601.623486296108,
+                    8559.031413871193,
+                    8725.779422667296
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=WEEKLY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 6328.74642523152,
+            "scoreError" : 141.49786934649498,
+            "scoreConfidence" : [
+                6187.248555885026,
+                6470.244294578015
+            ],
+            "scorePercentiles" : {
+                "0.0" : 5979.333862241525,
+                "50.0" : 6390.199297440895,
+                "90.0" : 6567.6339604878585,
+                "95.0" : 6625.937876976484,
+                "99.0" : 6637.044074596147,
+                "99.9" : 6637.044074596147,
+                "99.99" : 6637.044074596147,
+                "99.999" : 6637.044074596147,
+                "99.9999" : 6637.044074596147,
+                "100.0" : 6637.044074596147
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    6546.040990237139,
+                    6485.338249154129,
+                    6394.86874452006,
+                    6390.199297440895,
+                    6389.971281490793
+                ],
+                [
+                    6411.7004568957145,
+                    6545.409880715522,
+                    6464.945766007751,
+                    6380.275237674362,
+                    6407.80407241956
+                ],
+                [
+                    6128.308348903029,
+                    6163.746681086593,
+                    6088.528143565273,
+                    6083.725818644805,
+                    5979.333862241525
+                ],
+                [
+                    6457.337250423558,
+                    6600.023415863938,
+                    6637.044074596147,
+                    6477.233012931953,
+                    6433.212105174044
+                ],
+                [
+                    6151.894178956818,
+                    6119.614860814811,
+                    6102.982924220965,
+                    6163.579056646988,
+                    6215.542920161629
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=DAILY;BYDAY=MO"
+        },
+        "primaryMetric" : {
+            "score" : 4741.798235045749,
+            "scoreError" : 90.9015335403096,
+            "scoreConfidence" : [
+                4650.8967015054395,
+                4832.699768586058
+            ],
+            "scorePercentiles" : {
+                "0.0" : 4529.544423173649,
+                "50.0" : 4727.088069857864,
+                "90.0" : 4902.99761815531,
+                "95.0" : 4932.290901476433,
+                "99.0" : 4939.548935570432,
+                "99.9" : 4939.548935570432,
+                "99.99" : 4939.548935570432,
+                "99.999" : 4939.548935570432,
+                "99.9999" : 4939.548935570432,
+                "100.0" : 4939.548935570432
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    4802.519628904065,
+                    4939.548935570432,
+                    4915.355488590433,
+                    4852.507809153776,
+                    4845.594722194308
+                ],
+                [
+                    4670.5621030430175,
+                    4773.289878401943,
+                    4783.18061942089,
+                    4716.4912311283615,
+                    4709.781598007738
+                ],
+                [
+                    4556.543867556117,
+                    4540.467640827802,
+                    4529.544423173649,
+                    4585.91562645482,
+                    4579.946483474332
+                ],
+                [
+                    4881.7529296024795,
+                    4754.582040450102,
+                    4805.440024018337,
+                    4890.197121370065,
+                    4894.7590378652285
+                ],
+                [
+                    4711.385404875302,
+                    4690.015973988025,
+                    4688.336913036457,
+                    4700.148305178199,
+                    4727.088069857864
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 8325.43188595982,
+            "scoreError" : 54.63535706252226,
+            "scoreConfidence" : [
+                8270.7965288973,
+                8380.067243022342
+            ],
+            "scorePercentiles" : {
+                "0.0" : 8210.921114447841,
+                "50.0" : 8326.267027321313,
+                "90.0" : 8432.567121232978,
+                "95.0" : 8470.755503002165,
+                "99.0" : 8478.041687437339,
+                "99.9" : 8478.041687437339,
+                "99.99" : 8478.041687437339,
+                "99.999" : 8478.041687437339,
+                "99.9999" : 8478.041687437339,
+                "100.0" : 8478.041687437339
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    8358.191805971857,
+                    8286.092042417587,
+                    8365.291693828507,
+                    8478.041687437339,
+                    8418.442264730455
+                ],
+                [
+                    8315.412934158741,
+                    8292.32833834824,
+                    8326.267027321313,
+                    8453.754405986761,
+                    8406.694986293427
+                ],
+                [
+                    8384.300097844685,
+                    8324.542614665672,
+                    8339.45939813137,
+                    8362.739826801248,
+                    8289.22406545234
+                ],
+                [
+                    8255.65411781282,
+                    8353.692568310846,
+                    8210.921114447841,
+                    8258.162795835118,
+                    8244.689074969087
+                ],
+                [
+                    8239.710473856921,
+                    8227.384730983089,
+                    8331.852885010587,
+                    8388.156019934759,
+                    8224.790178444904
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 9038.326748209172,
+            "scoreError" : 71.79746556683128,
+            "scoreConfidence" : [
+                8966.529282642341,
+                9110.124213776004
+            ],
+            "scorePercentiles" : {
+                "0.0" : 8774.287816104075,
+                "50.0" : 9028.629672297957,
+                "90.0" : 9180.106139740641,
+                "95.0" : 9223.218491902684,
+                "99.0" : 9227.349708139167,
+                "99.9" : 9227.349708139167,
+                "99.99" : 9227.349708139167,
+                "99.999" : 9227.349708139167,
+                "99.9999" : 9227.349708139167,
+                "100.0" : 9227.349708139167
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    9108.336734456694,
+                    9157.790908000476,
+                    9227.349708139167,
+                    9119.049680763654,
+                    9132.152206742972
+                ],
+                [
+                    8964.089914598771,
+                    9028.629672297957,
+                    9018.707692861226,
+                    9052.806952469984,
+                    9035.694855549033
+                ],
+                [
+                    8989.922686056918,
+                    9006.291448057505,
+                    8942.229335651808,
+                    9040.266632935698,
+                    9117.222243449876
+                ],
+                [
+                    8999.284040448396,
+                    9022.645624765913,
+                    9052.062379798183,
+                    9213.57898735089,
+                    8933.452856742131
+                ],
+                [
+                    8996.06569000604,
+                    8973.338242782032,
+                    9079.098644909549,
+                    8973.813750290376,
+                    8774.287816104075
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 7702.484626431953,
+            "scoreError" : 247.1050164528755,
+            "scoreConfidence" : [
+                7455.379609979078,
+                7949.589642884828
+            ],
+            "scorePercentiles" : {
+                "0.0" : 7182.344322906793,
+                "50.0" : 7904.162662679874,
+                "90.0" : 8039.54931531155,
+                "95.0" : 8098.173260870011,
+                "99.0" : 8106.06615815013,
+                "99.9" : 8106.06615815013,
+                "99.99" : 8106.06615815013,
+                "99.999" : 8106.06615815013,
+                "99.9999" : 8106.06615815013,
+                "100.0" : 8106.06615815013
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    7929.90616367103,
+                    7904.162662679874,
+                    7890.28517288743,
+                    7914.076638946236,
+                    7930.12739454177
+                ],
+                [
+                    7187.833416183074,
+                    7182.344322906793,
+                    7251.993577974308,
+                    7311.112984713114,
+                    7215.353121016551
+                ],
+                [
+                    8002.132707458415,
+                    7993.205659994687,
+                    7932.6202611036,
+                    7926.385882952866,
+                    7865.622270794814
+                ],
+                [
+                    7327.243111969745,
+                    7437.440419093082,
+                    7446.103835687598,
+                    7446.479071644971,
+                    7391.29459909846
+                ],
+                [
+                    7906.188606219588,
+                    8012.7445251527615,
+                    8106.06615815013,
+                    8079.756500549734,
+                    7971.6365954081975
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceRuleExpansion.benchmarkExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "iterations" : "1000",
+            "rule" : "FREQ=DAILY;BYDAY=MO,TU,WE,TH,FR,SA,SU"
+        },
+        "primaryMetric" : {
+            "score" : 8844.281622692411,
+            "scoreError" : 64.32981759454522,
+            "scoreConfidence" : [
+                8779.951805097866,
+                8908.611440286957
+            ],
+            "scorePercentiles" : {
+                "0.0" : 8712.400438739007,
+                "50.0" : 8837.133880071215,
+                "90.0" : 8985.093992995806,
+                "95.0" : 9026.956494343505,
+                "99.0" : 9039.80341478439,
+                "99.9" : 9039.80341478439,
+                "99.99" : 9039.80341478439,
+                "99.999" : 9039.80341478439,
+                "99.9999" : 9039.80341478439,
+                "100.0" : 9039.80341478439
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    8837.133880071215,
+                    8819.912322683753,
+                    8881.618031805954,
+                    8822.563890079837,
+                    8832.671401658912
+                ],
+                [
+                    8977.169757227606,
+                    8996.980346648106,
+                    8848.690986129975,
+                    9039.80341478439,
+                    8955.953574373369
+                ],
+                [
+                    8739.455018072418,
+                    8712.400438739007,
+                    8765.408212549124,
+                    8713.421370473136,
+                    8754.973396411313
+                ],
+                [
+                    8847.49996584443,
+                    8858.984859110516,
+                    8891.874397343317,
+                    8919.297509160415,
+                    8837.775887508045
+                ],
+                [
+                    8784.306652256073,
+                    8811.99540899499,
+                    8758.636446518378,
+                    8812.012320805154,
+                    8886.501078060774
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 1066959.2462364421,
+            "scoreError" : 9975.080982483696,
+            "scoreConfidence" : [
+                1056984.1652539584,
+                1076934.3272189258
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1045527.98475453,
+                "50.0" : 1064880.059956432,
+                "90.0" : 1090375.2127083987,
+                "95.0" : 1094086.7403227005,
+                "99.0" : 1095437.2660596217,
+                "99.9" : 1095437.2660596217,
+                "99.99" : 1095437.2660596217,
+                "99.999" : 1095437.2660596217,
+                "99.9999" : 1095437.2660596217,
+                "100.0" : 1095437.2660596217
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1071514.1244491236,
+                    1060781.819537689,
+                    1078925.5729539925,
+                    1075851.9591170691,
+                    1090001.6787785194
+                ],
+                [
+                    1062236.4074235428,
+                    1064880.059956432,
+                    1050505.996612623,
+                    1047714.1940919185,
+                    1045527.98475453
+                ],
+                [
+                    1095437.2660596217,
+                    1074687.269663001,
+                    1079147.062830775,
+                    1071919.6961381147,
+                    1090935.513603218
+                ],
+                [
+                    1059586.4941320717,
+                    1064629.5114017485,
+                    1066952.0252663353,
+                    1048708.3946268323,
+                    1067678.7548671525
+                ],
+                [
+                    1062227.3824203785,
+                    1062627.4398130935,
+                    1051576.3870742735,
+                    1068033.9310009377,
+                    1061894.2293380585
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 18114.50697314745,
+            "scoreError" : 151.1694095036704,
+            "scoreConfidence" : [
+                17963.33756364378,
+                18265.67638265112
+            ],
+            "scorePercentiles" : {
+                "0.0" : 17803.96798762279,
+                "50.0" : 18057.47245264701,
+                "90.0" : 18368.683186027727,
+                "95.0" : 18579.14114691681,
+                "99.0" : 18631.01521714677,
+                "99.9" : 18631.01521714677,
+                "99.99" : 18631.01521714677,
+                "99.999" : 18631.01521714677,
+                "99.9999" : 18631.01521714677,
+                "100.0" : 18631.01521714677
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    17990.792605654522,
+                    17949.759071542783,
+                    17831.231725777394,
+                    17957.374803221803,
+                    18037.50077286647
+                ],
+                [
+                    18309.07087690384,
+                    18631.01521714677,
+                    18027.663533889314,
+                    18236.532805560666,
+                    18180.232972334852
+                ],
+                [
+                    17951.756181806646,
+                    18283.50953788911,
+                    18295.459723142987,
+                    18300.188759952347,
+                    18284.217501314128
+                ],
+                [
+                    18458.10164971356,
+                    17937.534309321767,
+                    18017.263863882654,
+                    17961.59580906316,
+                    18057.47245264701
+                ],
+                [
+                    18060.78251268236,
+                    17803.96798762279,
+                    17913.37183100382,
+                    18148.18901913658,
+                    18238.088804608895
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 143836.56893047763,
+            "scoreError" : 1274.2279093379316,
+            "scoreConfidence" : [
+                142562.3410211397,
+                145110.79683981556
+            ],
+            "scorePercentiles" : {
+                "0.0" : 141624.70685010846,
+                "50.0" : 143257.9913143913,
+                "90.0" : 146359.31413058954,
+                "95.0" : 147731.12396119314,
+                "99.0" : 148065.18925757142,
+                "99.9" : 148065.18925757142,
+                "99.99" : 148065.18925757142,
+                "99.999" : 148065.18925757142,
+                "99.9999" : 148065.18925757142,
+                "100.0" : 148065.18925757142
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    143131.12933349566,
+                    142100.6876061007,
+                    143257.9913143913,
+                    142892.49759263298,
+                    142607.53003093603
+                ],
+                [
+                    144355.57196136433,
+                    142025.0267959235,
+                    142325.93744125628,
+                    142984.11080131526,
+                    144099.05590269927
+                ],
+                [
+                    145553.11898979847,
+                    148065.18925757142,
+                    144975.710412705,
+                    145964.43137121998,
+                    146951.63826964385
+                ],
+                [
+                    141624.70685010846,
+                    145597.38797214837,
+                    144815.6504615324,
+                    143830.27539568866,
+                    141898.0464489224
+                ],
+                [
+                    145519.4266274642,
+                    143332.92503625064,
+                    143013.58546724942,
+                    142768.67627955368,
+                    142223.91564196954
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 10931.011900384547,
+            "scoreError" : 204.14056524245646,
+            "scoreConfidence" : [
+                10726.87133514209,
+                11135.152465627003
+            ],
+            "scorePercentiles" : {
+                "0.0" : 10380.950608648152,
+                "50.0" : 10966.798971162465,
+                "90.0" : 11238.368544640834,
+                "95.0" : 11348.337554857417,
+                "99.0" : 11382.177677955873,
+                "99.9" : 11382.177677955873,
+                "99.99" : 11382.177677955873,
+                "99.999" : 11382.177677955873,
+                "99.9999" : 11382.177677955873,
+                "100.0" : 11382.177677955873
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    10380.950608648152,
+                    10422.770694875604,
+                    10453.856950411859,
+                    10516.957650451048,
+                    10560.309855890411
+                ],
+                [
+                    10913.858124761335,
+                    11006.200476851345,
+                    10955.726125404462,
+                    11061.953506370623,
+                    11095.615653839837
+                ],
+                [
+                    11382.177677955873,
+                    11269.377267627688,
+                    11162.885062809784,
+                    11188.072549730228,
+                    11217.696062649598
+                ],
+                [
+                    11048.874619481556,
+                    10946.640749260088,
+                    11103.343079511822,
+                    11076.764494850357,
+                    10947.055414131897
+                ],
+                [
+                    11061.28147367159,
+                    10770.325155750468,
+                    10875.403194849037,
+                    10890.402088666564,
+                    10966.798971162465
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 410953.91282537684,
+            "scoreError" : 4047.0062316625504,
+            "scoreConfidence" : [
+                406906.9065937143,
+                415000.91905703937
+            ],
+            "scorePercentiles" : {
+                "0.0" : 403019.84254002955,
+                "50.0" : 413326.2457768006,
+                "90.0" : 418917.1023350717,
+                "95.0" : 419306.15599708614,
+                "99.0" : 419354.45717470354,
+                "99.9" : 419354.45717470354,
+                "99.99" : 419354.45717470354,
+                "99.999" : 419354.45717470354,
+                "99.9999" : 419354.45717470354,
+                "100.0" : 419354.45717470354
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    407448.44787579513,
+                    413326.2457768006,
+                    413512.133381253,
+                    409059.1122231393,
+                    407587.8314613708
+                ],
+                [
+                    413789.49953304674,
+                    414559.83336116927,
+                    414012.7774192995,
+                    419193.4532493123,
+                    416370.98514019983
+                ],
+                [
+                    414100.17676648166,
+                    406218.3178386965,
+                    405694.0481770521,
+                    407825.2369911463,
+                    408775.011582858
+                ],
+                [
+                    416188.6436652909,
+                    419354.45717470354,
+                    418732.8683922446,
+                    414156.22851031966,
+                    415706.7243987665
+                ],
+                [
+                    403840.4771957082,
+                    403484.07943918055,
+                    403019.84254002955,
+                    404137.593880361,
+                    403753.7946601965
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 6439.468908452757,
+            "scoreError" : 162.96476276280072,
+            "scoreConfidence" : [
+                6276.504145689956,
+                6602.433671215558
+            ],
+            "scorePercentiles" : {
+                "0.0" : 6010.10084963425,
+                "50.0" : 6497.516687480373,
+                "90.0" : 6641.877225529657,
+                "95.0" : 6684.224116975745,
+                "99.0" : 6696.407356154672,
+                "99.9" : 6696.407356154672,
+                "99.99" : 6696.407356154672,
+                "99.999" : 6696.407356154672,
+                "99.9999" : 6696.407356154672,
+                "100.0" : 6696.407356154672
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    6485.060350152209,
+                    6530.8006441529305,
+                    6474.752282452426,
+                    6568.1234123822305,
+                    6497.516687480373
+                ],
+                [
+                    6409.696981575196,
+                    6632.597669955039,
+                    6619.172215750374,
+                    6696.407356154672,
+                    6535.196625988038
+                ],
+                [
+                    6015.720196985385,
+                    6010.10084963425,
+                    6011.418070443516,
+                    6078.591602781208,
+                    6083.5672658339645
+                ],
+                [
+                    6492.143927770199,
+                    6497.832954310777,
+                    6453.882763265101,
+                    6573.044521864605,
+                    6380.104182641509
+                ],
+                [
+                    6629.272690267754,
+                    6607.561037254588,
+                    6497.451983476861,
+                    6550.909879854151,
+                    6655.796558891583
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 119269.5544136562,
+            "scoreError" : 1199.6847039279974,
+            "scoreConfidence" : [
+                118069.8697097282,
+                120469.23911758419
+            ],
+            "scorePercentiles" : {
+                "0.0" : 116715.89896503062,
+                "50.0" : 118812.11868371174,
+                "90.0" : 121666.27415804294,
+                "95.0" : 122292.68930751219,
+                "99.0" : 122490.61347216385,
+                "99.9" : 122490.61347216385,
+                "99.99" : 122490.61347216385,
+                "99.999" : 122490.61347216385,
+                "99.9999" : 122490.61347216385,
+                "100.0" : 122490.61347216385
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    118757.81143586317,
+                    118812.11868371174,
+                    118307.3099313719,
+                    116715.89896503062,
+                    117087.79029580398
+                ],
+                [
+                    121404.07099578413,
+                    120346.36195354741,
+                    119947.67307735974,
+                    121112.24239578987,
+                    119198.83988006285
+                ],
+                [
+                    117782.2318464149,
+                    118700.83344353785,
+                    117873.58534380501,
+                    117361.6972774734,
+                    119175.31054693183
+                ],
+                [
+                    122490.61347216385,
+                    120569.80901755251,
+                    121830.86625665834,
+                    121556.54609229934,
+                    120917.43467945105
+                ],
+                [
+                    118327.64052842629,
+                    118108.41213106307,
+                    118370.48857168818,
+                    118907.05953895394,
+                    118076.21398065968
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 7165.679443096607,
+            "scoreError" : 133.8444180406736,
+            "scoreConfidence" : [
+                7031.835025055934,
+                7299.523861137281
+            ],
+            "scorePercentiles" : {
+                "0.0" : 6918.714935107244,
+                "50.0" : 7102.51097507334,
+                "90.0" : 7438.545391520669,
+                "95.0" : 7474.056642765638,
+                "99.0" : 7476.821331897553,
+                "99.9" : 7476.821331897553,
+                "99.99" : 7476.821331897553,
+                "99.999" : 7476.821331897553,
+                "99.9999" : 7476.821331897553,
+                "100.0" : 7476.821331897553
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    7167.911962678944,
+                    7098.988995513318,
+                    7042.097847524496,
+                    7081.953572094333,
+                    7187.424367952713
+                ],
+                [
+                    7191.8738600274455,
+                    7342.3668446093225,
+                    7164.576427959651,
+                    7357.016474316984,
+                    7467.605701457836
+                ],
+                [
+                    7476.821331897553,
+                    7350.705521915946,
+                    7338.8747880381925,
+                    7409.4265574920755,
+                    7419.171851562558
+                ],
+                [
+                    6939.795340533694,
+                    6948.8902101357635,
+                    6996.096731799651,
+                    6918.714935107244,
+                    6950.569195228962
+                ],
+                [
+                    7035.638267605076,
+                    7102.51097507334,
+                    7047.7891865298525,
+                    7042.458101335605,
+                    7062.7070290246465
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 190348.41039835926,
+            "scoreError" : 2304.360738355033,
+            "scoreConfidence" : [
+                188044.04966000424,
+                192652.7711367143
+            ],
+            "scorePercentiles" : {
+                "0.0" : 185614.8906706839,
+                "50.0" : 189065.376588156,
+                "90.0" : 194408.98483117047,
+                "95.0" : 195996.36691586248,
+                "99.0" : 196481.55040879585,
+                "99.9" : 196481.55040879585,
+                "99.99" : 196481.55040879585,
+                "99.999" : 196481.55040879585,
+                "99.9999" : 196481.55040879585,
+                "100.0" : 196481.55040879585
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    191875.48287247404,
+                    193975.35830188432,
+                    192412.3624013371,
+                    194070.72384899503,
+                    193172.95030771688
+                ],
+                [
+                    189065.376588156,
+                    188197.69672490182,
+                    190430.76951422606,
+                    188454.7123537664,
+                    188830.96100928867
+                ],
+                [
+                    188450.1012940594,
+                    185614.8906706839,
+                    187554.99242881086,
+                    186370.48955580837,
+                    186895.87354820408
+                ],
+                [
+                    196481.55040879585,
+                    194105.4599859388,
+                    194864.27209901798,
+                    193144.3760913032,
+                    193172.9298370133
+                ],
+                [
+                    186936.247326961,
+                    188797.94287139314,
+                    188608.49139034524,
+                    187980.5531243973,
+                    189245.69540350325
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 1614.4235826961185,
+            "scoreError" : 41.51012148187411,
+            "scoreConfidence" : [
+                1572.9134612142443,
+                1655.9337041779927
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1492.3798095072898,
+                "50.0" : 1628.398011556569,
+                "90.0" : 1677.2303808416195,
+                "95.0" : 1679.7858586334441,
+                "99.0" : 1680.4636465075369,
+                "99.9" : 1680.4636465075369,
+                "99.99" : 1680.4636465075369,
+                "99.999" : 1680.4636465075369,
+                "99.9999" : 1680.4636465075369,
+                "100.0" : 1680.4636465075369
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1588.4745892957853,
+                    1595.7918742704906,
+                    1621.13391480019,
+                    1618.5518717126738,
+                    1602.3048919885262
+                ],
+                [
+                    1676.5810656734363,
+                    1678.2043535938944,
+                    1648.2652412853315,
+                    1680.4636465075369,
+                    1643.1025291862456
+                ],
+                [
+                    1635.4705309192668,
+                    1624.2239143121567,
+                    1637.844408384461,
+                    1626.0919432634046,
+                    1628.398011556569
+                ],
+                [
+                    1637.4753209915843,
+                    1640.95522888243,
+                    1651.0057525691873,
+                    1669.6738093928336,
+                    1664.283954139873
+                ],
+                [
+                    1555.5668535066766,
+                    1492.3798095072898,
+                    1500.206636566365,
+                    1532.4448482343184,
+                    1511.6945668624342
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 92623.62701075253,
+            "scoreError" : 1363.2273298970117,
+            "scoreConfidence" : [
+                91260.39968085552,
+                93986.85434064954
+            ],
+            "scorePercentiles" : {
+                "0.0" : 89573.26185451489,
+                "50.0" : 92617.61032512675,
+                "90.0" : 95282.38657958138,
+                "95.0" : 96020.59569777972,
+                "99.0" : 96236.96963288773,
+                "99.9" : 96236.96963288773,
+                "99.99" : 96236.96963288773,
+                "99.999" : 96236.96963288773,
+                "99.9999" : 96236.96963288773,
+                "100.0" : 96236.96963288773
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    90534.33457745274,
+                    90022.62239451542,
+                    91136.36308906249,
+                    90390.57421349993,
+                    89573.26185451489
+                ],
+                [
+                    95515.7231825277,
+                    96236.96963288773,
+                    95126.82884428382,
+                    94683.1475723467,
+                    94307.0227272925
+                ],
+                [
+                    91016.31467285515,
+                    91731.897058496,
+                    92617.61032512675,
+                    90294.91403331021,
+                    91484.75849931713
+                ],
+                [
+                    94667.70252344935,
+                    92867.58505200713,
+                    93990.26557128692,
+                    92754.38016807755,
+                    92837.28637476903
+                ],
+                [
+                    92398.4686356817,
+                    93347.98792145954,
+                    92505.45974457214,
+                    93081.96240456725,
+                    92467.23419545378
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 2909.336894731929,
+            "scoreError" : 95.94085955585305,
+            "scoreConfidence" : [
+                2813.396035176076,
+                3005.277754287782
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2748.967692987169,
+                "50.0" : 2862.6656545283,
+                "90.0" : 3149.6879590182893,
+                "95.0" : 3203.5476243401663,
+                "99.0" : 3209.841343320114,
+                "99.9" : 3209.841343320114,
+                "99.99" : 3209.841343320114,
+                "99.999" : 3209.841343320114,
+                "99.9999" : 3209.841343320114,
+                "100.0" : 3209.841343320114
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    2933.151325084138,
+                    2915.179163517647,
+                    2923.165705345551,
+                    2935.6445687755327,
+                    2930.7304759579247
+                ],
+                [
+                    2875.2492724933422,
+                    2859.539934565387,
+                    2775.128879343926,
+                    2791.373066952403,
+                    2795.2948298273227
+                ],
+                [
+                    2855.660327939964,
+                    2748.967692987169,
+                    2859.315239651557,
+                    2798.9894577737946,
+                    2830.8692444142957
+                ],
+                [
+                    2862.1321817053613,
+                    2862.6656545283,
+                    2797.426065558492,
+                    2876.8391306080234,
+                    2832.159674825065
+                ],
+                [
+                    3188.8622800536214,
+                    3072.187928710594,
+                    3209.841343320114,
+                    3079.4771793639693,
+                    3123.5717449947347
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 779249.7021407112,
+            "scoreError" : 7880.890765526732,
+            "scoreConfidence" : [
+                771368.8113751846,
+                787130.5929062379
+            ],
+            "scorePercentiles" : {
+                "0.0" : 752955.2870883563,
+                "50.0" : 778836.340182607,
+                "90.0" : 794112.792909747,
+                "95.0" : 795729.8020396082,
+                "99.0" : 796168.3517625454,
+                "99.9" : 796168.3517625454,
+                "99.99" : 796168.3517625454,
+                "99.999" : 796168.3517625454,
+                "99.9999" : 796168.3517625454,
+                "100.0" : 796168.3517625454
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    781513.1943775454,
+                    785458.3810282454,
+                    775917.1641146742,
+                    776797.9213299006,
+                    780614.9612537767
+                ],
+                [
+                    785705.8534662495,
+                    752955.2870883563,
+                    780790.186346415,
+                    762848.557466298,
+                    775259.4911071733
+                ],
+                [
+                    776641.6516363734,
+                    788823.9566282348,
+                    792505.2937926372,
+                    775912.1993330253,
+                    793716.9752810751
+                ],
+                [
+                    794706.5193527549,
+                    791700.5109079914,
+                    796168.3517625454,
+                    778836.340182607,
+                    773496.4669009777
+                ],
+                [
+                    780305.2014641456,
+                    774151.6288088604,
+                    771029.1751786148,
+                    766348.4556782647,
+                    769038.8290310382
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 6816.286864785589,
+            "scoreError" : 75.59854992799735,
+            "scoreConfidence" : [
+                6740.688314857592,
+                6891.885414713587
+            ],
+            "scorePercentiles" : {
+                "0.0" : 6589.926166162047,
+                "50.0" : 6832.986535984707,
+                "90.0" : 6943.619196512555,
+                "95.0" : 6959.150152474312,
+                "99.0" : 6962.823885117779,
+                "99.9" : 6962.823885117779,
+                "99.99" : 6962.823885117779,
+                "99.999" : 6962.823885117779,
+                "99.9999" : 6962.823885117779,
+                "100.0" : 6962.823885117779
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    6723.451874453535,
+                    6589.926166162047,
+                    6606.318078018548,
+                    6694.782194710705,
+                    6652.653036203019
+                ],
+                [
+                    6887.696614872126,
+                    6832.986535984707,
+                    6849.811528008774,
+                    6938.979921094557,
+                    6817.99397794877
+                ],
+                [
+                    6812.035620127458,
+                    6864.753878866723,
+                    6950.578109639554,
+                    6767.732031650206,
+                    6887.328281124653
+                ],
+                [
+                    6921.693239304193,
+                    6844.2669675513325,
+                    6836.058295524464,
+                    6934.637612481502,
+                    6962.823885117779
+                ],
+                [
+                    6801.637350299757,
+                    6794.515649520067,
+                    6810.8943237887515,
+                    6834.995252249223,
+                    6788.621194937323
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 139065.33421469055,
+            "scoreError" : 965.6840974567991,
+            "scoreConfidence" : [
+                138099.65011723374,
+                140031.01831214735
+            ],
+            "scorePercentiles" : {
+                "0.0" : 137152.2078279226,
+                "50.0" : 138928.65178833195,
+                "90.0" : 140905.510326837,
+                "95.0" : 141504.33107836542,
+                "99.0" : 141510.53088031983,
+                "99.9" : 141510.53088031983,
+                "99.99" : 141510.53088031983,
+                "99.999" : 141510.53088031983,
+                "99.9999" : 141510.53088031983,
+                "100.0" : 141510.53088031983
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    138288.4696264437,
+                    139419.802931658,
+                    138713.88998141448,
+                    137594.6490749543,
+                    138796.7272381979
+                ],
+                [
+                    137218.6185961863,
+                    138090.16011083336,
+                    138446.1235989054,
+                    140353.8703375229,
+                    137152.2078279226
+                ],
+                [
+                    139331.41219565156,
+                    140082.5176814943,
+                    138082.25971059833,
+                    141510.53088031983,
+                    140465.13500091992
+                ],
+                [
+                    139309.5060425065,
+                    140381.4588697714,
+                    137281.75875877737,
+                    141489.86487380514,
+                    138928.65178833195
+                ],
+                [
+                    137859.58557897477,
+                    138103.80225464542,
+                    138983.21608021183,
+                    140233.1956983575,
+                    140515.9406288582
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 5125.215206561726,
+            "scoreError" : 80.96374928674996,
+            "scoreConfidence" : [
+                5044.251457274976,
+                5206.178955848475
+            ],
+            "scorePercentiles" : {
+                "0.0" : 4848.9701365102665,
+                "50.0" : 5172.955804413706,
+                "90.0" : 5240.507219652872,
+                "95.0" : 5297.437672167534,
+                "99.0" : 5309.1932961155635,
+                "99.9" : 5309.1932961155635,
+                "99.99" : 5309.1932961155635,
+                "99.999" : 5309.1932961155635,
+                "99.9999" : 5309.1932961155635,
+                "100.0" : 5309.1932961155635
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    5198.118950183849,
+                    5174.027949083415,
+                    5216.118135581084,
+                    5178.808937166119,
+                    5185.792265459113
+                ],
+                [
+                    5008.732773087344,
+                    5031.89728206589,
+                    5135.364819805639,
+                    5087.852481787572,
+                    5116.433592747976
+                ],
+                [
+                    5186.300950626365,
+                    5126.715919442815,
+                    5126.5200213605685,
+                    5220.840110784476,
+                    5181.010679652552
+                ],
+                [
+                    5188.520731151542,
+                    5172.955804413706,
+                    5270.007882955466,
+                    5191.38908320605,
+                    5309.1932961155635
+                ],
+                [
+                    4924.938424700412,
+                    4848.9701365102665,
+                    5023.808631072102,
+                    4994.7230785673,
+                    5031.338226515948
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 392662.20011745696,
+            "scoreError" : 4397.131470354399,
+            "scoreConfidence" : [
+                388265.06864710257,
+                397059.33158781135
+            ],
+            "scorePercentiles" : {
+                "0.0" : 380987.7150265906,
+                "50.0" : 394627.4913688826,
+                "90.0" : 399213.34976153553,
+                "95.0" : 399466.6440371381,
+                "99.0" : 399523.6040053972,
+                "99.9" : 399523.6040053972,
+                "99.99" : 399523.6040053972,
+                "99.999" : 399523.6040053972,
+                "99.9999" : 399523.6040053972,
+                "100.0" : 399523.6040053972
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    397347.3985191751,
+                    396669.5999415151,
+                    387451.7860656702,
+                    389856.8262790208,
+                    388234.67658812506
+                ],
+                [
+                    391033.3871078496,
+                    398857.5070872974,
+                    398088.6550311752,
+                    393026.8635351294,
+                    395871.905108071
+                ],
+                [
+                    384054.1294095716,
+                    384338.3565634036,
+                    384665.5914148635,
+                    382466.0720859133,
+                    380987.7150265906
+                ],
+                [
+                    399133.0913062035,
+                    397583.9798033443,
+                    395287.86496083863,
+                    399523.6040053972,
+                    396791.33015675476
+                ],
+                [
+                    399333.7374445336,
+                    396976.46461432433,
+                    391378.85226964694,
+                    392968.1172431257,
+                    394627.4913688826
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 3051.0499322248706,
+            "scoreError" : 40.02600374537649,
+            "scoreConfidence" : [
+                3011.0239284794943,
+                3091.075935970247
+            ],
+            "scorePercentiles" : {
+                "0.0" : 2972.660080457205,
+                "50.0" : 3032.2029723023848,
+                "90.0" : 3144.177239303699,
+                "95.0" : 3168.4173505493022,
+                "99.0" : 3172.1997618688715,
+                "99.9" : 3172.1997618688715,
+                "99.99" : 3172.1997618688715,
+                "99.999" : 3172.1997618688715,
+                "99.9999" : 3172.1997618688715,
+                "100.0" : 3172.1997618688715
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3022.7205126114186,
+                    3034.0824299126575,
+                    3068.9938071958686,
+                    3073.745609436374,
+                    3070.3562143306535
+                ],
+                [
+                    3109.2475972554776,
+                    3105.12875768763,
+                    3018.725810342137,
+                    3016.180700740083,
+                    2972.660080457205
+                ],
+                [
+                    3172.1997618688715,
+                    3159.5917241369734,
+                    3032.2029723023848,
+                    3020.2757235066947,
+                    3048.8072318456293
+                ],
+                [
+                    3022.584626336967,
+                    3026.1590995787187,
+                    3016.657458711755,
+                    3023.21207774189,
+                    3057.2227856354525
+                ],
+                [
+                    3094.0229253551543,
+                    3133.9009160815162,
+                    3022.2671105757454,
+                    2978.042450862873,
+                    2977.2599211116158
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 117723.61244200451,
+            "scoreError" : 1429.5504700508868,
+            "scoreConfidence" : [
+                116294.06197195362,
+                119153.1629120554
+            ],
+            "scorePercentiles" : {
+                "0.0" : 114811.44296389089,
+                "50.0" : 117189.69047346352,
+                "90.0" : 120161.74094525198,
+                "95.0" : 120628.24510950706,
+                "99.0" : 120825.57948133854,
+                "99.9" : 120825.57948133854,
+                "99.99" : 120825.57948133854,
+                "99.999" : 120825.57948133854,
+                "99.9999" : 120825.57948133854,
+                "100.0" : 120825.57948133854
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    119369.78307984183,
+                    119278.97324136009,
+                    119048.0537027983,
+                    118434.05382387359,
+                    119798.27543889797
+                ],
+                [
+                    116765.91719629758,
+                    118666.53567115327,
+                    120167.79824190025,
+                    120157.70274748646,
+                    117095.48872331064
+                ],
+                [
+                    115464.5960106578,
+                    115332.7424747101,
+                    114945.81156411135,
+                    114811.44296389089,
+                    116067.1373897637
+                ],
+                [
+                    116426.79873613355,
+                    115672.34221423512,
+                    116980.59547383401,
+                    119625.56492005025,
+                    117010.39882960562
+                ],
+                [
+                    120825.57948133854,
+                    119935.02351572747,
+                    117189.69047346352,
+                    115355.78363468488,
+                    118664.2215009864
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 3579.1228054431785,
+            "scoreError" : 54.42662688317497,
+            "scoreConfidence" : [
+                3524.696178560004,
+                3633.5494323263533
+            ],
+            "scorePercentiles" : {
+                "0.0" : 3483.4889714527108,
+                "50.0" : 3568.4655962342044,
+                "90.0" : 3682.6122636194586,
+                "95.0" : 3755.5724045105203,
+                "99.0" : 3777.536361204308,
+                "99.9" : 3777.536361204308,
+                "99.99" : 3777.536361204308,
+                "99.999" : 3777.536361204308,
+                "99.9999" : 3777.536361204308,
+                "100.0" : 3777.536361204308
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    3594.706618738253,
+                    3577.27805345298,
+                    3532.52686855505,
+                    3584.37519515651,
+                    3661.6945219599393
+                ],
+                [
+                    3636.9076697257965,
+                    3514.0484749325706,
+                    3526.7669180904436,
+                    3501.0972832251614,
+                    3518.564513032836
+                ],
+                [
+                    3777.536361204308,
+                    3599.5171801490087,
+                    3668.1383245490865,
+                    3639.8870199467256,
+                    3563.9709927670947
+                ],
+                [
+                    3617.4516381794538,
+                    3498.3562996024707,
+                    3483.4889714527108,
+                    3486.29640191338,
+                    3517.124575381352
+                ],
+                [
+                    3704.3231722250166,
+                    3566.121929032281,
+                    3568.4655962342044,
+                    3571.1434369136045,
+                    3568.2821196592076
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 180523.4799913003,
+            "scoreError" : 1777.1887043844993,
+            "scoreConfidence" : [
+                178746.2912869158,
+                182300.66869568478
+            ],
+            "scorePercentiles" : {
+                "0.0" : 176605.39514272488,
+                "50.0" : 180711.2019507026,
+                "90.0" : 184238.913982523,
+                "95.0" : 185481.59090119923,
+                "99.0" : 186007.3751661963,
+                "99.9" : 186007.3751661963,
+                "99.99" : 186007.3751661963,
+                "99.999" : 186007.3751661963,
+                "99.9999" : 186007.3751661963,
+                "100.0" : 186007.3751661963
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    176714.8761874697,
+                    177637.1987633344,
+                    183025.21055968505,
+                    181906.60279471375,
+                    180889.89847965358
+                ],
+                [
+                    182001.1047334721,
+                    178938.71239965243,
+                    181458.09094789805,
+                    180711.2019507026,
+                    181513.22305125525
+                ],
+                [
+                    176605.39514272488,
+                    179598.08141579578,
+                    178488.27209394905,
+                    177791.92319838502,
+                    178799.17247712027
+                ],
+                [
+                    184254.7609495395,
+                    181588.87016921883,
+                    181987.027761658,
+                    184228.34933784534,
+                    186007.3751661963
+                ],
+                [
+                    181083.24868737173,
+                    180084.97786454772,
+                    179434.6707375492,
+                    178835.4213506152,
+                    179503.33356215365
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 683.014639941253,
+            "scoreError" : 19.153776344668877,
+            "scoreConfidence" : [
+                663.8608635965841,
+                702.1684162859219
+            ],
+            "scorePercentiles" : {
+                "0.0" : 631.1410163376336,
+                "50.0" : 689.7293925400315,
+                "90.0" : 714.4531664062545,
+                "95.0" : 720.8689932839243,
+                "99.0" : 722.8714412176852,
+                "99.9" : 722.8714412176852,
+                "99.99" : 722.8714412176852,
+                "99.999" : 722.8714412176852,
+                "99.9999" : 722.8714412176852,
+                "100.0" : 722.8714412176852
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    690.6349517829689,
+                    704.1580800611778,
+                    694.9677111051743,
+                    695.0410015864279,
+                    689.0304757649561
+                ],
+                [
+                    691.5968365133059,
+                    690.3846254030285,
+                    683.3442780575343,
+                    689.7293925400315,
+                    699.5764798190025
+                ],
+                [
+                    673.2597439717488,
+                    672.0005509084909,
+                    671.9996204651712,
+                    683.2792712489072,
+                    674.4378211744437
+                ],
+                [
+                    635.0210470048194,
+                    633.7361015296077,
+                    656.6688332898932,
+                    649.2676012209055,
+                    631.1410163376336
+                ],
+                [
+                    705.4227804441521,
+                    716.1966147718157,
+                    722.8714412176852,
+                    713.2908674958803,
+                    708.3088548165622
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1"
+        },
+        "primaryMetric" : {
+            "score" : 92759.0988155895,
+            "scoreError" : 836.285127821011,
+            "scoreConfidence" : [
+                91922.81368776849,
+                93595.38394341052
+            ],
+            "scorePercentiles" : {
+                "0.0" : 90810.8979140463,
+                "50.0" : 92624.9249423315,
+                "90.0" : 94241.65147294808,
+                "95.0" : 94903.95641066968,
+                "99.0" : 95041.37804403988,
+                "99.9" : 95041.37804403988,
+                "99.99" : 95041.37804403988,
+                "99.999" : 95041.37804403988,
+                "99.9999" : 95041.37804403988,
+                "100.0" : 95041.37804403988
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    91372.39834771086,
+                    91629.89387260214,
+                    92385.27842751208,
+                    91602.88212304474,
+                    91581.40023308268
+                ],
+                [
+                    92624.9249423315,
+                    93496.29024800946,
+                    92746.03307785958,
+                    91925.22811716463,
+                    92475.27214786637
+                ],
+                [
+                    94583.30593280586,
+                    92908.92741895744,
+                    93815.19285258018,
+                    92310.68685934409,
+                    93385.57949946244
+                ],
+                [
+                    95041.37804403988,
+                    93885.89124777386,
+                    93904.39599893033,
+                    93626.5794720409,
+                    93308.28306807528
+                ],
+                [
+                    94013.88183304289,
+                    92475.68900196174,
+                    91253.62232242881,
+                    91813.55738706338,
+                    90810.8979140463
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.35",
+        "benchmark" : "org.dmfs.rfc5545.recur.RecurrenceSetIterableExpansion.testExpansion",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Djava.io.tmpdir=/home/marten/workspace/lib-recur/benchmark/build/tmp/jmh",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.9",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.9+9",
+        "warmupIterations" : 5,
+        "warmupTime" : "5 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "5 s",
+        "measurementBatchSize" : 1,
+        "params" : {
+            "exceptions" : "FREQ=DAILY;BYDAY=MO:FREQ=DAILY;BYDAY=WE:FREQ=DAILY;BYDAY=WE,FR",
+            "instances" : "FREQ=DAILY;BYDAY=MO,TU,WE:FREQ=DAILY;BYDAY=WE,TH,FR:FREQ=DAILY;BYDAY=SU,SO",
+            "iterations" : "1000"
+        },
+        "primaryMetric" : {
+            "score" : 1521.9832386057753,
+            "scoreError" : 45.48037229568608,
+            "scoreConfidence" : [
+                1476.5028663100893,
+                1567.4636109014614
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1424.3237952585766,
+                "50.0" : 1522.0840433757403,
+                "90.0" : 1600.1701601816299,
+                "95.0" : 1606.3139905960338,
+                "99.0" : 1607.0370326243733,
+                "99.9" : 1607.0370326243733,
+                "99.99" : 1607.0370326243733,
+                "99.999" : 1607.0370326243733,
+                "99.9999" : 1607.0370326243733,
+                "100.0" : 1607.0370326243733
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1425.65694559024,
+                    1440.8056773856465,
+                    1444.4617933178306,
+                    1436.480821506755,
+                    1424.3237952585766
+                ],
+                [
+                    1540.4585581761055,
+                    1510.7783089952493,
+                    1509.9163328181492,
+                    1522.0840433757403,
+                    1533.5961019571412
+                ],
+                [
+                    1551.0916674148912,
+                    1577.3470604110255,
+                    1604.6268925299084,
+                    1566.1557132604935,
+                    1596.895333731004
+                ],
+                [
+                    1607.0370326243733,
+                    1597.1990052827773,
+                    1569.3829791302373,
+                    1581.0186797962872,
+                    1584.3296525947655
+                ],
+                [
+                    1503.2529881714195,
+                    1497.4893573998327,
+                    1494.6190467709312,
+                    1460.1226336501088,
+                    1470.4505439948887
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+
