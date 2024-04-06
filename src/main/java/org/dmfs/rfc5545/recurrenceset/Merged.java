@@ -20,6 +20,7 @@ package org.dmfs.rfc5545.recurrenceset;
 import org.dmfs.jems2.iterable.Mapped;
 import org.dmfs.jems2.iterable.Seq;
 import org.dmfs.jems2.iterable.Sieved;
+import org.dmfs.jems2.predicate.Not;
 import org.dmfs.rfc5545.InstanceIterator;
 import org.dmfs.rfc5545.RecurrenceSet;
 
@@ -56,6 +57,11 @@ public final class Merged implements RecurrenceSet
                     return new Sieved<>(RecurrenceSet::isInfinite, delegates).iterator().hasNext();
                 }
 
+                @Override
+                public boolean isFinite()
+                {
+                    return !new Sieved<>(new Not<>(RecurrenceSet::isFinite), delegates).iterator().hasNext();
+                }
             });
     }
 
@@ -76,5 +82,11 @@ public final class Merged implements RecurrenceSet
     public boolean isInfinite()
     {
         return mDelegate.isInfinite();
+    }
+
+    @Override
+    public boolean isFinite()
+    {
+        return mDelegate.isFinite();
     }
 }

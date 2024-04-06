@@ -65,4 +65,10 @@ public final class FastForwarded implements RecurrenceSet
     {
         return mDelegate.isInfinite();
     }
+
+    @Override
+    public boolean isFinite()
+    {
+        return mDelegate.isFinite();
+    }
 }

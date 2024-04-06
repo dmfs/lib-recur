@@ -93,4 +93,10 @@ public final class OfList implements RecurrenceSet
     {
         return false;
     }
+
+    @Override
+    public boolean isFinite()
+    {
+        return true;
+    }
 }

@@ -65,7 +65,7 @@ class DifferenceTest
                 new OfRule(new RecurrenceRule("FREQ=HOURLY;INTERVAL=12;COUNT=10"), DateTime.parse("20240224T120000")),
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240224T000000"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240224T120000"),
                     DateTime.parse("20240225T120000"),
@@ -87,7 +87,7 @@ class DifferenceTest
                 new OfRule(new RecurrenceRule("FREQ=WEEKLY;UNTIL=20200511T000000Z;BYDAY=TU"), DateTime.parse("20200414T160000Z")),
                 new OfList(DateTime.parse("20200421T160000Z"), DateTime.parse("20200505T160000Z"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20200414T160000Z"),
                     DateTime.parse("20200428T160000Z"))));

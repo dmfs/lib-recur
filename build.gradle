@@ -78,7 +78,7 @@ dependencies {
     api libs.jems2
     testImplementation project("lib-recur-hamcrest")
     testImplementation project("lib-recur-confidence")
-    testImplementation 'org.dmfs:jems2-testing:2.22.0'
+    testImplementation libs.jems2.testing
     testImplementation libs.jems2.confidence
     testImplementation 'org.saynotobugs:confidence-core:0.42.0'
 }

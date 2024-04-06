@@ -19,7 +19,7 @@ package org.dmfs.rfc5545.optional;
 
 import org.dmfs.jems2.Optional;
 import org.dmfs.jems2.optional.DelegatingOptional;
-import org.dmfs.jems2.optional.Restrained;
+import org.dmfs.jems2.optional.If;
 import org.dmfs.rfc5545.DateTime;
 import org.dmfs.rfc5545.RecurrenceSet;
 
@@ -31,6 +31,6 @@ public final class LastInstance extends DelegatingOptional<DateTime>
 {
     public LastInstance(RecurrenceSet recurrenceSet)
     {
-        super(new Restrained<>(() -> !recurrenceSet.isInfinite(), new Last<>(recurrenceSet)));
+        super(new If<>(recurrenceSet::isFinite, new Last<>(recurrenceSet)));
     }
 }

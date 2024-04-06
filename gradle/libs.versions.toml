@@ -1,7 +1,7 @@
 [versions]
 eclipse-jdt = "2.2.600"
 hamcrest = "2.2"
-jems2 = "2.22.0"
+jems2 = "2.23.1"
 junit = "5.8.2"
 junit-testkit = "1.9.2"
 srcless = "0.3.0"

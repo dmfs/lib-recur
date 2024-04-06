@@ -47,4 +47,10 @@ public final class OfRule implements RecurrenceSet
     {
         return mRecurrenceRule.isInfinite();
     }
+
+    @Override
+    public boolean isFinite()
+    {
+        return !mRecurrenceRule.isInfinite();
+    }
 }

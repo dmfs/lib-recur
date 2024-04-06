@@ -18,8 +18,6 @@
 package org.dmfs.rfc5545;
 
 
-import org.dmfs.jems2.Optional;
-
 /**
  * A set of instances.
  */
@@ -32,6 +30,17 @@ public interface RecurrenceSet extends Iterable<DateTime>
 
     /**
      * Returns whether this {@link RecurrenceSet} is infinite or not.
+     *
+     * @deprecated in favour of {@link #isFinite()}
      */
+    @Deprecated(forRemoval = true)
     boolean isInfinite();
+
+    /**
+     * Returns whether this {@link RecurrenceSet} is finite.
+     */
+    default boolean isFinite()
+    {
+        return !isInfinite();
+    }
 }

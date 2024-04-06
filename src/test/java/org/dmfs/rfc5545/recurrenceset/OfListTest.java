@@ -21,8 +21,7 @@ import org.dmfs.rfc5545.DateTime;
 import org.junit.jupiter.api.Test;
 
 import static java.util.TimeZone.getTimeZone;
-import static org.dmfs.rfc5545.confidence.Recur.emptyRecurrenceSet;
-import static org.dmfs.rfc5545.confidence.Recur.infinite;
+import static org.dmfs.rfc5545.confidence.Recur.*;
 import static org.saynotobugs.confidence.Assertion.assertThat;
 import static org.saynotobugs.confidence.quality.Core.*;
 
@@ -40,7 +39,7 @@ class OfListTest
     {
         assertThat(new OfList(DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"))));
     }
 
@@ -52,7 +51,7 @@ class OfListTest
                 DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T162501"),
                 DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T182501")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"),
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T162501"),
@@ -67,7 +66,7 @@ class OfListTest
                 DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"),
                 DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T182501")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"),
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T162501"),
@@ -81,7 +80,7 @@ class OfListTest
         assertThat(new OfList(
                 getTimeZone("Europe/Berlin"), "20240216T162501,20240216T142501,20240216T182501"),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"),
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T162501"),
@@ -97,7 +96,7 @@ class OfListTest
                 "20240216T162501,20240216T142501,20240216T182501",
                 "20240216T202501,20240216T232501,20240216T222501"),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"),
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T162501"),
@@ -120,7 +119,7 @@ class OfListTest
                 "20240216T232501",
                 "20240216T222501"),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T142501"),
                     DateTime.parse(getTimeZone("Europe/Berlin"), "20240216T162501"),
@@ -137,7 +136,7 @@ class OfListTest
         assertThat(new OfList(
                 "20240216T162501,20240216T142501,20240216T182501"),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240216T142501"),
                     DateTime.parse("20240216T162501"),
@@ -152,7 +151,7 @@ class OfListTest
                 "20240216T162501,20240216T142501,20240216T182501",
                 "20240216T202501,20240216T232501,20240216T222501"),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240216T142501"),
                     DateTime.parse("20240216T162501"),
@@ -174,7 +173,7 @@ class OfListTest
                 "20240216T232501",
                 "20240216T222501"),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240216T142501"),
                     DateTime.parse("20240216T162501"),
