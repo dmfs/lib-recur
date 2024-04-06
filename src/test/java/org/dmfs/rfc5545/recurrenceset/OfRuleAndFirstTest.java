@@ -22,8 +22,7 @@ import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.junit.jupiter.api.Test;
 
-import static org.dmfs.rfc5545.confidence.Recur.infinite;
-import static org.dmfs.rfc5545.confidence.Recur.startsWith;
+import static org.dmfs.rfc5545.confidence.Recur.*;
 import static org.saynotobugs.confidence.Assertion.assertThat;
 import static org.saynotobugs.confidence.quality.Core.*;
 
@@ -34,7 +33,7 @@ class OfRuleAndFirstTest
     {
         assertThat(new OfRuleAndFirst(new RecurrenceRule("FREQ=DAILY;BYDAY=FR;COUNT=3"), DateTime.parse("20240216")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240216"),
                     DateTime.parse("20240223"),
@@ -46,7 +45,7 @@ class OfRuleAndFirstTest
     {
         assertThat(new OfRuleAndFirst(new RecurrenceRule("FREQ=DAILY;BYDAY=FR;COUNT=3"), DateTime.parse("20240214")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240214"),
                     DateTime.parse("20240216"),
@@ -58,7 +57,7 @@ class OfRuleAndFirstTest
     {
         assertThat(new OfRuleAndFirst(new RecurrenceRule("FREQ=DAILY;BYDAY=FR;UNTIL=20240301"), DateTime.parse("20240216")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240216"),
                     DateTime.parse("20240223"),
@@ -71,7 +70,7 @@ class OfRuleAndFirstTest
     {
         assertThat(new OfRuleAndFirst(new RecurrenceRule("FREQ=DAILY;BYDAY=FR;UNTIL=20240301"), DateTime.parse("20240214")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240214"),
                     DateTime.parse("20240216"),

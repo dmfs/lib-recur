@@ -26,12 +26,12 @@ import org.saynotobugs.confidence.quality.composite.QualityComposition;
 import org.saynotobugs.confidence.quality.object.Satisfies;
 
 @StaticFactories(value = "Recur", packageName = "org.dmfs.rfc5545.confidence")
-public final class Infinite extends QualityComposition<RecurrenceSet>
+public final class Finite extends QualityComposition<RecurrenceSet>
 {
-    public Infinite()
+    public Finite()
     {
         super(new AllOf<>(
-            new Not<>(new Satisfies<>(RecurrenceSet::isFinite, new Text("finite"))),
-            new Satisfies<>(RecurrenceSet::isInfinite, new Text("infinite"))));
+            new Not<>(new Satisfies<>(RecurrenceSet::isInfinite, new Text("infinite"))),
+            new Satisfies<>(RecurrenceSet::isFinite, new Text("finite"))));
     }
 }

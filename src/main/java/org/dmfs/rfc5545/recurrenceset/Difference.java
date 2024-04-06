@@ -47,4 +47,10 @@ public final class Difference implements RecurrenceSet
     {
         return mMinuend.isInfinite();
     }
+
+    @Override
+    public boolean isFinite()
+    {
+        return mMinuend.isFinite();
+    }
 }

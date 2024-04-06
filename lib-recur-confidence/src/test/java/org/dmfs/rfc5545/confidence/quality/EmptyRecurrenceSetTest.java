@@ -38,14 +38,17 @@ class EmptyRecurrenceSetTest
             allOf(
                 org.saynotobugs.confidence.test.quality.Test.<RecurrenceSet>passes(mock(RecurrenceSet.class,
                     with(RecurrenceSet::isInfinite, returning(false)),
+                    with(RecurrenceSet::isFinite, returning(true)),
                     with(RecurrenceSet::iterator, returning(new EmptyIterator())))),
 
                 fails(mock(RecurrenceSet.class,
                     with(RecurrenceSet::isInfinite, returning(true)),
+                    with(RecurrenceSet::isFinite, returning(false)),
                     with(RecurrenceSet::iterator, returning(new EmptyIterator())))),
 
                 fails(mock(RecurrenceSet.class,
                     with(RecurrenceSet::isInfinite, returning(false)),
+                    with(RecurrenceSet::isFinite, returning(true)),
                     with(RecurrenceSet::iterator, returning(
                         new FastForwardable(
                             DateTime.parse("20240101"),
@@ -53,6 +56,7 @@ class EmptyRecurrenceSetTest
 
                 fails(mock(RecurrenceSet.class,
                     with(RecurrenceSet::isInfinite, returning(true)),
+                    with(RecurrenceSet::isFinite, returning(false)),
                     with(RecurrenceSet::iterator, returning(
                         new FastForwardable(
                             DateTime.parse("20240101"),

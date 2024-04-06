@@ -26,21 +26,21 @@ import static org.saynotobugs.confidence.Assertion.assertThat;
 import static org.saynotobugs.confidence.quality.Core.allOf;
 import static org.saynotobugs.confidence.test.quality.Test.fails;
 
-class InfiniteTest
+class FiniteTest
 {
     @Test
     void test()
     {
-        assertThat(new Infinite(),
+        assertThat(new Finite(),
             allOf(
                 org.saynotobugs.confidence.test.quality.Test.<RecurrenceSet>passes(mock(RecurrenceSet.class,
-                    with(RecurrenceSet::isInfinite, returning(true)),
-                    with(RecurrenceSet::isFinite, returning(false)),
+                    with(RecurrenceSet::isInfinite, returning(false)),
+                    with(RecurrenceSet::isFinite, returning(true)),
                     with(RecurrenceSet::iterator, returning(mock(InstanceIterator.class))))),
 
                 fails(mock(RecurrenceSet.class,
-                    with(RecurrenceSet::isInfinite, returning(false)),
-                    with(RecurrenceSet::isFinite, returning(true)),
+                    with(RecurrenceSet::isInfinite, returning(true)),
+                    with(RecurrenceSet::isFinite, returning(false)),
                     with(RecurrenceSet::iterator, returning(mock(InstanceIterator.class)))))));
     }
 

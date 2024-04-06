@@ -32,6 +32,7 @@ public final class EmptyRecurrenceSet extends QualityComposition<RecurrenceSet>
     {
         super(new AllOf<>(
             new Is<>(new EmptyIterable()),
+            new Is<>(new Finite()),
             new Is<>(new Not<>(new Infinite()))));
     }
 }

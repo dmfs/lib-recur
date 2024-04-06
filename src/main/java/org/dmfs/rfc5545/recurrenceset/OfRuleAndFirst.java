@@ -67,4 +67,10 @@ public final class OfRuleAndFirst implements RecurrenceSet
     {
         return mRecurrenceRule.isInfinite();
     }
+
+    @Override
+    public boolean isFinite()
+    {
+        return !mRecurrenceRule.isInfinite();
+    }
 }

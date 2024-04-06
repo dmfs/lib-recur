@@ -52,7 +52,7 @@ class MergedTest
         assertThat(new Merged(
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240215"),
                     DateTime.parse("20240216"),
@@ -69,7 +69,7 @@ class MergedTest
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215")),
                 new OfList(new EmptyIterable<>())),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240215"),
                     DateTime.parse("20240216"),
@@ -85,7 +85,7 @@ class MergedTest
                 new OfList(new EmptyIterable<>()),
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240215"),
                     DateTime.parse("20240216"),
@@ -117,7 +117,7 @@ class MergedTest
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215T180000")),
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215T120000"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240215T120000"),
                     DateTime.parse("20240215T180000"),
@@ -205,7 +205,7 @@ class MergedTest
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240214")),
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240214"),
                     DateTime.parse("20240215"),

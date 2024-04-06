@@ -22,8 +22,7 @@ import org.dmfs.rfc5545.recur.InvalidRecurrenceRuleException;
 import org.dmfs.rfc5545.recur.RecurrenceRule;
 import org.junit.jupiter.api.Test;
 
-import static org.dmfs.rfc5545.confidence.Recur.infinite;
-import static org.dmfs.rfc5545.confidence.Recur.startsWith;
+import static org.dmfs.rfc5545.confidence.Recur.*;
 import static org.saynotobugs.confidence.Assertion.assertThat;
 import static org.saynotobugs.confidence.quality.Core.*;
 
@@ -34,7 +33,7 @@ class OfRuleTest
     {
         assertThat(new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240215"),
                     DateTime.parse("20240216"),
@@ -48,7 +47,7 @@ class OfRuleTest
     {
         assertThat(new OfRule(new RecurrenceRule("FREQ=DAILY;UNTIL=20240219"), DateTime.parse("20240215")),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240215"),
                     DateTime.parse("20240216"),

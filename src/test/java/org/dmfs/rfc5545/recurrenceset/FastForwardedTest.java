@@ -55,7 +55,7 @@ class FastForwardedTest
             new FastForwarded(DateTime.parse("20240218"),
                 new OfRule(new RecurrenceRule("FREQ=DAILY;COUNT=5"), DateTime.parse("20240215"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240218"),
                     DateTime.parse("20240219"))));
@@ -69,7 +69,7 @@ class FastForwardedTest
             new FastForwarded(DateTime.parse("20240218"),
                 new OfRuleAndFirst(new RecurrenceRule("FREQ=DAILY;BYDAY=FR;COUNT=3"), DateTime.parse("20240215"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240223"))));
     }
@@ -82,7 +82,7 @@ class FastForwardedTest
             new FastForwarded(DateTime.parse("20240218"),
                 new OfRuleAndFirst(new RecurrenceRule("FREQ=DAILY;BYDAY=FR;COUNT=5"), DateTime.parse("20240207"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240223"),
                     DateTime.parse("20240301"))));
@@ -99,7 +99,7 @@ class FastForwardedTest
                     DateTime.parse("20240218"),
                     DateTime.parse("20240219"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240218"),
                     DateTime.parse("20240219"))));
@@ -118,7 +118,7 @@ class FastForwardedTest
                     DateTime.parse("20240220"),
                     DateTime.parse("20240221"))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240218"),
                     DateTime.parse("20240219"),
@@ -138,7 +138,7 @@ class FastForwardedTest
                         DateTime.parse("20240217"),
                         DateTime.parse("20240220")))),
             allOf(
-                is(not(infinite())),
+                is(finite()),
                 iterates(
                     DateTime.parse("20240218"),
                     DateTime.parse("20240219"),
