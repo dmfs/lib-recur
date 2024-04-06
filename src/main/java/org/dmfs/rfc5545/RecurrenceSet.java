@@ -18,9 +18,12 @@
 package org.dmfs.rfc5545;
 
 
+import org.dmfs.srcless.annotations.composable.Composable;
+
 /**
  * A set of instances.
  */
+@Composable
 public interface RecurrenceSet extends Iterable<DateTime>
 {
     /**

@@ -71,6 +71,8 @@ if (project.hasProperty('SONATYPE_USERNAME') && project.hasProperty('SONATYPE_PA
 }
 
 dependencies {
+    compileOnly libs.srcless.annotations
+    annotationProcessor libs.srcless.processors
     compileOnly 'org.eclipse.jdt:org.eclipse.jdt.annotation:2.2.600'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
@@ -80,7 +82,8 @@ dependencies {
     testImplementation project("lib-recur-confidence")
     testImplementation libs.jems2.testing
     testImplementation libs.jems2.confidence
-    testImplementation 'org.saynotobugs:confidence-core:0.42.0'
+    testImplementation libs.confidence.core
+    testImplementation libs.confidence.engine
 }
 
 

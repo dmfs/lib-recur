@@ -22,6 +22,7 @@ jems2-confidence = { module = "org.dmfs:jems2-confidence", version.ref = "jems2"
 
 confidence-core = { module = "org.saynotobugs:confidence-core", version.ref = "confidence" }
 confidence-test = { module = "org.saynotobugs:confidence-test", version.ref = "confidence" }
+confidence-engine = { module = "org.saynotobugs:confidence-incubator", version.ref = "confidence" }
 
 [bundles]
 srcless-processors = ["srcless-processors", "nullless-processors"]
