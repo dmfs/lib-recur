@@ -1,5 +1,6 @@
-[![Build](https://github.com/dmfs/lib-recur/actions/workflows/main.yml/badge.svg?label=main)](https://github.com/dmfs/lib-recur/actions/workflows/main.yml)
-[![codecov](https://codecov.io/gh/dmfs/lib-recur/branch/main/graph/badge.svg)](https://codecov.io/gh/dmfs/lib-recur)
+[![Build](https://github.com/dmfs/lib-recur/actions/workflows/main.yml/badge.svg?label=main)](https://github.com/dmfs/lib-recur/actions/workflows/main.yml)  
+[![codecov](https://codecov.io/gh/dmfs/lib-recur/branch/main/graph/badge.svg)](https://codecov.io/gh/dmfs/lib-recur)  
+[![Confidence](https://img.shields.io/badge/Tested_with-Confidence-800000?labelColor=white)](https://saynotobugs.org/confidence)
 
 # lib-recur
 
@@ -152,8 +153,6 @@ RecurrenceSet merged = new FastForwarded(
 Note, that `new FastForwarded(fastForwardTo, new OfRule(rrule, start))` and `new OfRule(rrule, fastForwardTo)` are not necessarily the same
 set of occurrences.
 
-
-
 ### Dealing with infinite rules
 
 Be aware that RRULEs are infinite if they specify neither `COUNT` nor `UNTIL`. This might easily result in an infinite loop if not taken care of.
@@ -169,6 +168,37 @@ for (DateTime occurrence:new First<>(1000, new OfRule(rule, start))) {
 ```
 
 This will always stop iterating after at most 1000 instances.
+
+### Limiting RecurrenceSets
+
+You can limit a `RecurrenceSet` to the instances that precede a certain `DateTime`
+using the `Preceding` decorator. This can also serve as a way to handle infinite rules:
+
+```java
+RecurrenceRule rule = new RecurrenceRule("FREQ=MONTHLY;BYMONTHDAY=23");
+DateTime start = new DateTime(1982, 4 /* 0-based month numbers! */,23);
+for (DateTime occurrence:new Preceding<>(
+    new DateTime(1983, 0, 1), // all instances before 1983
+    new OfRule(rule, start))) {
+    // do something with occurrence    
+}
+```
+
+The `Within` decorator combines `Preceding` and `FastForwarded` and only iterates
+occurrences that fall in the given (right-open) interval.
+
+```java
+// a RecurrenceSet that only contains occurrences in 2024
+// (assuming the original iterates all-day values)
+RecurrenceSet occurrencesOf2024 = new Within(
+    DateTime.parse("20240101"),
+    DateTime.parse("20250101"),
+    recurrenceSet
+);
+```
+
+Note, in both cases you must take care that the dates you supply have the same format (floating vs all-day vs absolute)
+as the occurrences of your recurrence set.
 
 ### Determining the last instance of a RecurrenceSet
 
